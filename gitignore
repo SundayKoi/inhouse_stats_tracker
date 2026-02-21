@@ -1,0 +1,11 @@
+# Environment variables (API keys)
+.env
+
+# Google service account credentials
+credentials.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
