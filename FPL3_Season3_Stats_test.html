@@ -108,7 +108,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <label class="rc"><input type="checkbox" value="TOP" checked onchange="render()"><span class="rb" style="--rc:#ef4444">Top</span></label>
         <label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="render()"><span class="rb" style="--rc:#22c55e">Jng</span></label>
         <label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="render()"><span class="rb" style="--rc:#3b82f6">Mid</span></label>
-        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Bot</span></label>
+        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Adc</span></label>
         <label class="rc"><input type="checkbox" value="UTILITY" checked onchange="render()"><span class="rb" style="--rc:#a855f7">Sup</span></label>
       </div>
     </div>
@@ -566,7 +566,8 @@ function render() {
     const pct = (Math.abs(d[statKey])/maxVal*100).toFixed(1);
     const color = TC[d.team] || '#6366f1';
     const delay = Math.min(i*0.03,1.5);
-    const role = d.mainRole[0]+d.mainRole.slice(1).toLowerCase();
+    const roleMap={TOP:'Top',JUNGLE:'Jng',MIDDLE:'Mid',BOTTOM:'ADC',UTILITY:'Sup'};
+    const role=roleMap[d.mainRole]||d.mainRole;
     const sub = d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
     const rank = d._rank || i+1;
     const rc2 = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
