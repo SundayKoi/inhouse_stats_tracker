@@ -145,8 +145,51 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 <script>
 const SHEET_ID = '1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
-const MATCH_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
-const ROSTER_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet3`;
+
+function gvizURL(sheet) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}`;
+}
+
+// Parse Google Visualization JSON response into array of objects
+function parseGviz(text) {
+  const jsonStr = text.replace(/^[^(]*\(/, '').replace(/\);?\s*$/, '');
+  const json = JSON.parse(jsonStr);
+  const cols = json.table.cols.map(c => c.label || c.id);
+  return json.table.rows.map(r => {
+    const obj = {};
+    r.c.forEach((cell, i) => {
+      obj[cols[i]] = cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '';
+    });
+    return obj;
+  });
+}
+
+// JSONP loader to bypass CORS (works from file:// and any origin)
+function loadSheetJSONP(sheet) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_gviz_cb_' + Math.random().toString(36).slice(2);
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cbName}&sheet=${encodeURIComponent(sheet)}`;
+    window[cbName] = function(response) {
+      delete window[cbName];
+      document.body.removeChild(script);
+      try {
+        const cols = response.table.cols.map(c => c.label || c.id);
+        const rows = response.table.rows.map(r => {
+          const obj = {};
+          r.c.forEach((cell, i) => {
+            obj[cols[i]] = cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '';
+          });
+          return obj;
+        });
+        resolve(rows);
+      } catch(e) { reject(e); }
+    };
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = () => { delete window[cbName]; reject(new Error('Failed to load sheet: '+sheet)); };
+    document.body.appendChild(script);
+  });
+}
 
 const NAME_MERGES = {
   "Imthegeoff": "JellyBeanGeoff",
@@ -241,8 +284,15 @@ function aggregate(matchRows, rosterMap) {
     if (NAME_MERGES[name]) name = NAME_MERGES[name];
     if (!name) continue;
 
-    matchIds.add(r['Match ID']);
-    dates.add(r['Date']);
+    matchIds.add(r['Match ID'] || '');
+    
+    // gviz returns dates as "Date(2026,0,19)" — parse that
+    let dateStr = r['Date'] || '';
+    const dateMatch = dateStr.match(/Date\((\d+),(\d+),(\d+)\)/);
+    if (dateMatch) {
+      dateStr = `${dateMatch[1]}-${String(parseInt(dateMatch[2])+1).padStart(2,'0')}-${dateMatch[3].padStart(2,'0')}`;
+    }
+    dates.add(dateStr);
 
     if (!ps[name]) ps[name] = {
       games:0,kills:0,deaths:0,assists:0,cs:0,gold:0,
@@ -335,53 +385,66 @@ function aggregate(matchRows, rosterMap) {
 
   players.sort((a,b) => b.games - a.games);
 
-  // Meta
-  const totalMatches = Math.round(matchIds.size);
+  // Meta — matches = unique match IDs, game nights = unique dates
+  const totalMatches = matchIds.size;
+  // Each match has 10 player rows, so actual match count = unique match IDs
+  // But match IDs from gviz might include empty strings
+  matchIds.delete('');
+  dates.delete('');
   const gameNights = dates.size;
   const sortedDates = [...dates].sort();
   const dateRange = sortedDates.length ? formatDate(sortedDates[0]) + ' — ' + formatDate(sortedDates[sortedDates.length-1]) : '';
 
-  return { players, totalMatches, gameNights, dateRange };
+  return { players, totalMatches: matchIds.size, gameNights, dateRange };
 }
 
 function formatDate(d) {
   if (!d) return '';
-  const parts = d.split(/[-/]/);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  // Try YYYY-MM-DD or MM/DD/YYYY
-  let y, m, day;
-  if (parts[0].length === 4) { y=parts[0]; m=parseInt(parts[1]); day=parseInt(parts[2]); }
-  else { m=parseInt(parts[0]); day=parseInt(parts[1]); y=parts[2]; }
-  return months[(m||1)-1]+' '+day+', '+y;
+  const parts = d.split('-');
+  if (parts.length === 3) {
+    const m = parseInt(parts[1]);
+    const day = parseInt(parts[2]);
+    return months[m-1]+' '+day+', '+parts[0];
+  }
+  return d;
 }
 
 // ─── Load data ───
 async function loadData() {
   try {
-    const [matchRes, rosterRes] = await Promise.all([
-      fetch(MATCH_URL),
-      fetch(ROSTER_URL)
+    const [matchRows, rosterRows] = await Promise.all([
+      loadSheetJSONP('Sheet1'),
+      loadSheetJSONP('Sheet3')
     ]);
-    const matchText = await matchRes.text();
-    const rosterText = await rosterRes.text();
-
-    const matchRows = parseCSV(matchText);
-    const rosterRows = parseCSV(rosterText);
 
     // Build roster map from Sheet3
+    // gviz may return headers differently, so try multiple approaches
     const rosterMap = {};
-    for (const r of rosterRows) {
-      const player = r['Player'] || r['player'] || Object.values(r)[0] || '';
-      const team = r['FPL Team'] || r['fpl team'] || r['Team'] || Object.values(r)[1] || '';
-      if (player && team) {
-        rosterMap[player.trim()] = team.trim();
+    if (rosterRows.length > 0) {
+      const firstRow = rosterRows[0];
+      const keys = Object.keys(firstRow);
+      // Find the player and team columns by checking all possible header names
+      let playerCol = keys.find(k => /player/i.test(k)) || keys[0];
+      let teamCol = keys.find(k => /fpl|team/i.test(k)) || keys[1];
+      
+      for (const r of rosterRows) {
+        const player = (r[playerCol] || '').trim();
+        const team = (r[teamCol] || '').trim();
+        if (player && team) {
+          rosterMap[player] = team;
+        }
       }
     }
-    // Also add merged names
+    // Also add merged names to roster
     for (const [old, canonical] of Object.entries(NAME_MERGES)) {
       if (rosterMap[old] && !rosterMap[canonical]) rosterMap[canonical] = rosterMap[old];
       if (rosterMap[canonical] && !rosterMap[old]) rosterMap[old] = rosterMap[canonical];
     }
+    
+    console.log('Roster map:', rosterMap);
+    console.log('Roster rows sample:', rosterRows.slice(0,3));
+    console.log('Match rows sample:', matchRows.slice(0,2));
 
     const result = aggregate(matchRows, rosterMap);
     PD = result.players;
