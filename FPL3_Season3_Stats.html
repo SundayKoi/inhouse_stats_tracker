@@ -23,7 +23,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .meta-bar{display:flex;justify-content:center;gap:24px;margin:12px 0 0;flex-wrap:wrap}
 .meta-item{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
 .meta-item span{color:var(--cyan);font-weight:700}
-
 .ctrls{display:flex;gap:10px;margin:24px 0 16px;flex-wrap:wrap}
 .ctrl{flex:1;min-width:160px}
 .ctrl label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
@@ -35,37 +34,38 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tbtn.ah{background:linear-gradient(135deg,#00f0ff15,#22c55e15);border-color:var(--green);color:var(--green);box-shadow:0 0 12px #22c55e15}
 .tbtn.al{background:linear-gradient(135deg,#ff2d7b15,#ef444415);border-color:var(--pink);color:var(--pink);box-shadow:0 0 12px #ff2d7b15}
 .tbtn.aa{background:linear-gradient(135deg,#00f0ff15,#a855f715);border-color:var(--purple);color:var(--purple);box-shadow:0 0 12px #a855f715}
-
 .role-checks{display:flex;gap:4px;flex-wrap:wrap}
 .rc{cursor:pointer}
 .rc input{display:none}
 .rb{display:block;padding:6px 10px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);transition:all .2s;text-align:center}
 .rc input:checked+.rb{border-color:var(--rc);color:var(--rc);background:color-mix(in srgb,var(--rc) 15%,var(--bg2))}
 .rc:hover .rb{border-color:var(--dim)}
-
 .card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;backdrop-filter:blur(8px);position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
-
-.brow{display:grid;grid-template-columns:32px 160px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
-@media(max-width:600px){.brow{grid-template-columns:24px 110px 1fr 55px;gap:4px}}
+.brow{display:grid;grid-template-columns:32px 220px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
+@media(max-width:600px){.brow{grid-template-columns:24px 140px 1fr 55px;gap:4px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
 .brow .rk.r1{color:var(--gold);text-shadow:0 0 8px #ffd70040}
 .brow .rk.r2{color:var(--silver)}
 .brow .rk.r3{color:var(--bronze)}
 .brow .pi{overflow:hidden}
 .brow .pn{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.brow .tn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .tn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:visible}
 .bc{height:26px;background:#ffffff06;position:relative;overflow:hidden}
 .bf{height:100%;position:relative;transition:width .7s cubic-bezier(.22,1,.36,1);min-width:3px}
 .bf::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2px;background:#fff;opacity:.7;box-shadow:0 0 6px currentColor}
 .brow .val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;text-align:right}
 @keyframes si{to{opacity:1;transform:translateX(0)}}
-
 .player-count{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:12px;padding-top:10px;border-top:1px solid var(--border);text-align:center}
 .ftr{text-align:center;padding:30px 0 16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;opacity:.3}
 .nodata{text-align:center;padding:50px 0;font-family:'Share Tech Mono',monospace;color:var(--dim);font-size:12px}
+.loading{text-align:center;padding:80px 0}
+.loading .spin{display:inline-block;width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading p{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);margin-top:16px;letter-spacing:2px}
+.load-error{text-align:center;padding:60px 0;font-family:'Share Tech Mono',monospace;color:var(--pink);font-size:12px}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border)}::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
 </style>
 </head>
@@ -77,15 +77,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="sub">PLAYER PERFORMANCE DASHBOARD</div>
     <div class="cred">Stats compiled by Drib x Lizzo Mukkbang</div>
     <div class="meta-bar">
-      <div class="meta-item"><span id="mPlayers">0</span> Players</div>
-      <div class="meta-item"><span>76</span> Matches</div>
-      <div class="meta-item"><span>12</span> Teams</div>
-      <div class="meta-item"><span>5</span> Game Nights</div>
-      <div class="meta-item">Jan 19 — Feb 16, 2026</div>
+      <div class="meta-item"><span id="mPlayers">—</span> Players</div>
+      <div class="meta-item"><span id="mMatches">—</span> Matches</div>
+      <div class="meta-item"><span id="mTeams">12</span> Teams</div>
+      <div class="meta-item"><span id="mNights">—</span> Game Nights</div>
+      <div class="meta-item" id="mDates">Loading…</div>
     </div>
   </header>
 
-  <div class="ctrls">
+  <div class="ctrls" id="ctrlsWrap" style="display:none">
     <div class="ctrl">
       <label>Stat</label>
       <select id="statSel" onchange="render()"></select>
@@ -108,7 +108,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <label class="rc"><input type="checkbox" value="TOP" checked onchange="render()"><span class="rb" style="--rc:#ef4444">Top</span></label>
         <label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="render()"><span class="rb" style="--rc:#22c55e">Jng</span></label>
         <label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="render()"><span class="rb" style="--rc:#3b82f6">Mid</span></label>
-        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Bot</span></label>
+        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Adc</span></label>
         <label class="rc"><input type="checkbox" value="UTILITY" checked onchange="render()"><span class="rb" style="--rc:#a855f7">Sup</span></label>
       </div>
     </div>
@@ -123,23 +123,87 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </select>
     </div>
     <div class="ctrl">
+      <label>Season Phase</label>
+      <select id="phaseSel" onchange="render()">
+        <option value="All">All</option>
+        <option value="Regular">Regular Season</option>
+        <option value="Playoffs">Playoffs</option>
+      </select>
+    </div>
+    <div class="ctrl">
       <label>Search Player</label>
       <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
     </div>
   </div>
-  
+
   <div class="card">
     <div class="card-t" id="chartTitle"></div>
     <div class="card-s" id="chartSub"></div>
-    <div id="bars"></div>
+    <div id="bars">
+      <div class="loading" id="loadingEl">
+        <div class="spin"></div>
+        <p>LOADING MATCH DATA...</p>
+      </div>
+    </div>
     <div class="player-count" id="playerCount"></div>
   </div>
 
-  <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API</div>
+  <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
 </div>
 
 <script>
-const PD = [{"player": "Cheongseolmo", "team": "Rising Tide Raiders", "games": 14, "wins": 5, "losses": 9, "winRate": 35.7, "kda": 1.69, "killsPerGame": 2.43, "deathsPerGame": 6.07, "assistsPerGame": 7.86, "csPerMin": 5.69, "goldPerMin": 347.8, "damagePerMin": 436.5, "visionPerMin": 1.04, "damageTakenPerGame": 35804.0, "damageMitigatedPerGame": 34498.0, "goldPerGame": 11693.0, "csPerGame": 191.1, "visionPerGame": 34.9, "totalKills": 34, "totalDeaths": 85, "totalAssists": 110, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 5.3, "wardsKilledPerGame": 8.1, "controlWardsPerGame": 4.5, "turretKillsPerGame": 0.5, "turretDamagePerGame": 1521.0, "objectiveDamagePerGame": 20211.0, "teamDragonsPerGame": 1.7, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 1.0, "teamTowersPerGame": 4.6, "firstBloodRate": 21.4, "mainRole": "JUNGLE"}, {"player": "lolcavan", "team": "Rising Tide Raiders", "games": 14, "wins": 5, "losses": 9, "winRate": 35.7, "kda": 3.1, "killsPerGame": 5.79, "deathsPerGame": 3.5, "assistsPerGame": 5.07, "csPerMin": 8.44, "goldPerMin": 461.4, "damagePerMin": 867.2, "visionPerMin": 0.75, "damageTakenPerGame": 18494.0, "damageMitigatedPerGame": 11370.0, "goldPerGame": 15513.0, "csPerGame": 283.9, "visionPerGame": 25.3, "totalKills": 81, "totalDeaths": 49, "totalAssists": 71, "doubleKills": 9, "tripleKills": 1, "quadraKills": 1, "pentaKills": 0, "wardsPlacedPerGame": 9.0, "wardsKilledPerGame": 4.9, "controlWardsPerGame": 1.1, "turretKillsPerGame": 1.6, "turretDamagePerGame": 6508.0, "objectiveDamagePerGame": 14743.0, "teamDragonsPerGame": 1.7, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 1.0, "teamTowersPerGame": 4.6, "firstBloodRate": 21.4, "mainRole": "BOTTOM"}, {"player": "AfkBoulder", "team": "Rising Tide Raiders", "games": 14, "wins": 5, "losses": 9, "winRate": 35.7, "kda": 2.38, "killsPerGame": 0.93, "deathsPerGame": 5.14, "assistsPerGame": 11.29, "csPerMin": 0.96, "goldPerMin": 260.7, "damagePerMin": 310.6, "visionPerMin": 2.8, "damageTakenPerGame": 23878.0, "damageMitigatedPerGame": 23309.0, "goldPerGame": 8766.0, "csPerGame": 32.1, "visionPerGame": 94.0, "totalKills": 13, "totalDeaths": 72, "totalAssists": 158, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 37.9, "wardsKilledPerGame": 8.5, "controlWardsPerGame": 4.4, "turretKillsPerGame": 0.4, "turretDamagePerGame": 1497.0, "objectiveDamagePerGame": 3296.0, "teamDragonsPerGame": 1.7, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 1.0, "teamTowersPerGame": 4.6, "firstBloodRate": 21.4, "mainRole": "UTILITY"}, {"player": "KingOfSpades", "team": "Divine Ascension", "games": 13, "wins": 9, "losses": 4, "winRate": 69.2, "kda": 2.45, "killsPerGame": 4.54, "deathsPerGame": 3.77, "assistsPerGame": 4.69, "csPerMin": 7.46, "goldPerMin": 425.2, "damagePerMin": 890.0, "visionPerMin": 1.01, "damageTakenPerGame": 40903.0, "damageMitigatedPerGame": 52154.0, "goldPerGame": 13002.0, "csPerGame": 228.0, "visionPerGame": 30.8, "totalKills": 59, "totalDeaths": 49, "totalAssists": 61, "doubleKills": 5, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 13.3, "wardsKilledPerGame": 1.8, "controlWardsPerGame": 1.2, "turretKillsPerGame": 3.1, "turretDamagePerGame": 12487.0, "objectiveDamagePerGame": 17301.0, "teamDragonsPerGame": 2.4, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.8, "firstBloodRate": 69.2, "mainRole": "TOP"}, {"player": "JayDK", "team": "Divine Ascension", "games": 13, "wins": 9, "losses": 4, "winRate": 69.2, "kda": 3.18, "killsPerGame": 6.31, "deathsPerGame": 4.23, "assistsPerGame": 7.15, "csPerMin": 7.87, "goldPerMin": 426.7, "damagePerMin": 980.0, "visionPerMin": 0.89, "damageTakenPerGame": 25092.0, "damageMitigatedPerGame": 19334.0, "goldPerGame": 13048.0, "csPerGame": 240.8, "visionPerGame": 27.1, "totalKills": 82, "totalDeaths": 55, "totalAssists": 93, "doubleKills": 11, "tripleKills": 2, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 11.1, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 1.9, "turretKillsPerGame": 1.2, "turretDamagePerGame": 7011.0, "objectiveDamagePerGame": 10412.0, "teamDragonsPerGame": 2.4, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.8, "firstBloodRate": 69.2, "mainRole": "MIDDLE"}, {"player": "Zygg", "team": "Divine Ascension", "games": 13, "wins": 9, "losses": 4, "winRate": 69.2, "kda": 4.57, "killsPerGame": 5.31, "deathsPerGame": 2.69, "assistsPerGame": 7.0, "csPerMin": 8.91, "goldPerMin": 483.6, "damagePerMin": 759.1, "visionPerMin": 0.77, "damageTakenPerGame": 15140.0, "damageMitigatedPerGame": 8886.0, "goldPerGame": 14787.0, "csPerGame": 272.4, "visionPerGame": 23.6, "totalKills": 69, "totalDeaths": 35, "totalAssists": 91, "doubleKills": 9, "tripleKills": 2, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.5, "wardsKilledPerGame": 3.2, "controlWardsPerGame": 0.5, "turretKillsPerGame": 1.5, "turretDamagePerGame": 7078.0, "objectiveDamagePerGame": 17040.0, "teamDragonsPerGame": 2.4, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.8, "firstBloodRate": 69.2, "mainRole": "BOTTOM"}, {"player": "MagnumBuck", "team": "Divine Ascension", "games": 13, "wins": 9, "losses": 4, "winRate": 69.2, "kda": 3.36, "killsPerGame": 1.15, "deathsPerGame": 4.31, "assistsPerGame": 13.31, "csPerMin": 0.86, "goldPerMin": 282.8, "damagePerMin": 268.8, "visionPerMin": 2.98, "damageTakenPerGame": 20965.0, "damageMitigatedPerGame": 17093.0, "goldPerGame": 8649.0, "csPerGame": 26.2, "visionPerGame": 91.1, "totalKills": 15, "totalDeaths": 56, "totalAssists": 173, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 35.8, "wardsKilledPerGame": 9.7, "controlWardsPerGame": 5.8, "turretKillsPerGame": 0.7, "turretDamagePerGame": 2125.0, "objectiveDamagePerGame": 3461.0, "teamDragonsPerGame": 2.4, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.8, "firstBloodRate": 69.2, "mainRole": "UTILITY"}, {"player": "Wranor", "team": "Flannel Banana Bandits", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 1.53, "killsPerGame": 2.69, "deathsPerGame": 6.38, "assistsPerGame": 7.08, "csPerMin": 6.62, "goldPerMin": 339.3, "damagePerMin": 824.2, "visionPerMin": 1.16, "damageTakenPerGame": 39486.0, "damageMitigatedPerGame": 55610.0, "goldPerGame": 11425.0, "csPerGame": 223.0, "visionPerGame": 39.2, "totalKills": 35, "totalDeaths": 83, "totalAssists": 92, "doubleKills": 3, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 16.5, "wardsKilledPerGame": 3.5, "controlWardsPerGame": 4.6, "turretKillsPerGame": 0.8, "turretDamagePerGame": 4395.0, "objectiveDamagePerGame": 6853.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 5.2, "firstBloodRate": 38.5, "mainRole": "TOP"}, {"player": "Angrodis", "team": "Flannel Banana Bandits", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.1, "killsPerGame": 4.77, "deathsPerGame": 5.92, "assistsPerGame": 7.69, "csPerMin": 6.91, "goldPerMin": 401.0, "damagePerMin": 742.5, "visionPerMin": 1.09, "damageTakenPerGame": 40760.0, "damageMitigatedPerGame": 45580.0, "goldPerGame": 13504.0, "csPerGame": 232.7, "visionPerGame": 36.7, "totalKills": 62, "totalDeaths": 77, "totalAssists": 100, "doubleKills": 5, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 5.8, "wardsKilledPerGame": 6.6, "controlWardsPerGame": 4.5, "turretKillsPerGame": 0.9, "turretDamagePerGame": 2736.0, "objectiveDamagePerGame": 31499.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 5.2, "firstBloodRate": 38.5, "mainRole": "JUNGLE"}, {"player": "zeldaguy0", "team": "Flannel Banana Bandits", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.76, "killsPerGame": 7.0, "deathsPerGame": 5.08, "assistsPerGame": 7.0, "csPerMin": 7.59, "goldPerMin": 419.8, "damagePerMin": 960.9, "visionPerMin": 1.06, "damageTakenPerGame": 23303.0, "damageMitigatedPerGame": 12758.0, "goldPerGame": 14136.0, "csPerGame": 255.5, "visionPerGame": 35.8, "totalKills": 91, "totalDeaths": 66, "totalAssists": 91, "doubleKills": 8, "tripleKills": 3, "quadraKills": 1, "pentaKills": 0, "wardsPlacedPerGame": 11.8, "wardsKilledPerGame": 6.2, "controlWardsPerGame": 0.8, "turretKillsPerGame": 1.2, "turretDamagePerGame": 7993.0, "objectiveDamagePerGame": 13911.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 5.2, "firstBloodRate": 38.5, "mainRole": "MIDDLE"}, {"player": "MeleeVayne", "team": "Flannel Banana Bandits", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 3.0, "killsPerGame": 6.0, "deathsPerGame": 4.31, "assistsPerGame": 6.92, "csPerMin": 8.17, "goldPerMin": 455.4, "damagePerMin": 880.9, "visionPerMin": 0.47, "damageTakenPerGame": 18206.0, "damageMitigatedPerGame": 11481.0, "goldPerGame": 15338.0, "csPerGame": 275.2, "visionPerGame": 15.8, "totalKills": 78, "totalDeaths": 56, "totalAssists": 90, "doubleKills": 11, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.5, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 0.0, "turretKillsPerGame": 1.5, "turretDamagePerGame": 5951.0, "objectiveDamagePerGame": 15513.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 5.2, "firstBloodRate": 38.5, "mainRole": "BOTTOM"}, {"player": "JellyBeanGeoff", "team": "Flannel Banana Bandits", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 3.28, "killsPerGame": 0.77, "deathsPerGame": 4.69, "assistsPerGame": 14.62, "csPerMin": 0.88, "goldPerMin": 274.3, "damagePerMin": 378.3, "visionPerMin": 3.39, "damageTakenPerGame": 20660.0, "damageMitigatedPerGame": 20222.0, "goldPerGame": 9239.0, "csPerGame": 29.5, "visionPerGame": 114.3, "totalKills": 10, "totalDeaths": 61, "totalAssists": 190, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 45.1, "wardsKilledPerGame": 12.6, "controlWardsPerGame": 10.7, "turretKillsPerGame": 0.1, "turretDamagePerGame": 1248.0, "objectiveDamagePerGame": 3165.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 5.2, "firstBloodRate": 38.5, "mainRole": "UTILITY"}, {"player": "Promech", "team": "Womenphobia", "games": 13, "wins": 4, "losses": 9, "winRate": 30.8, "kda": 1.3, "killsPerGame": 3.92, "deathsPerGame": 6.85, "assistsPerGame": 5.0, "csPerMin": 6.62, "goldPerMin": 357.8, "damagePerMin": 819.9, "visionPerMin": 1.1, "damageTakenPerGame": 48613.0, "damageMitigatedPerGame": 57040.0, "goldPerGame": 12335.0, "csPerGame": 228.1, "visionPerGame": 37.8, "totalKills": 51, "totalDeaths": 89, "totalAssists": 65, "doubleKills": 4, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.7, "wardsKilledPerGame": 4.2, "controlWardsPerGame": 0.3, "turretKillsPerGame": 1.3, "turretDamagePerGame": 7885.0, "objectiveDamagePerGame": 10165.0, "teamDragonsPerGame": 1.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.3, "teamGrubsPerGame": 1.3, "teamTowersPerGame": 4.5, "firstBloodRate": 30.8, "mainRole": "TOP"}, {"player": "Very Talonted", "team": "Womenphobia", "games": 13, "wins": 4, "losses": 9, "winRate": 30.8, "kda": 2.7, "killsPerGame": 3.92, "deathsPerGame": 3.54, "assistsPerGame": 5.62, "csPerMin": 8.04, "goldPerMin": 386.5, "damagePerMin": 656.4, "visionPerMin": 0.78, "damageTakenPerGame": 20059.0, "damageMitigatedPerGame": 12863.0, "goldPerGame": 13322.0, "csPerGame": 277.1, "visionPerGame": 26.8, "totalKills": 51, "totalDeaths": 46, "totalAssists": 73, "doubleKills": 7, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.9, "wardsKilledPerGame": 3.5, "controlWardsPerGame": 1.2, "turretKillsPerGame": 0.5, "turretDamagePerGame": 4061.0, "objectiveDamagePerGame": 5771.0, "teamDragonsPerGame": 1.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.3, "teamGrubsPerGame": 1.3, "teamTowersPerGame": 4.5, "firstBloodRate": 30.8, "mainRole": "MIDDLE"}, {"player": "Winter", "team": "Gamblers", "games": 13, "wins": 7, "losses": 6, "winRate": 53.8, "kda": 2.87, "killsPerGame": 4.54, "deathsPerGame": 3.62, "assistsPerGame": 5.85, "csPerMin": 7.5, "goldPerMin": 392.3, "damagePerMin": 775.8, "visionPerMin": 0.97, "damageTakenPerGame": 26070.0, "damageMitigatedPerGame": 23016.0, "goldPerGame": 12078.0, "csPerGame": 230.8, "visionPerGame": 30.0, "totalKills": 59, "totalDeaths": 47, "totalAssists": 76, "doubleKills": 7, "tripleKills": 2, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.2, "wardsKilledPerGame": 1.8, "controlWardsPerGame": 0.2, "turretKillsPerGame": 1.1, "turretDamagePerGame": 5454.0, "objectiveDamagePerGame": 9713.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 4.9, "firstBloodRate": 30.8, "mainRole": "TOP"}, {"player": "Zhaphh", "team": "Gamblers", "games": 13, "wins": 7, "losses": 6, "winRate": 53.8, "kda": 3.81, "killsPerGame": 5.0, "deathsPerGame": 3.62, "assistsPerGame": 8.77, "csPerMin": 6.13, "goldPerMin": 396.1, "damagePerMin": 457.9, "visionPerMin": 1.33, "damageTakenPerGame": 31591.0, "damageMitigatedPerGame": 31164.0, "goldPerGame": 12194.0, "csPerGame": 188.7, "visionPerGame": 40.8, "totalKills": 65, "totalDeaths": 47, "totalAssists": 114, "doubleKills": 11, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.5, "wardsKilledPerGame": 8.4, "controlWardsPerGame": 4.8, "turretKillsPerGame": 0.8, "turretDamagePerGame": 3142.0, "objectiveDamagePerGame": 30723.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 4.9, "firstBloodRate": 30.8, "mainRole": "JUNGLE"}, {"player": "Fox", "team": "Gamblers", "games": 13, "wins": 7, "losses": 6, "winRate": 53.8, "kda": 2.34, "killsPerGame": 2.85, "deathsPerGame": 4.08, "assistsPerGame": 6.69, "csPerMin": 7.12, "goldPerMin": 351.4, "damagePerMin": 538.4, "visionPerMin": 1.09, "damageTakenPerGame": 18814.0, "damageMitigatedPerGame": 13128.0, "goldPerGame": 10819.0, "csPerGame": 219.2, "visionPerGame": 33.5, "totalKills": 37, "totalDeaths": 53, "totalAssists": 87, "doubleKills": 4, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 14.1, "wardsKilledPerGame": 3.1, "controlWardsPerGame": 2.4, "turretKillsPerGame": 1.1, "turretDamagePerGame": 4356.0, "objectiveDamagePerGame": 7400.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 4.9, "firstBloodRate": 30.8, "mainRole": "MIDDLE"}, {"player": "7gen", "team": "Gamblers", "games": 13, "wins": 7, "losses": 6, "winRate": 53.8, "kda": 2.82, "killsPerGame": 6.69, "deathsPerGame": 4.69, "assistsPerGame": 6.54, "csPerMin": 7.83, "goldPerMin": 482.6, "damagePerMin": 886.6, "visionPerMin": 0.6, "damageTakenPerGame": 20960.0, "damageMitigatedPerGame": 10963.0, "goldPerGame": 14857.0, "csPerGame": 241.1, "visionPerGame": 18.4, "totalKills": 87, "totalDeaths": 61, "totalAssists": 85, "doubleKills": 11, "tripleKills": 4, "quadraKills": 2, "pentaKills": 0, "wardsPlacedPerGame": 8.5, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 0.0, "turretKillsPerGame": 1.5, "turretDamagePerGame": 7965.0, "objectiveDamagePerGame": 15278.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 4.9, "firstBloodRate": 30.8, "mainRole": "BOTTOM"}, {"player": "BlindHookers", "team": "Gamblers", "games": 13, "wins": 7, "losses": 6, "winRate": 53.8, "kda": 2.04, "killsPerGame": 1.31, "deathsPerGame": 6.08, "assistsPerGame": 11.08, "csPerMin": 1.17, "goldPerMin": 271.8, "damagePerMin": 289.4, "visionPerMin": 3.12, "damageTakenPerGame": 23953.0, "damageMitigatedPerGame": 23929.0, "goldPerGame": 8366.0, "csPerGame": 36.1, "visionPerGame": 95.9, "totalKills": 17, "totalDeaths": 79, "totalAssists": 144, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 37.3, "wardsKilledPerGame": 10.5, "controlWardsPerGame": 7.2, "turretKillsPerGame": 0.2, "turretDamagePerGame": 1314.0, "objectiveDamagePerGame": 3028.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 4.9, "firstBloodRate": 30.8, "mainRole": "UTILITY"}, {"player": "I fear nobody", "team": "Astronauts", "games": 13, "wins": 8, "losses": 5, "winRate": 61.5, "kda": 3.59, "killsPerGame": 4.69, "deathsPerGame": 4.31, "assistsPerGame": 10.77, "csPerMin": 6.07, "goldPerMin": 395.8, "damagePerMin": 575.3, "visionPerMin": 1.59, "damageTakenPerGame": 42124.0, "damageMitigatedPerGame": 54795.0, "goldPerGame": 13496.0, "csPerGame": 206.9, "visionPerGame": 54.2, "totalKills": 61, "totalDeaths": 56, "totalAssists": 140, "doubleKills": 4, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 5.9, "wardsKilledPerGame": 15.2, "controlWardsPerGame": 4.7, "turretKillsPerGame": 0.9, "turretDamagePerGame": 5519.0, "objectiveDamagePerGame": 43403.0, "teamDragonsPerGame": 2.9, "teamBaronsPerGame": 0.6, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.3, "firstBloodRate": 69.2, "mainRole": "JUNGLE"}, {"player": "DeFaux", "team": "Astronauts", "games": 13, "wins": 8, "losses": 5, "winRate": 61.5, "kda": 4.24, "killsPerGame": 5.46, "deathsPerGame": 3.15, "assistsPerGame": 7.92, "csPerMin": 7.05, "goldPerMin": 376.4, "damagePerMin": 708.8, "visionPerMin": 1.24, "damageTakenPerGame": 21115.0, "damageMitigatedPerGame": 13311.0, "goldPerGame": 12834.0, "csPerGame": 240.4, "visionPerGame": 42.2, "totalKills": 71, "totalDeaths": 41, "totalAssists": 103, "doubleKills": 3, "tripleKills": 2, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 17.2, "wardsKilledPerGame": 4.1, "controlWardsPerGame": 3.5, "turretKillsPerGame": 0.5, "turretDamagePerGame": 3144.0, "objectiveDamagePerGame": 7124.0, "teamDragonsPerGame": 2.9, "teamBaronsPerGame": 0.6, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.3, "firstBloodRate": 69.2, "mainRole": "MIDDLE"}, {"player": "Balmer", "team": "Astronauts", "games": 13, "wins": 8, "losses": 5, "winRate": 61.5, "kda": 4.57, "killsPerGame": 7.46, "deathsPerGame": 3.23, "assistsPerGame": 7.31, "csPerMin": 8.5, "goldPerMin": 496.8, "damagePerMin": 1043.7, "visionPerMin": 1.0, "damageTakenPerGame": 19438.0, "damageMitigatedPerGame": 11056.0, "goldPerGame": 16942.0, "csPerGame": 289.8, "visionPerGame": 34.2, "totalKills": 97, "totalDeaths": 42, "totalAssists": 95, "doubleKills": 17, "tripleKills": 3, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 14.9, "wardsKilledPerGame": 5.0, "controlWardsPerGame": 4.8, "turretKillsPerGame": 2.1, "turretDamagePerGame": 8751.0, "objectiveDamagePerGame": 20171.0, "teamDragonsPerGame": 2.9, "teamBaronsPerGame": 0.6, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.3, "firstBloodRate": 69.2, "mainRole": "BOTTOM"}, {"player": "08 Mitsu Eclipse", "team": "Astronauts", "games": 13, "wins": 8, "losses": 5, "winRate": 61.5, "kda": 3.67, "killsPerGame": 1.38, "deathsPerGame": 4.23, "assistsPerGame": 14.15, "csPerMin": 0.66, "goldPerMin": 265.7, "damagePerMin": 261.5, "visionPerMin": 2.68, "damageTakenPerGame": 19464.0, "damageMitigatedPerGame": 18809.0, "goldPerGame": 9061.0, "csPerGame": 22.6, "visionPerGame": 91.2, "totalKills": 18, "totalDeaths": 55, "totalAssists": 184, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 36.4, "wardsKilledPerGame": 9.2, "controlWardsPerGame": 3.4, "turretKillsPerGame": 0.5, "turretDamagePerGame": 833.0, "objectiveDamagePerGame": 1909.0, "teamDragonsPerGame": 2.9, "teamBaronsPerGame": 0.6, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 7.3, "firstBloodRate": 69.2, "mainRole": "UTILITY"}, {"player": "YWGI", "team": "Gladiators", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.15, "killsPerGame": 4.31, "deathsPerGame": 4.08, "assistsPerGame": 4.46, "csPerMin": 7.62, "goldPerMin": 401.9, "damagePerMin": 815.7, "visionPerMin": 0.96, "damageTakenPerGame": 36132.0, "damageMitigatedPerGame": 42365.0, "goldPerGame": 12965.0, "csPerGame": 245.8, "visionPerGame": 30.9, "totalKills": 56, "totalDeaths": 53, "totalAssists": 58, "doubleKills": 5, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.6, "wardsKilledPerGame": 1.9, "controlWardsPerGame": 2.3, "turretKillsPerGame": 1.5, "turretDamagePerGame": 8127.0, "objectiveDamagePerGame": 10219.0, "teamDragonsPerGame": 2.3, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 2.2, "teamTowersPerGame": 6.2, "firstBloodRate": 46.2, "mainRole": "TOP"}, {"player": "YRW", "team": "Rising Tide Raiders", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 3.89, "killsPerGame": 7.62, "deathsPerGame": 3.62, "assistsPerGame": 6.46, "csPerMin": 7.84, "goldPerMin": 434.1, "damagePerMin": 950.0, "visionPerMin": 1.15, "damageTakenPerGame": 24344.0, "damageMitigatedPerGame": 19207.0, "goldPerGame": 13481.0, "csPerGame": 243.4, "visionPerGame": 35.8, "totalKills": 99, "totalDeaths": 47, "totalAssists": 84, "doubleKills": 18, "tripleKills": 5, "quadraKills": 1, "pentaKills": 0, "wardsPlacedPerGame": 15.1, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 1.2, "turretKillsPerGame": 1.5, "turretDamagePerGame": 9235.0, "objectiveDamagePerGame": 10513.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 1.8, "teamTowersPerGame": 5.6, "firstBloodRate": 38.5, "mainRole": "MIDDLE"}, {"player": "FriskyMMO", "team": "Gladiators", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.39, "killsPerGame": 1.23, "deathsPerGame": 5.08, "assistsPerGame": 10.92, "csPerMin": 1.0, "goldPerMin": 265.3, "damagePerMin": 277.2, "visionPerMin": 2.82, "damageTakenPerGame": 21252.0, "damageMitigatedPerGame": 19832.0, "goldPerGame": 8559.0, "csPerGame": 32.2, "visionPerGame": 90.9, "totalKills": 16, "totalDeaths": 66, "totalAssists": 142, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 30.5, "wardsKilledPerGame": 11.3, "controlWardsPerGame": 5.2, "turretKillsPerGame": 0.5, "turretDamagePerGame": 1183.0, "objectiveDamagePerGame": 3013.0, "teamDragonsPerGame": 2.3, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 2.2, "teamTowersPerGame": 6.2, "firstBloodRate": 46.2, "mainRole": "UTILITY"}, {"player": "Bleedinwolves", "team": "TD Phoenix", "games": 13, "wins": 10, "losses": 3, "winRate": 76.9, "kda": 3.7, "killsPerGame": 5.15, "deathsPerGame": 3.08, "assistsPerGame": 6.23, "csPerMin": 8.85, "goldPerMin": 466.2, "damagePerMin": 886.2, "visionPerMin": 1.05, "damageTakenPerGame": 38413.0, "damageMitigatedPerGame": 45489.0, "goldPerGame": 16503.0, "csPerGame": 313.3, "visionPerGame": 37.0, "totalKills": 67, "totalDeaths": 40, "totalAssists": 81, "doubleKills": 4, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 14.2, "wardsKilledPerGame": 4.8, "controlWardsPerGame": 0.7, "turretKillsPerGame": 4.8, "turretDamagePerGame": 18429.0, "objectiveDamagePerGame": 25840.0, "teamDragonsPerGame": 3.1, "teamBaronsPerGame": 1.1, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.7, "teamTowersPerGame": 9.3, "firstBloodRate": 76.9, "mainRole": "TOP"}, {"player": "Crabadabadoo", "team": "TD Phoenix", "games": 13, "wins": 10, "losses": 3, "winRate": 76.9, "kda": 3.3, "killsPerGame": 6.85, "deathsPerGame": 4.85, "assistsPerGame": 9.15, "csPerMin": 7.1, "goldPerMin": 432.8, "damagePerMin": 691.2, "visionPerMin": 1.16, "damageTakenPerGame": 37930.0, "damageMitigatedPerGame": 52770.0, "goldPerGame": 15322.0, "csPerGame": 251.3, "visionPerGame": 41.1, "totalKills": 89, "totalDeaths": 63, "totalAssists": 119, "doubleKills": 9, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 4.8, "wardsKilledPerGame": 10.2, "controlWardsPerGame": 2.5, "turretKillsPerGame": 1.1, "turretDamagePerGame": 2405.0, "objectiveDamagePerGame": 39202.0, "teamDragonsPerGame": 3.1, "teamBaronsPerGame": 1.1, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.7, "teamTowersPerGame": 9.3, "firstBloodRate": 76.9, "mainRole": "JUNGLE"}, {"player": "Solomon", "team": "TD Phoenix", "games": 13, "wins": 10, "losses": 3, "winRate": 76.9, "kda": 3.91, "killsPerGame": 5.08, "deathsPerGame": 3.38, "assistsPerGame": 8.15, "csPerMin": 6.59, "goldPerMin": 365.1, "damagePerMin": 718.2, "visionPerMin": 0.83, "damageTakenPerGame": 18810.0, "damageMitigatedPerGame": 13302.0, "goldPerGame": 12925.0, "csPerGame": 233.3, "visionPerGame": 29.4, "totalKills": 66, "totalDeaths": 44, "totalAssists": 106, "doubleKills": 8, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 14.6, "wardsKilledPerGame": 1.2, "controlWardsPerGame": 0.6, "turretKillsPerGame": 0.8, "turretDamagePerGame": 5109.0, "objectiveDamagePerGame": 8636.0, "teamDragonsPerGame": 3.1, "teamBaronsPerGame": 1.1, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.7, "teamTowersPerGame": 9.3, "firstBloodRate": 76.9, "mainRole": "MIDDLE"}, {"player": "Humble", "team": "TD Phoenix", "games": 13, "wins": 10, "losses": 3, "winRate": 76.9, "kda": 2.6, "killsPerGame": 6.62, "deathsPerGame": 4.85, "assistsPerGame": 6.0, "csPerMin": 7.76, "goldPerMin": 469.6, "damagePerMin": 771.5, "visionPerMin": 0.75, "damageTakenPerGame": 21013.0, "damageMitigatedPerGame": 12864.0, "goldPerGame": 16623.0, "csPerGame": 274.7, "visionPerGame": 26.5, "totalKills": 86, "totalDeaths": 63, "totalAssists": 78, "doubleKills": 11, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.9, "wardsKilledPerGame": 5.5, "controlWardsPerGame": 1.2, "turretKillsPerGame": 1.8, "turretDamagePerGame": 9057.0, "objectiveDamagePerGame": 20890.0, "teamDragonsPerGame": 3.1, "teamBaronsPerGame": 1.1, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.7, "teamTowersPerGame": 9.3, "firstBloodRate": 76.9, "mainRole": "BOTTOM"}, {"player": "ReginaldDwight", "team": "The Everstone Elite", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.49, "killsPerGame": 2.08, "deathsPerGame": 3.31, "assistsPerGame": 6.15, "csPerMin": 7.4, "goldPerMin": 354.0, "damagePerMin": 592.4, "visionPerMin": 0.92, "damageTakenPerGame": 31075.0, "damageMitigatedPerGame": 42324.0, "goldPerGame": 11128.0, "csPerGame": 232.7, "visionPerGame": 28.8, "totalKills": 27, "totalDeaths": 43, "totalAssists": 80, "doubleKills": 2, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.2, "wardsKilledPerGame": 1.6, "controlWardsPerGame": 0.4, "turretKillsPerGame": 0.9, "turretDamagePerGame": 6075.0, "objectiveDamagePerGame": 7884.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 5.0, "firstBloodRate": 53.8, "mainRole": "TOP"}, {"player": "Feral Eevee", "team": "The Everstone Elite", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 4.89, "killsPerGame": 5.85, "deathsPerGame": 2.85, "assistsPerGame": 8.08, "csPerMin": 7.06, "goldPerMin": 387.7, "damagePerMin": 840.4, "visionPerMin": 0.77, "damageTakenPerGame": 15544.0, "damageMitigatedPerGame": 8725.0, "goldPerGame": 12186.0, "csPerGame": 221.8, "visionPerGame": 24.3, "totalKills": 76, "totalDeaths": 37, "totalAssists": 105, "doubleKills": 8, "tripleKills": 2, "quadraKills": 1, "pentaKills": 0, "wardsPlacedPerGame": 9.8, "wardsKilledPerGame": 3.0, "controlWardsPerGame": 0.5, "turretKillsPerGame": 1.1, "turretDamagePerGame": 5406.0, "objectiveDamagePerGame": 8216.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 5.0, "firstBloodRate": 53.8, "mainRole": "MIDDLE"}, {"player": "Matrix", "team": "The Everstone Elite", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 4.41, "killsPerGame": 8.0, "deathsPerGame": 3.38, "assistsPerGame": 6.92, "csPerMin": 8.06, "goldPerMin": 492.5, "damagePerMin": 802.0, "visionPerMin": 0.75, "damageTakenPerGame": 16889.0, "damageMitigatedPerGame": 11453.0, "goldPerGame": 15481.0, "csPerGame": 253.3, "visionPerGame": 23.5, "totalKills": 104, "totalDeaths": 44, "totalAssists": 90, "doubleKills": 22, "tripleKills": 3, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 8.9, "wardsKilledPerGame": 4.2, "controlWardsPerGame": 0.8, "turretKillsPerGame": 1.2, "turretDamagePerGame": 6912.0, "objectiveDamagePerGame": 13979.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 5.0, "firstBloodRate": 53.8, "mainRole": "BOTTOM"}, {"player": "Ah0p", "team": "The Everstone Elite", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 4.3, "killsPerGame": 1.23, "deathsPerGame": 3.54, "assistsPerGame": 14.0, "csPerMin": 1.02, "goldPerMin": 278.1, "damagePerMin": 290.8, "visionPerMin": 3.01, "damageTakenPerGame": 18319.0, "damageMitigatedPerGame": 13963.0, "goldPerGame": 8740.0, "csPerGame": 31.9, "visionPerGame": 94.5, "totalKills": 16, "totalDeaths": 46, "totalAssists": 182, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 38.4, "wardsKilledPerGame": 10.5, "controlWardsPerGame": 7.2, "turretKillsPerGame": 0.8, "turretDamagePerGame": 1302.0, "objectiveDamagePerGame": 3412.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 5.0, "firstBloodRate": 53.8, "mainRole": "UTILITY"}, {"player": "Canny", "team": "MetaShift", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.77, "killsPerGame": 6.08, "deathsPerGame": 3.62, "assistsPerGame": 3.92, "csPerMin": 8.11, "goldPerMin": 441.0, "damagePerMin": 795.8, "visionPerMin": 0.81, "damageTakenPerGame": 41664.0, "damageMitigatedPerGame": 50116.0, "goldPerGame": 14719.0, "csPerGame": 270.7, "visionPerGame": 27.2, "totalKills": 79, "totalDeaths": 47, "totalAssists": 51, "doubleKills": 5, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.4, "wardsKilledPerGame": 1.5, "controlWardsPerGame": 1.0, "turretKillsPerGame": 3.2, "turretDamagePerGame": 15342.0, "objectiveDamagePerGame": 17755.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 1.6, "teamTowersPerGame": 6.5, "firstBloodRate": 76.9, "mainRole": "TOP"}, {"player": "Spies", "team": "MetaShift", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 4.41, "killsPerGame": 4.77, "deathsPerGame": 3.0, "assistsPerGame": 8.46, "csPerMin": 7.58, "goldPerMin": 424.1, "damagePerMin": 634.4, "visionPerMin": 1.05, "damageTakenPerGame": 29176.0, "damageMitigatedPerGame": 33175.0, "goldPerGame": 14155.0, "csPerGame": 252.8, "visionPerGame": 35.0, "totalKills": 62, "totalDeaths": 39, "totalAssists": 110, "doubleKills": 5, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 3.8, "wardsKilledPerGame": 7.4, "controlWardsPerGame": 2.0, "turretKillsPerGame": 0.8, "turretDamagePerGame": 2579.0, "objectiveDamagePerGame": 33988.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 1.6, "teamTowersPerGame": 6.5, "firstBloodRate": 76.9, "mainRole": "JUNGLE"}, {"player": "MetaShift", "team": "MetaShift", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.59, "killsPerGame": 4.31, "deathsPerGame": 4.46, "assistsPerGame": 7.23, "csPerMin": 6.68, "goldPerMin": 359.4, "damagePerMin": 768.1, "visionPerMin": 0.91, "damageTakenPerGame": 26783.0, "damageMitigatedPerGame": 19029.0, "goldPerGame": 11996.0, "csPerGame": 222.8, "visionPerGame": 30.5, "totalKills": 56, "totalDeaths": 58, "totalAssists": 94, "doubleKills": 4, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 15.6, "wardsKilledPerGame": 3.2, "controlWardsPerGame": 3.5, "turretKillsPerGame": 0.8, "turretDamagePerGame": 5082.0, "objectiveDamagePerGame": 8586.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 1.6, "teamTowersPerGame": 6.5, "firstBloodRate": 76.9, "mainRole": "MIDDLE"}, {"player": "Little", "team": "MetaShift", "games": 13, "wins": 6, "losses": 7, "winRate": 46.2, "kda": 2.61, "killsPerGame": 1.54, "deathsPerGame": 4.38, "assistsPerGame": 9.92, "csPerMin": 1.15, "goldPerMin": 263.7, "damagePerMin": 240.9, "visionPerMin": 3.39, "damageTakenPerGame": 21993.0, "damageMitigatedPerGame": 19365.0, "goldPerGame": 8801.0, "csPerGame": 38.4, "visionPerGame": 113.1, "totalKills": 20, "totalDeaths": 57, "totalAssists": 129, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 43.8, "wardsKilledPerGame": 14.3, "controlWardsPerGame": 7.9, "turretKillsPerGame": 0.2, "turretDamagePerGame": 703.0, "objectiveDamagePerGame": 2502.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 1.6, "teamTowersPerGame": 6.5, "firstBloodRate": 76.9, "mainRole": "UTILITY"}, {"player": "Lizzo Mukkbang", "team": "Gladiators", "games": 12, "wins": 3, "losses": 9, "winRate": 25.0, "kda": 1.45, "killsPerGame": 4.17, "deathsPerGame": 5.5, "assistsPerGame": 3.83, "csPerMin": 7.46, "goldPerMin": 372.0, "damagePerMin": 819.6, "visionPerMin": 1.28, "damageTakenPerGame": 23080.0, "damageMitigatedPerGame": 22573.0, "goldPerGame": 13369.0, "csPerGame": 268.2, "visionPerGame": 46.2, "totalKills": 50, "totalDeaths": 66, "totalAssists": 46, "doubleKills": 5, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 19.9, "wardsKilledPerGame": 3.8, "controlWardsPerGame": 5.7, "turretKillsPerGame": 1.2, "turretDamagePerGame": 4917.0, "objectiveDamagePerGame": 9157.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.6, "teamHeraldsPerGame": 0.3, "teamGrubsPerGame": 1.2, "teamTowersPerGame": 5.1, "firstBloodRate": 50.0, "mainRole": "MIDDLE"}, {"player": "Evil Fallen", "team": "Gladiators", "games": 12, "wins": 2, "losses": 10, "winRate": 16.7, "kda": 1.8, "killsPerGame": 3.67, "deathsPerGame": 4.92, "assistsPerGame": 5.17, "csPerMin": 8.36, "goldPerMin": 438.1, "damagePerMin": 812.2, "visionPerMin": 0.52, "damageTakenPerGame": 19577.0, "damageMitigatedPerGame": 11923.0, "goldPerGame": 13861.0, "csPerGame": 264.6, "visionPerGame": 16.4, "totalKills": 44, "totalDeaths": 59, "totalAssists": 62, "doubleKills": 7, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.8, "wardsKilledPerGame": 4.2, "controlWardsPerGame": 0.0, "turretKillsPerGame": 0.7, "turretDamagePerGame": 4627.0, "objectiveDamagePerGame": 9745.0, "teamDragonsPerGame": 1.6, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.1, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 3.8, "firstBloodRate": 25.0, "mainRole": "BOTTOM"}, {"player": "Rexcat4", "team": "Dota Enjoyers", "games": 12, "wins": 5, "losses": 7, "winRate": 41.7, "kda": 2.46, "killsPerGame": 5.58, "deathsPerGame": 5.08, "assistsPerGame": 6.92, "csPerMin": 6.66, "goldPerMin": 410.1, "damagePerMin": 559.6, "visionPerMin": 1.43, "damageTakenPerGame": 24932.0, "damageMitigatedPerGame": 23790.0, "goldPerGame": 12384.0, "csPerGame": 201.2, "visionPerGame": 43.2, "totalKills": 67, "totalDeaths": 61, "totalAssists": 83, "doubleKills": 7, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.2, "wardsKilledPerGame": 8.5, "controlWardsPerGame": 4.3, "turretKillsPerGame": 0.7, "turretDamagePerGame": 2098.0, "objectiveDamagePerGame": 30246.0, "teamDragonsPerGame": 2.0, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 2.1, "teamTowersPerGame": 5.3, "firstBloodRate": 41.7, "mainRole": "JUNGLE"}, {"player": "DawnFate", "team": "Flannel Equinox", "games": 12, "wins": 10, "losses": 2, "winRate": 83.3, "kda": 2.69, "killsPerGame": 3.0, "deathsPerGame": 4.08, "assistsPerGame": 8.0, "csPerMin": 6.45, "goldPerMin": 363.5, "damagePerMin": 648.7, "visionPerMin": 0.88, "damageTakenPerGame": 37155.0, "damageMitigatedPerGame": 42994.0, "goldPerGame": 11478.0, "csPerGame": 203.8, "visionPerGame": 27.9, "totalKills": 36, "totalDeaths": 49, "totalAssists": 96, "doubleKills": 4, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 11.0, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 0.6, "turretKillsPerGame": 1.5, "turretDamagePerGame": 7792.0, "objectiveDamagePerGame": 11531.0, "teamDragonsPerGame": 3.6, "teamBaronsPerGame": 0.9, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.4, "teamTowersPerGame": 9.0, "firstBloodRate": 41.7, "mainRole": "TOP"}, {"player": "Lakuna", "team": "Flannel Equinox", "games": 12, "wins": 10, "losses": 2, "winRate": 83.3, "kda": 6.12, "killsPerGame": 7.25, "deathsPerGame": 2.67, "assistsPerGame": 9.08, "csPerMin": 7.63, "goldPerMin": 452.9, "damagePerMin": 634.3, "visionPerMin": 0.91, "damageTakenPerGame": 30941.0, "damageMitigatedPerGame": 29774.0, "goldPerGame": 14301.0, "csPerGame": 240.8, "visionPerGame": 28.7, "totalKills": 87, "totalDeaths": 32, "totalAssists": 109, "doubleKills": 16, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 1.0, "wardsKilledPerGame": 7.1, "controlWardsPerGame": 1.0, "turretKillsPerGame": 1.5, "turretDamagePerGame": 4790.0, "objectiveDamagePerGame": 42977.0, "teamDragonsPerGame": 3.6, "teamBaronsPerGame": 0.9, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.4, "teamTowersPerGame": 9.0, "firstBloodRate": 41.7, "mainRole": "JUNGLE"}, {"player": "ChaoTiC", "team": "Flannel Equinox", "games": 12, "wins": 10, "losses": 2, "winRate": 83.3, "kda": 11.0, "killsPerGame": 6.25, "deathsPerGame": 1.5, "assistsPerGame": 10.25, "csPerMin": 8.2, "goldPerMin": 446.7, "damagePerMin": 787.9, "visionPerMin": 0.88, "damageTakenPerGame": 15593.0, "damageMitigatedPerGame": 11967.0, "goldPerGame": 14106.0, "csPerGame": 259.0, "visionPerGame": 27.8, "totalKills": 75, "totalDeaths": 18, "totalAssists": 123, "doubleKills": 9, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 11.6, "wardsKilledPerGame": 3.7, "controlWardsPerGame": 2.0, "turretKillsPerGame": 1.9, "turretDamagePerGame": 8590.0, "objectiveDamagePerGame": 14658.0, "teamDragonsPerGame": 3.6, "teamBaronsPerGame": 0.9, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.4, "teamTowersPerGame": 9.0, "firstBloodRate": 41.7, "mainRole": "MIDDLE"}, {"player": "Flyinq squirtle", "team": "Flannel Equinox", "games": 12, "wins": 10, "losses": 2, "winRate": 83.3, "kda": 5.17, "killsPerGame": 8.75, "deathsPerGame": 3.5, "assistsPerGame": 9.33, "csPerMin": 9.12, "goldPerMin": 552.9, "damagePerMin": 1092.6, "visionPerMin": 0.91, "damageTakenPerGame": 19051.0, "damageMitigatedPerGame": 12239.0, "goldPerGame": 17457.0, "csPerGame": 288.0, "visionPerGame": 28.7, "totalKills": 105, "totalDeaths": 42, "totalAssists": 112, "doubleKills": 21, "tripleKills": 8, "quadraKills": 1, "pentaKills": 1, "wardsPlacedPerGame": 12.1, "wardsKilledPerGame": 4.4, "controlWardsPerGame": 2.9, "turretKillsPerGame": 2.8, "turretDamagePerGame": 12000.0, "objectiveDamagePerGame": 24011.0, "teamDragonsPerGame": 3.6, "teamBaronsPerGame": 0.9, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.4, "teamTowersPerGame": 9.0, "firstBloodRate": 41.7, "mainRole": "BOTTOM"}, {"player": "Sunset Diner", "team": "Flannel Equinox", "games": 12, "wins": 10, "losses": 2, "winRate": 83.3, "kda": 9.12, "killsPerGame": 0.83, "deathsPerGame": 2.0, "assistsPerGame": 17.42, "csPerMin": 1.04, "goldPerMin": 286.8, "damagePerMin": 205.5, "visionPerMin": 3.26, "damageTakenPerGame": 13643.0, "damageMitigatedPerGame": 13039.0, "goldPerGame": 9055.0, "csPerGame": 32.8, "visionPerGame": 103.1, "totalKills": 10, "totalDeaths": 24, "totalAssists": 209, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 44.6, "wardsKilledPerGame": 11.1, "controlWardsPerGame": 7.8, "turretKillsPerGame": 1.0, "turretDamagePerGame": 1655.0, "objectiveDamagePerGame": 3502.0, "teamDragonsPerGame": 3.6, "teamBaronsPerGame": 0.9, "teamHeraldsPerGame": 0.8, "teamGrubsPerGame": 1.4, "teamTowersPerGame": 9.0, "firstBloodRate": 41.7, "mainRole": "UTILITY"}, {"player": "Beg", "team": "Divine Ascension", "games": 11, "wins": 7, "losses": 4, "winRate": 63.6, "kda": 3.1, "killsPerGame": 4.91, "deathsPerGame": 4.55, "assistsPerGame": 9.18, "csPerMin": 6.32, "goldPerMin": 408.5, "damagePerMin": 532.2, "visionPerMin": 1.1, "damageTakenPerGame": 33222.0, "damageMitigatedPerGame": 37451.0, "goldPerGame": 12125.0, "csPerGame": 187.7, "visionPerGame": 32.7, "totalKills": 54, "totalDeaths": 50, "totalAssists": 101, "doubleKills": 3, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.3, "wardsKilledPerGame": 6.9, "controlWardsPerGame": 2.4, "turretKillsPerGame": 1.0, "turretDamagePerGame": 3727.0, "objectiveDamagePerGame": 35558.0, "teamDragonsPerGame": 2.1, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.7, "teamGrubsPerGame": 2.5, "teamTowersPerGame": 7.3, "firstBloodRate": 63.6, "mainRole": "JUNGLE"}, {"player": "S3ntine1", "team": "Dota Enjoyers", "games": 11, "wins": 2, "losses": 9, "winRate": 18.2, "kda": 1.56, "killsPerGame": 1.91, "deathsPerGame": 4.36, "assistsPerGame": 4.91, "csPerMin": 7.07, "goldPerMin": 346.2, "damagePerMin": 745.4, "visionPerMin": 1.4, "damageTakenPerGame": 46248.0, "damageMitigatedPerGame": 53758.0, "goldPerGame": 11780.0, "csPerGame": 240.6, "visionPerGame": 47.7, "totalKills": 21, "totalDeaths": 48, "totalAssists": 54, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 15.5, "wardsKilledPerGame": 2.0, "controlWardsPerGame": 1.8, "turretKillsPerGame": 1.2, "turretDamagePerGame": 6808.0, "objectiveDamagePerGame": 8226.0, "teamDragonsPerGame": 1.9, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.9, "teamTowersPerGame": 4.1, "firstBloodRate": 45.5, "mainRole": "TOP"}, {"player": "Conguitos0", "team": "Womenphobia", "games": 11, "wins": 2, "losses": 9, "winRate": 18.2, "kda": 3.46, "killsPerGame": 5.09, "deathsPerGame": 3.73, "assistsPerGame": 7.82, "csPerMin": 5.87, "goldPerMin": 379.4, "damagePerMin": 524.1, "visionPerMin": 0.78, "damageTakenPerGame": 33115.0, "damageMitigatedPerGame": 43875.0, "goldPerGame": 13555.0, "csPerGame": 209.6, "visionPerGame": 27.8, "totalKills": 56, "totalDeaths": 41, "totalAssists": 86, "doubleKills": 3, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 1.7, "wardsKilledPerGame": 7.6, "controlWardsPerGame": 0.5, "turretKillsPerGame": 0.7, "turretDamagePerGame": 3063.0, "objectiveDamagePerGame": 26084.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 1.1, "teamTowersPerGame": 4.5, "firstBloodRate": 54.5, "mainRole": "JUNGLE"}, {"player": "Thunder Master", "team": "Dota Enjoyers", "games": 11, "wins": 2, "losses": 9, "winRate": 18.2, "kda": 2.59, "killsPerGame": 5.0, "deathsPerGame": 3.55, "assistsPerGame": 4.18, "csPerMin": 9.02, "goldPerMin": 488.5, "damagePerMin": 686.1, "visionPerMin": 0.71, "damageTakenPerGame": 18202.0, "damageMitigatedPerGame": 10391.0, "goldPerGame": 16624.0, "csPerGame": 307.1, "visionPerGame": 24.1, "totalKills": 55, "totalDeaths": 39, "totalAssists": 46, "doubleKills": 8, "tripleKills": 2, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 8.9, "wardsKilledPerGame": 4.0, "controlWardsPerGame": 0.9, "turretKillsPerGame": 1.1, "turretDamagePerGame": 7312.0, "objectiveDamagePerGame": 14137.0, "teamDragonsPerGame": 1.9, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 0.9, "teamTowersPerGame": 4.1, "firstBloodRate": 45.5, "mainRole": "BOTTOM"}, {"player": "MQB", "team": "Womenphobia", "games": 11, "wins": 1, "losses": 10, "winRate": 9.1, "kda": 1.94, "killsPerGame": 0.91, "deathsPerGame": 4.91, "assistsPerGame": 8.64, "csPerMin": 1.17, "goldPerMin": 258.1, "damagePerMin": 189.6, "visionPerMin": 3.23, "damageTakenPerGame": 20333.0, "damageMitigatedPerGame": 19044.0, "goldPerGame": 8009.0, "csPerGame": 36.3, "visionPerGame": 100.2, "totalKills": 10, "totalDeaths": 54, "totalAssists": 95, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 42.6, "wardsKilledPerGame": 9.6, "controlWardsPerGame": 9.4, "turretKillsPerGame": 0.2, "turretDamagePerGame": 686.0, "objectiveDamagePerGame": 1388.0, "teamDragonsPerGame": 1.5, "teamBaronsPerGame": 0.3, "teamHeraldsPerGame": 0.1, "teamGrubsPerGame": 0.4, "teamTowersPerGame": 3.1, "firstBloodRate": 27.3, "mainRole": "UTILITY"}, {"player": "Sycoghost", "team": "Astronauts", "games": 10, "wins": 6, "losses": 4, "winRate": 60.0, "kda": 2.91, "killsPerGame": 4.3, "deathsPerGame": 3.2, "assistsPerGame": 5.0, "csPerMin": 8.26, "goldPerMin": 426.7, "damagePerMin": 656.0, "visionPerMin": 0.98, "damageTakenPerGame": 31278.0, "damageMitigatedPerGame": 27754.0, "goldPerGame": 14192.0, "csPerGame": 274.8, "visionPerGame": 32.7, "totalKills": 43, "totalDeaths": 32, "totalAssists": 50, "doubleKills": 2, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.2, "wardsKilledPerGame": 3.3, "controlWardsPerGame": 1.3, "turretKillsPerGame": 3.0, "turretDamagePerGame": 13798.0, "objectiveDamagePerGame": 14693.0, "teamDragonsPerGame": 2.8, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 2.6, "teamTowersPerGame": 7.1, "firstBloodRate": 70.0, "mainRole": "TOP"}, {"player": "RaveMaster", "team": "Gladiators", "games": 10, "wins": 2, "losses": 8, "winRate": 20.0, "kda": 1.68, "killsPerGame": 3.6, "deathsPerGame": 6.3, "assistsPerGame": 7.0, "csPerMin": 5.93, "goldPerMin": 368.2, "damagePerMin": 524.8, "visionPerMin": 1.14, "damageTakenPerGame": 32711.0, "damageMitigatedPerGame": 34668.0, "goldPerGame": 11608.0, "csPerGame": 186.9, "visionPerGame": 35.9, "totalKills": 36, "totalDeaths": 63, "totalAssists": 70, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.2, "wardsKilledPerGame": 7.4, "controlWardsPerGame": 4.4, "turretKillsPerGame": 0.5, "turretDamagePerGame": 1990.0, "objectiveDamagePerGame": 13913.0, "teamDragonsPerGame": 1.6, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 0.6, "teamTowersPerGame": 3.6, "firstBloodRate": 30.0, "mainRole": "JUNGLE"}, {"player": "BigRed2000", "team": "Rising Tide Raiders", "games": 10, "wins": 2, "losses": 8, "winRate": 20.0, "kda": 1.32, "killsPerGame": 2.2, "deathsPerGame": 5.6, "assistsPerGame": 5.2, "csPerMin": 7.02, "goldPerMin": 344.7, "damagePerMin": 658.3, "visionPerMin": 0.9, "damageTakenPerGame": 35839.0, "damageMitigatedPerGame": 39823.0, "goldPerGame": 10679.0, "csPerGame": 217.4, "visionPerGame": 28.0, "totalKills": 22, "totalDeaths": 56, "totalAssists": 52, "doubleKills": 2, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.0, "wardsKilledPerGame": 2.2, "controlWardsPerGame": 0.4, "turretKillsPerGame": 0.8, "turretDamagePerGame": 4717.0, "objectiveDamagePerGame": 5443.0, "teamDragonsPerGame": 1.5, "teamBaronsPerGame": 0.3, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 0.1, "teamTowersPerGame": 3.7, "firstBloodRate": 10.0, "mainRole": "TOP"}, {"player": "SlimPimpin77", "team": "TD Phoenix", "games": 10, "wins": 8, "losses": 2, "winRate": 80.0, "kda": 4.59, "killsPerGame": 1.1, "deathsPerGame": 3.7, "assistsPerGame": 15.9, "csPerMin": 0.78, "goldPerMin": 275.2, "damagePerMin": 266.8, "visionPerMin": 2.85, "damageTakenPerGame": 21654.0, "damageMitigatedPerGame": 17605.0, "goldPerGame": 9603.0, "csPerGame": 27.1, "visionPerGame": 99.4, "totalKills": 11, "totalDeaths": 37, "totalAssists": 159, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 39.0, "wardsKilledPerGame": 9.9, "controlWardsPerGame": 4.0, "turretKillsPerGame": 0.4, "turretDamagePerGame": 1706.0, "objectiveDamagePerGame": 3315.0, "teamDragonsPerGame": 3.3, "teamBaronsPerGame": 1.2, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 9.7, "firstBloodRate": 80.0, "mainRole": "UTILITY"}, {"player": "UnluckyCanadian", "team": "Dota Enjoyers", "games": 9, "wins": 2, "losses": 7, "winRate": 22.2, "kda": 2.88, "killsPerGame": 0.67, "deathsPerGame": 3.78, "assistsPerGame": 10.22, "csPerMin": 1.09, "goldPerMin": 245.4, "damagePerMin": 175.1, "visionPerMin": 2.67, "damageTakenPerGame": 20957.0, "damageMitigatedPerGame": 20087.0, "goldPerGame": 8741.0, "csPerGame": 39.0, "visionPerGame": 95.2, "totalKills": 6, "totalDeaths": 34, "totalAssists": 92, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 34.3, "wardsKilledPerGame": 10.2, "controlWardsPerGame": 4.1, "turretKillsPerGame": 0.1, "turretDamagePerGame": 491.0, "objectiveDamagePerGame": 1588.0, "teamDragonsPerGame": 2.2, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.4, "teamGrubsPerGame": 1.0, "teamTowersPerGame": 4.9, "firstBloodRate": 55.6, "mainRole": "UTILITY"}, {"player": "juanitosol", "team": "MetaShift", "games": 9, "wins": 4, "losses": 5, "winRate": 44.4, "kda": 2.29, "killsPerGame": 4.22, "deathsPerGame": 4.56, "assistsPerGame": 6.22, "csPerMin": 7.9, "goldPerMin": 419.6, "damagePerMin": 698.1, "visionPerMin": 0.96, "damageTakenPerGame": 19421.0, "damageMitigatedPerGame": 12109.0, "goldPerGame": 14067.0, "csPerGame": 264.7, "visionPerGame": 32.2, "totalKills": 38, "totalDeaths": 41, "totalAssists": 56, "doubleKills": 3, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 13.3, "wardsKilledPerGame": 4.7, "controlWardsPerGame": 1.2, "turretKillsPerGame": 1.1, "turretDamagePerGame": 5014.0, "objectiveDamagePerGame": 10491.0, "teamDragonsPerGame": 2.1, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.6, "teamGrubsPerGame": 1.7, "teamTowersPerGame": 6.2, "firstBloodRate": 77.8, "mainRole": "BOTTOM"}, {"player": "luci", "team": "Womenphobia", "games": 9, "wins": 3, "losses": 6, "winRate": 33.3, "kda": 3.05, "killsPerGame": 6.0, "deathsPerGame": 4.33, "assistsPerGame": 7.22, "csPerMin": 9.15, "goldPerMin": 521.9, "damagePerMin": 945.9, "visionPerMin": 0.52, "damageTakenPerGame": 19953.0, "damageMitigatedPerGame": 10939.0, "goldPerGame": 16923.0, "csPerGame": 296.8, "visionPerGame": 16.8, "totalKills": 54, "totalDeaths": 39, "totalAssists": 65, "doubleKills": 7, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.2, "wardsKilledPerGame": 4.2, "controlWardsPerGame": 0.0, "turretKillsPerGame": 1.3, "turretDamagePerGame": 7800.0, "objectiveDamagePerGame": 15853.0, "teamDragonsPerGame": 2.1, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 2.1, "teamTowersPerGame": 4.9, "firstBloodRate": 44.4, "mainRole": "BOTTOM"}, {"player": "The Fool", "team": "The Everstone Elite", "games": 8, "wins": 5, "losses": 3, "winRate": 62.5, "kda": 5.5, "killsPerGame": 4.12, "deathsPerGame": 2.75, "assistsPerGame": 11.0, "csPerMin": 6.46, "goldPerMin": 390.1, "damagePerMin": 529.3, "visionPerMin": 1.1, "damageTakenPerGame": 30957.0, "damageMitigatedPerGame": 34149.0, "goldPerGame": 11464.0, "csPerGame": 189.8, "visionPerGame": 32.2, "totalKills": 33, "totalDeaths": 22, "totalAssists": 88, "doubleKills": 4, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.0, "wardsKilledPerGame": 4.6, "controlWardsPerGame": 5.5, "turretKillsPerGame": 0.6, "turretDamagePerGame": 2568.0, "objectiveDamagePerGame": 27386.0, "teamDragonsPerGame": 3.0, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 0.6, "teamTowersPerGame": 6.2, "firstBloodRate": 62.5, "mainRole": "JUNGLE"}, {"player": "Banana Breeder", "team": "Dota Enjoyers", "games": 7, "wins": 0, "losses": 7, "winRate": 0.0, "kda": 1.17, "killsPerGame": 3.14, "deathsPerGame": 6.0, "assistsPerGame": 3.86, "csPerMin": 6.47, "goldPerMin": 347.1, "damagePerMin": 618.3, "visionPerMin": 0.94, "damageTakenPerGame": 19460.0, "damageMitigatedPerGame": 10817.0, "goldPerGame": 10042.0, "csPerGame": 187.1, "visionPerGame": 27.1, "totalKills": 22, "totalDeaths": 42, "totalAssists": 27, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 11.9, "wardsKilledPerGame": 2.7, "controlWardsPerGame": 0.0, "turretKillsPerGame": 0.3, "turretDamagePerGame": 4006.0, "objectiveDamagePerGame": 5984.0, "teamDragonsPerGame": 1.0, "teamBaronsPerGame": 0.4, "teamHeraldsPerGame": 0.1, "teamGrubsPerGame": 0.1, "teamTowersPerGame": 2.0, "firstBloodRate": 14.3, "mainRole": "MIDDLE"}, {"player": "Sir Joey", "team": "The Everstone Elite", "games": 5, "wins": 1, "losses": 4, "winRate": 20.0, "kda": 2.58, "killsPerGame": 4.6, "deathsPerGame": 4.8, "assistsPerGame": 7.8, "csPerMin": 5.66, "goldPerMin": 361.9, "damagePerMin": 578.3, "visionPerMin": 0.71, "damageTakenPerGame": 38066.0, "damageMitigatedPerGame": 39713.0, "goldPerGame": 12557.0, "csPerGame": 196.4, "visionPerGame": 24.6, "totalKills": 23, "totalDeaths": 24, "totalAssists": 39, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.2, "wardsKilledPerGame": 2.6, "controlWardsPerGame": 0.0, "turretKillsPerGame": 1.0, "turretDamagePerGame": 2472.0, "objectiveDamagePerGame": 24926.0, "teamDragonsPerGame": 2.4, "teamBaronsPerGame": 0.8, "teamHeraldsPerGame": 0.2, "teamGrubsPerGame": 0.4, "teamTowersPerGame": 3.0, "firstBloodRate": 40.0, "mainRole": "JUNGLE"}, {"player": "SaintofAegis", "team": "Dota Enjoyers", "games": 3, "wins": 1, "losses": 2, "winRate": 33.3, "kda": 0.71, "killsPerGame": 3.33, "deathsPerGame": 9.33, "assistsPerGame": 3.33, "csPerMin": 7.53, "goldPerMin": 389.2, "damagePerMin": 718.0, "visionPerMin": 0.9, "damageTakenPerGame": 41840.0, "damageMitigatedPerGame": 38224.0, "goldPerGame": 11585.0, "csPerGame": 224.0, "visionPerGame": 26.7, "totalKills": 10, "totalDeaths": 28, "totalAssists": 10, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.7, "wardsKilledPerGame": 2.7, "controlWardsPerGame": 0.7, "turretKillsPerGame": 3.0, "turretDamagePerGame": 11907.0, "objectiveDamagePerGame": 11990.0, "teamDragonsPerGame": 1.7, "teamBaronsPerGame": 0.3, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 0.3, "teamTowersPerGame": 4.7, "firstBloodRate": 33.3, "mainRole": "TOP"}, {"player": "WellShowThemAll", "team": "Gladiators", "games": 3, "wins": 2, "losses": 1, "winRate": 66.7, "kda": 2.31, "killsPerGame": 5.33, "deathsPerGame": 4.33, "assistsPerGame": 4.67, "csPerMin": 7.79, "goldPerMin": 475.6, "damagePerMin": 735.9, "visionPerMin": 0.28, "damageTakenPerGame": 17578.0, "damageMitigatedPerGame": 10810.0, "goldPerGame": 14157.0, "csPerGame": 232.0, "visionPerGame": 8.3, "totalKills": 16, "totalDeaths": 13, "totalAssists": 14, "doubleKills": 2, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 4.0, "wardsKilledPerGame": 1.7, "controlWardsPerGame": 0.0, "turretKillsPerGame": 2.7, "turretDamagePerGame": 8161.0, "objectiveDamagePerGame": 18982.0, "teamDragonsPerGame": 2.7, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 1.0, "teamGrubsPerGame": 2.7, "teamTowersPerGame": 8.0, "firstBloodRate": 66.7, "mainRole": "BOTTOM"}, {"player": "SpritesGambit", "team": "TD Phoenix", "games": 3, "wins": 2, "losses": 1, "winRate": 66.7, "kda": 2.18, "killsPerGame": 1.0, "deathsPerGame": 5.67, "assistsPerGame": 11.33, "csPerMin": 0.59, "goldPerMin": 250.4, "damagePerMin": 228.2, "visionPerMin": 3.24, "damageTakenPerGame": 26546.0, "damageMitigatedPerGame": 27622.0, "goldPerGame": 9280.0, "csPerGame": 22.0, "visionPerGame": 120.0, "totalKills": 3, "totalDeaths": 17, "totalAssists": 34, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 48.7, "wardsKilledPerGame": 8.7, "controlWardsPerGame": 7.7, "turretKillsPerGame": 0.3, "turretDamagePerGame": 864.0, "objectiveDamagePerGame": 2401.0, "teamDragonsPerGame": 2.3, "teamBaronsPerGame": 0.7, "teamHeraldsPerGame": 0.7, "teamGrubsPerGame": 2.3, "teamTowersPerGame": 8.0, "firstBloodRate": 66.7, "mainRole": "UTILITY"}, {"player": "Tauty2k", "team": "Astronauts", "games": 3, "wins": 2, "losses": 1, "winRate": 66.7, "kda": 3.3, "killsPerGame": 5.33, "deathsPerGame": 3.33, "assistsPerGame": 5.67, "csPerMin": 7.83, "goldPerMin": 395.1, "damagePerMin": 660.1, "visionPerMin": 0.88, "damageTakenPerGame": 56536.0, "damageMitigatedPerGame": 89078.0, "goldPerGame": 14579.0, "csPerGame": 289.0, "visionPerGame": 32.3, "totalKills": 16, "totalDeaths": 10, "totalAssists": 17, "doubleKills": 2, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 10.3, "wardsKilledPerGame": 5.7, "controlWardsPerGame": 0.0, "turretKillsPerGame": 3.0, "turretDamagePerGame": 10145.0, "objectiveDamagePerGame": 17781.0, "teamDragonsPerGame": 3.3, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.7, "teamGrubsPerGame": 1.3, "teamTowersPerGame": 8.0, "firstBloodRate": 66.7, "mainRole": "TOP"}, {"player": "Shinypants456", "team": "MetaShift", "games": 2, "wins": 0, "losses": 2, "winRate": 0.0, "kda": 2.0, "killsPerGame": 5.0, "deathsPerGame": 4.0, "assistsPerGame": 3.0, "csPerMin": 7.61, "goldPerMin": 404.4, "damagePerMin": 550.5, "visionPerMin": 0.47, "damageTakenPerGame": 17910.0, "damageMitigatedPerGame": 12330.0, "goldPerGame": 12093.0, "csPerGame": 227.5, "visionPerGame": 14.0, "totalKills": 10, "totalDeaths": 8, "totalAssists": 6, "doubleKills": 2, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 5.5, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 0.0, "turretKillsPerGame": 0.0, "turretDamagePerGame": 1971.0, "objectiveDamagePerGame": 7437.0, "teamDragonsPerGame": 1.5, "teamBaronsPerGame": 0.0, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 2.0, "firstBloodRate": 100.0, "mainRole": "BOTTOM"}, {"player": "\u00c6ndril", "team": "Dota Enjoyers", "games": 2, "wins": 0, "losses": 2, "winRate": 0.0, "kda": 1.27, "killsPerGame": 2.0, "deathsPerGame": 5.5, "assistsPerGame": 5.0, "csPerMin": 6.29, "goldPerMin": 319.0, "damagePerMin": 433.6, "visionPerMin": 0.89, "damageTakenPerGame": 21871.0, "damageMitigatedPerGame": 24975.0, "goldPerGame": 8645.0, "csPerGame": 170.5, "visionPerGame": 24.0, "totalKills": 4, "totalDeaths": 11, "totalAssists": 10, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.5, "wardsKilledPerGame": 2.0, "controlWardsPerGame": 2.5, "turretKillsPerGame": 0.0, "turretDamagePerGame": 1832.0, "objectiveDamagePerGame": 2020.0, "teamDragonsPerGame": 1.0, "teamBaronsPerGame": 0.0, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 0.0, "teamTowersPerGame": 1.0, "firstBloodRate": 50.0, "mainRole": "TOP"}, {"player": "boat chicken", "team": "Dota Enjoyers", "games": 2, "wins": 0, "losses": 2, "winRate": 0.0, "kda": 0.94, "killsPerGame": 2.5, "deathsPerGame": 9.0, "assistsPerGame": 6.0, "csPerMin": 4.41, "goldPerMin": 315.0, "damagePerMin": 586.5, "visionPerMin": 0.7, "damageTakenPerGame": 32556.0, "damageMitigatedPerGame": 33001.0, "goldPerGame": 10142.0, "csPerGame": 142.0, "visionPerGame": 22.5, "totalKills": 5, "totalDeaths": 18, "totalAssists": 12, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 8.0, "wardsKilledPerGame": 1.5, "controlWardsPerGame": 3.0, "turretKillsPerGame": 0.0, "turretDamagePerGame": 0.0, "objectiveDamagePerGame": 17798.0, "teamDragonsPerGame": 1.5, "teamBaronsPerGame": 1.0, "teamHeraldsPerGame": 0.5, "teamGrubsPerGame": 0.0, "teamTowersPerGame": 5.0, "firstBloodRate": 0.0, "mainRole": "JUNGLE"}, {"player": "Yanzi", "team": "Divine Ascension", "games": 2, "wins": 2, "losses": 0, "winRate": 100.0, "kda": 7.25, "killsPerGame": 6.5, "deathsPerGame": 2.0, "assistsPerGame": 8.0, "csPerMin": 7.39, "goldPerMin": 440.0, "damagePerMin": 603.6, "visionPerMin": 1.45, "damageTakenPerGame": 24380.0, "damageMitigatedPerGame": 22054.0, "goldPerGame": 15619.0, "csPerGame": 262.5, "visionPerGame": 51.5, "totalKills": 13, "totalDeaths": 4, "totalAssists": 16, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 8.0, "wardsKilledPerGame": 9.0, "controlWardsPerGame": 6.5, "turretKillsPerGame": 3.0, "turretDamagePerGame": 4752.0, "objectiveDamagePerGame": 56474.0, "teamDragonsPerGame": 4.0, "teamBaronsPerGame": 2.0, "teamHeraldsPerGame": 1.0, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 11.0, "firstBloodRate": 100.0, "mainRole": "JUNGLE"}, {"player": "Ke0", "team": "MetaShift", "games": 2, "wins": 2, "losses": 0, "winRate": 100.0, "kda": 2.44, "killsPerGame": 3.5, "deathsPerGame": 4.5, "assistsPerGame": 7.5, "csPerMin": 6.98, "goldPerMin": 426.9, "damagePerMin": 482.9, "visionPerMin": 0.5, "damageTakenPerGame": 17722.0, "damageMitigatedPerGame": 10598.0, "goldPerGame": 15454.0, "csPerGame": 252.5, "visionPerGame": 18.0, "totalKills": 7, "totalDeaths": 9, "totalAssists": 15, "doubleKills": 1, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 6.0, "wardsKilledPerGame": 2.5, "controlWardsPerGame": 0.5, "turretKillsPerGame": 1.5, "turretDamagePerGame": 5946.0, "objectiveDamagePerGame": 23834.0, "teamDragonsPerGame": 3.5, "teamBaronsPerGame": 2.0, "teamHeraldsPerGame": 1.0, "teamGrubsPerGame": 1.5, "teamTowersPerGame": 12.0, "firstBloodRate": 50.0, "mainRole": "BOTTOM"}, {"player": "Poofin", "team": "Dota Enjoyers", "games": 2, "wins": 0, "losses": 2, "winRate": 0.0, "kda": 0.67, "killsPerGame": 0.0, "deathsPerGame": 6.0, "assistsPerGame": 4.0, "csPerMin": 0.73, "goldPerMin": 217.7, "damagePerMin": 184.4, "visionPerMin": 2.81, "damageTakenPerGame": 15771.0, "damageMitigatedPerGame": 8180.0, "goldPerGame": 5844.0, "csPerGame": 19.5, "visionPerGame": 75.5, "totalKills": 0, "totalDeaths": 12, "totalAssists": 8, "doubleKills": 0, "tripleKills": 0, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 32.0, "wardsKilledPerGame": 5.0, "controlWardsPerGame": 4.5, "turretKillsPerGame": 0.0, "turretDamagePerGame": 0.0, "objectiveDamagePerGame": 0.0, "teamDragonsPerGame": 0.5, "teamBaronsPerGame": 0.5, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 0.5, "teamTowersPerGame": 0.5, "firstBloodRate": 0.0, "mainRole": "UTILITY"}, {"player": "Graeson", "team": "Dota Enjoyers", "games": 1, "wins": 0, "losses": 1, "winRate": 0.0, "kda": 2.2, "killsPerGame": 7.0, "deathsPerGame": 5.0, "assistsPerGame": 4.0, "csPerMin": 6.67, "goldPerMin": 377.2, "damagePerMin": 726.1, "visionPerMin": 1.1, "damageTakenPerGame": 19608.0, "damageMitigatedPerGame": 9027.0, "goldPerGame": 11654.0, "csPerGame": 206.0, "visionPerGame": 34.0, "totalKills": 7, "totalDeaths": 5, "totalAssists": 4, "doubleKills": 2, "tripleKills": 1, "quadraKills": 0, "pentaKills": 0, "wardsPlacedPerGame": 12.0, "wardsKilledPerGame": 8.0, "controlWardsPerGame": 3.0, "turretKillsPerGame": 1.0, "turretDamagePerGame": 5950.0, "objectiveDamagePerGame": 6194.0, "teamDragonsPerGame": 1.0, "teamBaronsPerGame": 0.0, "teamHeraldsPerGame": 0.0, "teamGrubsPerGame": 0.0, "teamTowersPerGame": 2.0, "firstBloodRate": 0.0, "mainRole": "MIDDLE"}];
+const SHEET_ID = '1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
+
+function gvizURL(sheet) {
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}`;
+}
+
+// Parse Google Visualization JSON response into array of objects
+function parseGviz(text) {
+  const jsonStr = text.replace(/^[^(]*\(/, '').replace(/\);?\s*$/, '');
+  const json = JSON.parse(jsonStr);
+  const cols = json.table.cols.map(c => c.label || c.id);
+  return json.table.rows.map(r => {
+    const obj = {};
+    r.c.forEach((cell, i) => {
+      obj[cols[i]] = cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '';
+    });
+    return obj;
+  });
+}
+
+// JSONP loader to bypass CORS (works from file:// and any origin)
+function loadSheetJSONP(sheet) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_gviz_cb_' + Math.random().toString(36).slice(2);
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cbName}&sheet=${encodeURIComponent(sheet)}`;
+    window[cbName] = function(response) {
+      delete window[cbName];
+      document.body.removeChild(script);
+      try {
+        const cols = response.table.cols.map(c => c.label || c.id);
+        const rows = response.table.rows.map(r => {
+          const obj = {};
+          r.c.forEach((cell, i) => {
+            obj[cols[i]] = cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '';
+          });
+          return obj;
+        });
+        resolve(rows);
+      } catch(e) { reject(e); }
+    };
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = () => { delete window[cbName]; reject(new Error('Failed to load sheet: '+sheet)); };
+    document.body.appendChild(script);
+  });
+}
+
+const NAME_MERGES = {
+  "Imthegeoff": "JellyBeanGeoff",
+  "Reindeer Smolder": "luci",
+  "Flying Squirtle": "Flyinq squirtle"
+};
 
 const STATS = [
   {name:"KDA",key:"kda",fmt:"dec"},
@@ -182,98 +246,343 @@ const TC = {
   "Sub":"#475569"
 };
 
-let curType='top10';
+let PD = [];
+let curType = 'top10';
 
-// Init dropdowns
-const ss=document.getElementById('statSel');
-STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});
+// ─── CSV Parser ───
+function parseCSV(text) {
+  const lines = [];
+  let cur = '', inQ = false, row = [];
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"' && text[i+1] === '"') { cur += '"'; i++; }
+      else if (c === '"') { inQ = false; }
+      else { cur += c; }
+    } else {
+      if (c === '"') { inQ = true; }
+      else if (c === ',') { row.push(cur.trim()); cur = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i+1] === '\n') i++;
+        row.push(cur.trim()); cur = '';
+        if (row.length > 1 || row[0] !== '') lines.push(row);
+        row = [];
+      } else { cur += c; }
+    }
+  }
+  row.push(cur.trim());
+  if (row.length > 1 || row[0] !== '') lines.push(row);
+  if (!lines.length) return [];
+  const headers = lines[0];
+  return lines.slice(1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = r[i] || '');
+    return obj;
+  });
+}
 
-const ts=document.getElementById('teamSel');
-ts.innerHTML='<option value="All">All Teams</option>';
-const teams=[...new Set(PD.map(p=>p.team))].sort();
-teams.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o)});
+// ─── Aggregate match rows → player stats ───
+function aggregate(matchRows, rosterMap) {
+  const ps = {};
+  const matchIds = new Set();
+  const dates = new Set();
 
-document.getElementById('mPlayers').textContent=PD.length;
+  for (const r of matchRows) {
+    let name = r['Summoner Name'] || '';
+    if (NAME_MERGES[name]) name = NAME_MERGES[name];
+    if (!name) continue;
 
-function setType(t){
-  curType=t;
-  document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');
-  document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');
-  document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');
+    matchIds.add(r['Match ID'] || '');
+    
+    // gviz returns dates as "Date(2026,0,19)" or "Date(2026,0,19,0,0,0)" — parse that
+    let dateStr = r['Date'] || '';
+    const dateMatch = dateStr.match(/Date\((\d+),(\d+),(\d+)/);
+    if (dateMatch) {
+      dateStr = `${dateMatch[1]}-${String(parseInt(dateMatch[2])+1).padStart(2,'0')}-${String(parseInt(dateMatch[3])).padStart(2,'0')}`;
+    }
+    // If it's already a normal date string like "1/19/2026", normalize it
+    else if (dateStr.includes('/')) {
+      const p = dateStr.split('/');
+      dateStr = `${p[2]}-${p[0].padStart(2,'0')}-${p[1].padStart(2,'0')}`;
+    }
+    // Strip time — only keep YYYY-MM-DD
+    dateStr = dateStr.substring(0, 10);
+    dates.add(dateStr);
+
+    if (!ps[name]) ps[name] = {
+      games:0,kills:0,deaths:0,assists:0,cs:0,gold:0,
+      damage:0,damageTaken:0,vision:0,duration:0,wins:0,
+      doubles:0,triples:0,quadras:0,pentas:0,
+      wardsPlaced:0,wardsKilled:0,controlWards:0,
+      turretKills:0,turretDamage:0,objectiveDamage:0,
+      physicalDamage:0,magicDamage:0,trueDamage:0,
+      damageMitigated:0,
+      teamDragons:0,teamBarons:0,teamHeralds:0,teamGrubs:0,teamTowers:0,
+      firstBloods:0,roles:[]
+    };
+
+    const p = ps[name];
+    const n = (k) => parseFloat(r[k]) || 0;
+    p.games++;
+    p.kills += n('Kills');
+    p.deaths += n('Deaths');
+    p.assists += n('Assists');
+    p.cs += n('CS');
+    p.gold += n('Gold Earned');
+    p.damage += n('Total Damage to Champions');
+    p.damageTaken += n('Damage Taken');
+    p.vision += n('Vision Score');
+    p.duration += n('Game Duration (min)');
+    p.wins += (r['Win'] === 'Win' ? 1 : 0);
+    p.doubles += n('Double Kills');
+    p.triples += n('Triple Kills');
+    p.quadras += n('Quadra Kills');
+    p.pentas += n('Penta Kills');
+    p.wardsPlaced += n('Wards Placed');
+    p.wardsKilled += n('Wards Killed');
+    p.controlWards += n('Control Wards Bought');
+    p.turretKills += n('Turret Kills');
+    p.turretDamage += n('Turret Damage');
+    p.objectiveDamage += n('Objective Damage');
+    p.damageMitigated += n('Damage Mitigated');
+    p.teamDragons += n('Team Dragons');
+    p.teamBarons += n('Team Barons');
+    p.teamHeralds += n('Team Heralds');
+    p.teamGrubs += n('Team Grubs');
+    p.teamTowers += n('Team Towers');
+    p.firstBloods += (r['Team First Blood'] === 'Yes' ? 1 : 0);
+    p.roles.push(r['Role'] || 'MIDDLE');
+  }
+
+  const players = [];
+  for (const [name, s] of Object.entries(ps)) {
+    const g = s.games;
+    const d = s.duration || 1;
+    const team = rosterMap[name] || 'Sub';
+    const mainRole = s.roles.length ? 
+      [...new Set(s.roles)].sort((a,b) => s.roles.filter(x=>x===b).length - s.roles.filter(x=>x===a).length)[0] : 'MIDDLE';
+
+    players.push({
+      player: name, team, games: g,
+      wins: s.wins, losses: g - s.wins,
+      winRate: +(s.wins/g*100).toFixed(1),
+      kda: +((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),
+      killsPerGame: +(s.kills/g).toFixed(2),
+      deathsPerGame: +(s.deaths/g).toFixed(2),
+      assistsPerGame: +(s.assists/g).toFixed(2),
+      csPerMin: +(s.cs/d).toFixed(2),
+      goldPerMin: +(s.gold/d).toFixed(1),
+      damagePerMin: +(s.damage/d).toFixed(1),
+      visionPerMin: +(s.vision/d).toFixed(2),
+      damageTakenPerGame: Math.round(s.damageTaken/g),
+      damageMitigatedPerGame: Math.round(s.damageMitigated/g),
+      goldPerGame: Math.round(s.gold/g),
+      csPerGame: +(s.cs/g).toFixed(1),
+      visionPerGame: +(s.vision/g).toFixed(1),
+      totalKills: s.kills, totalDeaths: s.deaths, totalAssists: s.assists,
+      doubleKills: s.doubles, tripleKills: s.triples,
+      quadraKills: s.quadras, pentaKills: s.pentas,
+      wardsPlacedPerGame: +(s.wardsPlaced/g).toFixed(1),
+      wardsKilledPerGame: +(s.wardsKilled/g).toFixed(1),
+      controlWardsPerGame: +(s.controlWards/g).toFixed(1),
+      turretKillsPerGame: +(s.turretKills/g).toFixed(1),
+      turretDamagePerGame: Math.round(s.turretDamage/g),
+      objectiveDamagePerGame: Math.round(s.objectiveDamage/g),
+      teamDragonsPerGame: +(s.teamDragons/g).toFixed(1),
+      teamBaronsPerGame: +(s.teamBarons/g).toFixed(1),
+      teamHeraldsPerGame: +(s.teamHeralds/g).toFixed(1),
+      teamGrubsPerGame: +(s.teamGrubs/g).toFixed(1),
+      teamTowersPerGame: +(s.teamTowers/g).toFixed(1),
+      firstBloodRate: +(s.firstBloods/g*100).toFixed(1),
+      mainRole
+    });
+  }
+
+  players.sort((a,b) => b.games - a.games);
+
+  // Meta — matches = unique match IDs, game nights = unique dates
+  const totalMatches = matchIds.size;
+  // Each match has 10 player rows, so actual match count = unique match IDs
+  // But match IDs from gviz might include empty strings
+  matchIds.delete('');
+  dates.delete('');
+  console.log('Unique dates:', [...dates]);
+  const gameNights = dates.size;
+  const sortedDates = [...dates].sort();
+  const dateRange = sortedDates.length ? formatDate(sortedDates[0]) + ' — ' + formatDate(sortedDates[sortedDates.length-1]) : '';
+
+  return { players, totalMatches: matchIds.size, gameNights, dateRange };
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const parts = d.split('-');
+  if (parts.length === 3) {
+    const m = parseInt(parts[1]);
+    const day = parseInt(parts[2]);
+    return months[m-1]+' '+day+', '+parts[0];
+  }
+  return d;
+}
+
+// ─── Load data ───
+async function loadData() {
+  try {
+    const matchRows = await loadSheetJSONP('Sheet1');
+    
+    // Log column names for debugging
+    if (matchRows.length) console.log('Sheet columns:', Object.keys(matchRows[0]));
+    
+    // Team comes directly from match data — no need for Sheet3
+    const rosterMap = {};
+    for (const r of matchRows) {
+      let name = (r['Summoner Name'] || '').trim();
+      const team = (r['FPL Team'] || r['Team'] || '').trim();
+      if (NAME_MERGES[name]) name = NAME_MERGES[name];
+      if (name && team) rosterMap[name] = team;
+    }
+    console.log('Roster map:', rosterMap);
+
+    const result = aggregate(matchRows, rosterMap);
+    PD = result.players;
+    window._matchRows = matchRows;  // Store for re-aggregation
+    window._rosterMap = rosterMap;
+
+    // Update meta
+    document.getElementById('mPlayers').textContent = PD.length;
+    document.getElementById('mMatches').textContent = result.totalMatches;
+    document.getElementById('mNights').textContent = result.gameNights;
+    document.getElementById('mDates').textContent = result.dateRange;
+
+    // Init dropdowns
+    const ss = document.getElementById('statSel');
+    STATS.forEach(s => { const o = document.createElement('option'); o.value = s.key; o.textContent = s.name; ss.appendChild(o); });
+
+    const teamSet = [...new Set(PD.map(p => p.team))].sort();
+    const tSel = document.getElementById('teamSel');
+    tSel.innerHTML = '<option value="All">All Teams</option>';
+    teamSet.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; tSel.appendChild(o); });
+
+    document.getElementById('mTeams').textContent = teamSet.filter(t => t !== 'Sub').length;
+
+    // Show controls, render
+    document.getElementById('ctrlsWrap').style.display = 'flex';
+    document.getElementById('loadingEl').style.display = 'none';
+    render();
+
+  } catch (err) {
+    document.getElementById('loadingEl').innerHTML =
+      '<div class="load-error">⚠ FAILED TO LOAD DATA<br><br>'+
+      '<span style="font-size:10px;color:var(--dim)">Make sure the Google Sheet is shared as "Anyone with the link → Viewer"</span><br>'+
+      '<span style="font-size:10px;color:var(--dim)">Error: '+err.message+'</span></div>';
+  }
+}
+
+// ─── Render ───
+function setType(t) {
+  curType = t;
+  document.getElementById('bHigh').className = 'tbtn' + (t==='top10'?' ah':'');
+  document.getElementById('bLow').className = 'tbtn' + (t==='bot10'?' al':'');
+  document.getElementById('bAll').className = 'tbtn' + (t==='all'?' aa':'');
   render();
 }
 
-function fmtVal(v,fmt){
-  if(v===null||v===undefined)return'-';
-  if(fmt==='pct')return v.toFixed(1)+'%';
-  if(fmt==='num')return Math.round(v).toLocaleString('en-US');
-  if(fmt==='int')return Math.round(v).toLocaleString('en-US');
-  if(fmt==='dec')return v.toFixed(2);
+function fmtVal(v, fmt) {
+  if (v===null||v===undefined) return '-';
+  if (fmt==='pct') return v.toFixed(1)+'%';
+  if (fmt==='num') return Math.round(v).toLocaleString('en-US');
+  if (fmt==='int') return Math.round(v).toLocaleString('en-US');
+  if (fmt==='dec') return v.toFixed(2);
   return v.toString();
 }
 
-function render(){
-  const statKey=ss.value;
-  const statCfg=STATS.find(s=>s.key===statKey);
-  const team=ts.value;
-  const minG=parseInt(document.getElementById('minGSel').value);
-  const checkedRoles=[...document.querySelectorAll('#roleChecks input:checked')].map(c=>c.value);
+function render() {
+  if (!PD.length && !window._matchRows) return;
+  
+  // Re-aggregate if phase filter is active
+  const phase = document.getElementById('phaseSel').value;
+  let rows = window._matchRows || [];
+  if (phase !== 'All') {
+    rows = rows.filter(r => (r['Season Phase'] || 'Regular') === phase);
+  }
+  if (window._matchRows) {
+    const result = aggregate(rows, window._rosterMap || {});
+    PD = result.players;
+    document.getElementById('mPlayers').textContent = PD.length;
+    document.getElementById('mMatches').textContent = result.totalMatches;
+    document.getElementById('mNights').textContent = result.gameNights;
+    document.getElementById('mDates').textContent = result.dateRange || '—';
+  }
+  if (!PD.length) {
+    document.getElementById('bars').innerHTML = '<div class="nodata">NO PLAYERS MATCH THESE FILTERS</div>';
+    document.getElementById('playerCount').textContent = '';
+    return;
+  }
+  const statKey = document.getElementById('statSel').value;
+  const statCfg = STATS.find(s => s.key === statKey);
+  const team = document.getElementById('teamSel').value;
+  const minG = parseInt(document.getElementById('minGSel').value);
+  const checkedRoles = [...document.querySelectorAll('#roleChecks input:checked')].map(c => c.value);
 
-  let data=PD.filter(p=>p.games>=minG);
-  data=data.filter(p=>checkedRoles.includes(p.mainRole));
-  if(team!=='All')data=data.filter(p=>p.team===team);
+  let data = PD.filter(p => p.games >= minG);
+  data = data.filter(p => checkedRoles.includes(p.mainRole));
+  if (team !== 'All') data = data.filter(p => p.team === team);
 
-  const invert=statCfg&&statCfg.invert;
-  data.sort((a,b)=>invert?a[statKey]-b[statKey]:b[statKey]-a[statKey]);
-  data.forEach((d,i)=>d._rank=i+1);
+  // Sort first, then assign ranks, then search
+  const invert = statCfg && statCfg.invert;
+  data.sort((a,b) => invert ? a[statKey]-b[statKey] : b[statKey]-a[statKey]);
+  data.forEach((d,i) => d._rank = i+1);
 
-  const search=document.getElementById('searchBar').value.toLowerCase();
-  if(search){
-    data=data.filter(p=>p.player.toLowerCase().includes(search));
-  }else{
-    if(curType==='top10'){
-      data=data.slice(0,10);
-    }else if(curType==='bot10'){
-      data=data.reverse().slice(0,10);
+  const search = document.getElementById('searchBar').value.toLowerCase();
+  if (search) {
+    data = data.filter(p => p.player.toLowerCase().includes(search));
+  } else {
+    if (curType === 'top10') {
+      data = data.slice(0,10);
+    } else if (curType === 'bot10') {
+      data = data.reverse().slice(0,10);
     }
   }
 
-  const arrows={top10:'▲ TOP 10',bot10:'▼ BOTTOM 10',all:'ALL PLAYERS'};
-  document.getElementById('chartTitle').textContent=(statCfg?statCfg.name:statKey)+' — '+arrows[curType];
-  const filters=[];
-  if(team!=='All')filters.push(team.toUpperCase());
-  if(checkedRoles.length<5)filters.push(checkedRoles.map(r=>r[0]+r.slice(1).toLowerCase()).join(', '));
-  if(minG>1)filters.push(minG+'+ GAMES');
-  document.getElementById('chartSub').textContent=(filters.length?filters.join(' // ')+' // ':'')+'SEASON 3';
+  const arrows = {top10:'▲ TOP 10', bot10:'▼ BOTTOM 10', all:'ALL PLAYERS'};
+  document.getElementById('chartTitle').textContent = (statCfg?statCfg.name:statKey)+' — '+arrows[curType];
+  const filters = [];
+  if (team !== 'All') filters.push(team.toUpperCase());
+  if (checkedRoles.length < 5) filters.push(checkedRoles.map(r=>r[0]+r.slice(1).toLowerCase()).join(', '));
+  if (minG > 1) filters.push(minG+'+ GAMES');
+  document.getElementById('chartSub').textContent = (filters.length ? filters.join(' // ')+' // ' : '') + 'SEASON 3';
 
-  const barsDiv=document.getElementById('bars');
-  if(!data.length){
-    barsDiv.innerHTML='<div class="nodata">NO PLAYERS MATCH THESE FILTERS</div>';
-    document.getElementById('playerCount').textContent='';
+  const barsDiv = document.getElementById('bars');
+  if (!data.length) {
+    barsDiv.innerHTML = '<div class="nodata">NO PLAYERS MATCH THESE FILTERS</div>';
+    document.getElementById('playerCount').textContent = '';
     return;
   }
 
-  const maxVal=Math.max(...data.map(d=>Math.abs(d[statKey])));
+  const maxVal = Math.max(...data.map(d => Math.abs(d[statKey])));
 
-  barsDiv.innerHTML=data.map((d,i)=>{
-    const pct=(Math.abs(d[statKey])/maxVal*100).toFixed(1);
-    const color=TC[d.team]||'#6366f1';
-    const delay=Math.min(i*0.03,1.5);
-    const role=d.mainRole[0]+d.mainRole.slice(1).toLowerCase();
-    const sub=d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
-    const rank=d._rank||i+1;
-    const rc2=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+  barsDiv.innerHTML = data.map((d,i) => {
+    const pct = (Math.abs(d[statKey])/maxVal*100).toFixed(1);
+    const color = TC[d.team] || '#6366f1';
+    const delay = Math.min(i*0.03,1.5);
+    const roleMap={TOP:'TOP',JUNGLE:'JNG',MIDDLE:'MID',BOTTOM:'ADC',UTILITY:'SUP'};
+    const role=roleMap[d.mainRole]||d.mainRole;
+    const sub = d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
+    const rank = d._rank || i+1;
+    const rc2 = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     return '<div class="brow" style="animation-delay:'+delay+'s">'+
-          '<div class="rk '+rc2+'">'+rank+'</div>'+
-          '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
-          '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
-          '<div class="val" style="color:'+color+'">'+fmtVal(d[statKey],statCfg?statCfg.fmt:'dec')+'</div></div>';
-      }).join('');
+      '<div class="rk '+rc2+'">'+rank+'</div>'+
+      '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
+      '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
+      '<div class="val" style="color:'+color+'">'+fmtVal(d[statKey],statCfg?statCfg.fmt:'dec')+'</div></div>';
+  }).join('');
 
-  document.getElementById('playerCount').textContent='Showing '+data.length+' of '+PD.length+' players';
+  document.getElementById('playerCount').textContent = 'Showing '+data.length+' of '+PD.length+' players';
 }
 
-render();
+// ─── Go! ───
+loadData();
 </script>
 </body>
 </html>
