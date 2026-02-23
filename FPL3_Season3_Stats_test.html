@@ -413,38 +413,20 @@ function formatDate(d) {
 // ─── Load data ───
 async function loadData() {
   try {
-    const [matchRows, rosterRows] = await Promise.all([
-      loadSheetJSONP('Sheet1'),
-      loadSheetJSONP('Sheet3')
-    ]);
-
-    // Build roster map from Sheet3
-    // gviz may return headers differently, so try multiple approaches
-    const rosterMap = {};
-    if (rosterRows.length > 0) {
-      const firstRow = rosterRows[0];
-      const keys = Object.keys(firstRow);
-      // Find the player and team columns by checking all possible header names
-      let playerCol = keys.find(k => /player/i.test(k)) || keys[0];
-      let teamCol = keys.find(k => /fpl|team/i.test(k)) || keys[1];
-      
-      for (const r of rosterRows) {
-        const player = (r[playerCol] || '').trim();
-        const team = (r[teamCol] || '').trim();
-        if (player && team) {
-          rosterMap[player] = team;
-        }
-      }
-    }
-    // Also add merged names to roster
-    for (const [old, canonical] of Object.entries(NAME_MERGES)) {
-      if (rosterMap[old] && !rosterMap[canonical]) rosterMap[canonical] = rosterMap[old];
-      if (rosterMap[canonical] && !rosterMap[old]) rosterMap[old] = rosterMap[canonical];
-    }
+    const matchRows = await loadSheetJSONP('Sheet1');
     
+    // Log column names for debugging
+    if (matchRows.length) console.log('Sheet columns:', Object.keys(matchRows[0]));
+    
+    // Team comes directly from match data — no need for Sheet3
+    const rosterMap = {};
+    for (const r of matchRows) {
+      let name = (r['Summoner Name'] || '').trim();
+      const team = (r['FPL Team'] || r['Team'] || '').trim();
+      if (NAME_MERGES[name]) name = NAME_MERGES[name];
+      if (name && team) rosterMap[name] = team;
+    }
     console.log('Roster map:', rosterMap);
-    console.log('Roster rows sample:', rosterRows.slice(0,3));
-    console.log('Match rows sample:', matchRows.slice(0,2));
 
     const result = aggregate(matchRows, rosterMap);
     PD = result.players;
