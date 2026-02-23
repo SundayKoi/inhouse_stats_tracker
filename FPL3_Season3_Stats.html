@@ -223,19 +223,19 @@ function render(){
   data=data.filter(p=>checkedRoles.includes(p.mainRole));
   if(team!=='All')data=data.filter(p=>p.team===team);
 
-  const search=document.getElementById('searchBar').value.toLowerCase();
-  data.forEach((d,i)=>d._rank=i+1);
-  if(search)data=data.filter(p=>p.player.toLowerCase().includes(search));
-
   const invert=statCfg&&statCfg.invert;
-  if(curType==='top10'){
-    data.sort((a,b)=>invert?a[statKey]-b[statKey]:b[statKey]-a[statKey]);
-    data=data.slice(0,10);
-  }else if(curType==='bot10'){
-    data.sort((a,b)=>invert?b[statKey]-a[statKey]:a[statKey]-b[statKey]);
-    data=data.slice(0,10);
+  data.sort((a,b)=>invert?a[statKey]-b[statKey]:b[statKey]-a[statKey]);
+  data.forEach((d,i)=>d._rank=i+1);
+
+  const search=document.getElementById('searchBar').value.toLowerCase();
+  if(search){
+    data=data.filter(p=>p.player.toLowerCase().includes(search));
   }else{
-    data.sort((a,b)=>b[statKey]-a[statKey]);
+    if(curType==='top10'){
+      data=data.slice(0,10);
+    }else if(curType==='bot10'){
+      data=data.reverse().slice(0,10);
+    }
   }
 
   const arrows={top10:'▲ TOP 10',bot10:'▼ BOTTOM 10',all:'ALL PLAYERS'};
