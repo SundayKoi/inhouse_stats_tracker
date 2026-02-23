@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPL Season 3 — Stats Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060c;--bg2:#0c0c16;--bg3:#12121e;--border:#1a1a30;--cyan:#00f0ff;--cyan-dim:#00f0ff25;--pink:#ff2d7b;--purple:#a855f7;--green:#22c55e;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;--text:#e2e8f0;--dim:#4a5568}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#00f0ff05 1px,transparent 1px),linear-gradient(0deg,#00f0ff05 1px,transparent 1px);background-size:50px 50px;z-index:0;animation:gp 6s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:.3}50%{opacity:.6}}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#00000008 2px,#00000008 4px);pointer-events:none;z-index:100}
+.wrap{max-width:1100px;margin:0 auto;padding:16px;position:relative;z-index:1}
+.hdr{text-align:center;padding:32px 0 24px;position:relative}
+.hdr::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.badge{display:inline-block;padding:3px 14px;border:1px solid var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);background:var(--cyan-dim);animation:bp 3s ease-in-out infinite}
+@keyframes bp{0%,100%{box-shadow:0 0 8px #00f0ff15}50%{box-shadow:0 0 20px #00f0ff35}}
+.hdr h1{font-family:'Orbitron',sans-serif;font-size:clamp(24px,5vw,46px);font-weight:900;letter-spacing:2px;margin:10px 0 4px;background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr .sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:2px}
+.hdr .cred{font-size:11px;color:var(--dim);margin-top:6px;opacity:.5}
+.meta-bar{display:flex;justify-content:center;gap:24px;margin:12px 0 0;flex-wrap:wrap}
+.meta-item{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
+.meta-item span{color:var(--cyan);font-weight:700}
+.ctrls{display:flex;gap:10px;margin:24px 0 16px;flex-wrap:wrap}
+.ctrl{flex:1;min-width:160px}
+.ctrl label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
+.ctrl select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;appearance:none;cursor:pointer;transition:all .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.ctrl select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 15px #00f0ff15}
+.tog{display:flex;gap:3px}
+.tbtn{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--dim);font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;padding:8px 4px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tbtn:hover{border-color:var(--dim)}
+.tbtn.ah{background:linear-gradient(135deg,#00f0ff15,#22c55e15);border-color:var(--green);color:var(--green);box-shadow:0 0 12px #22c55e15}
+.tbtn.al{background:linear-gradient(135deg,#ff2d7b15,#ef444415);border-color:var(--pink);color:var(--pink);box-shadow:0 0 12px #ff2d7b15}
+.tbtn.aa{background:linear-gradient(135deg,#00f0ff15,#a855f715);border-color:var(--purple);color:var(--purple);box-shadow:0 0 12px #a855f715}
+.role-checks{display:flex;gap:4px;flex-wrap:wrap}
+.rc{cursor:pointer}
+.rc input{display:none}
+.rb{display:block;padding:6px 10px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);transition:all .2s;text-align:center}
+.rc input:checked+.rb{border-color:var(--rc);color:var(--rc);background:color-mix(in srgb,var(--rc) 15%,var(--bg2))}
+.rc:hover .rb{border-color:var(--dim)}
+.card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
+.card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+.card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
+.brow{display:grid;grid-template-columns:32px 160px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
+@media(max-width:600px){.brow{grid-template-columns:24px 110px 1fr 55px;gap:4px}}
+.brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
+.brow .rk.r1{color:var(--gold);text-shadow:0 0 8px #ffd70040}
+.brow .rk.r2{color:var(--silver)}
+.brow .rk.r3{color:var(--bronze)}
+.brow .pi{overflow:hidden}
+.brow .pn{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .tn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc{height:26px;background:#ffffff06;position:relative;overflow:hidden}
+.bf{height:100%;position:relative;transition:width .7s cubic-bezier(.22,1,.36,1);min-width:3px}
+.bf::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2px;background:#fff;opacity:.7;box-shadow:0 0 6px currentColor}
+.brow .val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;text-align:right}
+@keyframes si{to{opacity:1;transform:translateX(0)}}
+.player-count{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-top:12px;padding-top:10px;border-top:1px solid var(--border);text-align:center}
+.ftr{text-align:center;padding:30px 0 16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;opacity:.3}
+.nodata{text-align:center;padding:50px 0;font-family:'Share Tech Mono',monospace;color:var(--dim);font-size:12px}
+.loading{text-align:center;padding:80px 0}
+.loading .spin{display:inline-block;width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading p{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);margin-top:16px;letter-spacing:2px}
+.load-error{text-align:center;padding:60px 0;font-family:'Share Tech Mono',monospace;color:var(--pink);font-size:12px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border)}::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hdr">
+    <div class="badge">Season 3 // Official Stats</div>
+    <h1>FRANCHISE PREMIER LEAGUE</h1>
+    <div class="sub">PLAYER PERFORMANCE DASHBOARD</div>
+    <div class="cred">Stats compiled by Drib x Lizzo Mukkbang</div>
+    <div class="meta-bar">
+      <div class="meta-item"><span id="mPlayers">—</span> Players</div>
+      <div class="meta-item"><span id="mMatches">—</span> Matches</div>
+      <div class="meta-item"><span id="mTeams">12</span> Teams</div>
+      <div class="meta-item"><span id="mNights">—</span> Game Nights</div>
+      <div class="meta-item" id="mDates">Loading…</div>
+    </div>
+  </header>
+
+  <div class="ctrls" id="ctrlsWrap" style="display:none">
+    <div class="ctrl">
+      <label>Stat</label>
+      <select id="statSel" onchange="render()"></select>
+    </div>
+    <div class="ctrl">
+      <label>View</label>
+      <div class="tog">
+        <button class="tbtn ah" id="bHigh" onclick="setType('top10')">▲ TOP 10</button>
+        <button class="tbtn" id="bLow" onclick="setType('bot10')">▼ BOT 10</button>
+        <button class="tbtn" id="bAll" onclick="setType('all')">ALL</button>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>FPL Team</label>
+      <select id="teamSel" onchange="render()"></select>
+    </div>
+    <div class="ctrl">
+      <label>Role</label>
+      <div class="role-checks" id="roleChecks">
+        <label class="rc"><input type="checkbox" value="TOP" checked onchange="render()"><span class="rb" style="--rc:#ef4444">Top</span></label>
+        <label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="render()"><span class="rb" style="--rc:#22c55e">Jng</span></label>
+        <label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="render()"><span class="rb" style="--rc:#3b82f6">Mid</span></label>
+        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Bot</span></label>
+        <label class="rc"><input type="checkbox" value="UTILITY" checked onchange="render()"><span class="rb" style="--rc:#a855f7">Sup</span></label>
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>Min Games</label>
+      <select id="minGSel" onchange="render()">
+        <option value="1">1+</option>
+        <option value="3">3+</option>
+        <option value="5" selected>5+</option>
+        <option value="8">8+</option>
+        <option value="10">10+</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label>Search Player</label>
+      <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-t" id="chartTitle"></div>
+    <div class="card-s" id="chartSub"></div>
+    <div id="bars">
+      <div class="loading" id="loadingEl">
+        <div class="spin"></div>
+        <p>LOADING MATCH DATA...</p>
+      </div>
+    </div>
+    <div class="player-count" id="playerCount"></div>
+  </div>
+
+  <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
+</div>
+
+<script>
+const SHEET_ID = '1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
+const MATCH_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+const ROSTER_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet3`;
+
+const NAME_MERGES = {
+  "Imthegeoff": "JellyBeanGeoff",
+  "Reindeer Smolder": "luci",
+  "Flying Squirtle": "Flyinq squirtle"
+};
+
+const STATS = [
+  {name:"KDA",key:"kda",fmt:"dec"},
+  {name:"Kills/Game",key:"killsPerGame",fmt:"dec"},
+  {name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},
+  {name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},
+  {name:"CS/Min",key:"csPerMin",fmt:"dec"},
+  {name:"Gold/Min",key:"goldPerMin",fmt:"dec"},
+  {name:"Damage/Min",key:"damagePerMin",fmt:"num"},
+  {name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},
+  {name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},
+  {name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},
+  {name:"Win Rate %",key:"winRate",fmt:"pct"},
+  {name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},
+  {name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},
+  {name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},
+  {name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},
+  {name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},
+  {name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},
+  {name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},
+  {name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},
+  {name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},
+  {name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},
+  {name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},
+  {name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},
+  {name:"Total Kills",key:"totalKills",fmt:"int"},
+  {name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},
+  {name:"Total Assists",key:"totalAssists",fmt:"int"},
+  {name:"Double Kills",key:"doubleKills",fmt:"int"},
+  {name:"Triple Kills",key:"tripleKills",fmt:"int"},
+  {name:"Quadra Kills",key:"quadraKills",fmt:"int"},
+  {name:"Penta Kills",key:"pentaKills",fmt:"int"},
+  {name:"Games Played",key:"games",fmt:"int"},
+];
+
+const TC = {
+  "Flannel Equinox":"#6366f1","Astronauts":"#ef4444","Gladiators":"#f59e0b","Womenphobia":"#8b5cf6",
+  "TD Phoenix":"#ec4899","Divine Ascension":"#14b8a6","Rising Tide Raiders":"#22c55e","MetaShift":"#3b82f6",
+  "Flannel Banana Bandits":"#f97316","Dota Enjoyers":"#64748b","The Everstone Elite":"#a855f7","Gamblers":"#eab308",
+  "Sub":"#475569"
+};
+
+let PD = [];
+let curType = 'top10';
+
+// ─── CSV Parser ───
+function parseCSV(text) {
+  const lines = [];
+  let cur = '', inQ = false, row = [];
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"' && text[i+1] === '"') { cur += '"'; i++; }
+      else if (c === '"') { inQ = false; }
+      else { cur += c; }
+    } else {
+      if (c === '"') { inQ = true; }
+      else if (c === ',') { row.push(cur.trim()); cur = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i+1] === '\n') i++;
+        row.push(cur.trim()); cur = '';
+        if (row.length > 1 || row[0] !== '') lines.push(row);
+        row = [];
+      } else { cur += c; }
+    }
+  }
+  row.push(cur.trim());
+  if (row.length > 1 || row[0] !== '') lines.push(row);
+  if (!lines.length) return [];
+  const headers = lines[0];
+  return lines.slice(1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = r[i] || '');
+    return obj;
+  });
+}
+
+// ─── Aggregate match rows → player stats ───
+function aggregate(matchRows, rosterMap) {
+  const ps = {};
+  const matchIds = new Set();
+  const dates = new Set();
+
+  for (const r of matchRows) {
+    let name = r['Summoner Name'] || '';
+    if (NAME_MERGES[name]) name = NAME_MERGES[name];
+    if (!name) continue;
+
+    matchIds.add(r['Match ID']);
+    dates.add(r['Date']);
+
+    if (!ps[name]) ps[name] = {
+      games:0,kills:0,deaths:0,assists:0,cs:0,gold:0,
+      damage:0,damageTaken:0,vision:0,duration:0,wins:0,
+      doubles:0,triples:0,quadras:0,pentas:0,
+      wardsPlaced:0,wardsKilled:0,controlWards:0,
+      turretKills:0,turretDamage:0,objectiveDamage:0,
+      physicalDamage:0,magicDamage:0,trueDamage:0,
+      damageMitigated:0,
+      teamDragons:0,teamBarons:0,teamHeralds:0,teamGrubs:0,teamTowers:0,
+      firstBloods:0,roles:[]
+    };
+
+    const p = ps[name];
+    const n = (k) => parseFloat(r[k]) || 0;
+    p.games++;
+    p.kills += n('Kills');
+    p.deaths += n('Deaths');
+    p.assists += n('Assists');
+    p.cs += n('CS');
+    p.gold += n('Gold Earned');
+    p.damage += n('Total Damage to Champions');
+    p.damageTaken += n('Damage Taken');
+    p.vision += n('Vision Score');
+    p.duration += n('Game Duration (min)');
+    p.wins += (r['Win'] === 'Win' ? 1 : 0);
+    p.doubles += n('Double Kills');
+    p.triples += n('Triple Kills');
+    p.quadras += n('Quadra Kills');
+    p.pentas += n('Penta Kills');
+    p.wardsPlaced += n('Wards Placed');
+    p.wardsKilled += n('Wards Killed');
+    p.controlWards += n('Control Wards Bought');
+    p.turretKills += n('Turret Kills');
+    p.turretDamage += n('Turret Damage');
+    p.objectiveDamage += n('Objective Damage');
+    p.damageMitigated += n('Damage Mitigated');
+    p.teamDragons += n('Team Dragons');
+    p.teamBarons += n('Team Barons');
+    p.teamHeralds += n('Team Heralds');
+    p.teamGrubs += n('Team Grubs');
+    p.teamTowers += n('Team Towers');
+    p.firstBloods += (r['Team First Blood'] === 'Yes' ? 1 : 0);
+    p.roles.push(r['Role'] || 'MIDDLE');
+  }
+
+  const players = [];
+  for (const [name, s] of Object.entries(ps)) {
+    const g = s.games;
+    const d = s.duration || 1;
+    const team = rosterMap[name] || 'Sub';
+    const mainRole = s.roles.length ? 
+      [...new Set(s.roles)].sort((a,b) => s.roles.filter(x=>x===b).length - s.roles.filter(x=>x===a).length)[0] : 'MIDDLE';
+
+    players.push({
+      player: name, team, games: g,
+      wins: s.wins, losses: g - s.wins,
+      winRate: +(s.wins/g*100).toFixed(1),
+      kda: +((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),
+      killsPerGame: +(s.kills/g).toFixed(2),
+      deathsPerGame: +(s.deaths/g).toFixed(2),
+      assistsPerGame: +(s.assists/g).toFixed(2),
+      csPerMin: +(s.cs/d).toFixed(2),
+      goldPerMin: +(s.gold/d).toFixed(1),
+      damagePerMin: +(s.damage/d).toFixed(1),
+      visionPerMin: +(s.vision/d).toFixed(2),
+      damageTakenPerGame: Math.round(s.damageTaken/g),
+      damageMitigatedPerGame: Math.round(s.damageMitigated/g),
+      goldPerGame: Math.round(s.gold/g),
+      csPerGame: +(s.cs/g).toFixed(1),
+      visionPerGame: +(s.vision/g).toFixed(1),
+      totalKills: s.kills, totalDeaths: s.deaths, totalAssists: s.assists,
+      doubleKills: s.doubles, tripleKills: s.triples,
+      quadraKills: s.quadras, pentaKills: s.pentas,
+      wardsPlacedPerGame: +(s.wardsPlaced/g).toFixed(1),
+      wardsKilledPerGame: +(s.wardsKilled/g).toFixed(1),
+      controlWardsPerGame: +(s.controlWards/g).toFixed(1),
+      turretKillsPerGame: +(s.turretKills/g).toFixed(1),
+      turretDamagePerGame: Math.round(s.turretDamage/g),
+      objectiveDamagePerGame: Math.round(s.objectiveDamage/g),
+      teamDragonsPerGame: +(s.teamDragons/g).toFixed(1),
+      teamBaronsPerGame: +(s.teamBarons/g).toFixed(1),
+      teamHeraldsPerGame: +(s.teamHeralds/g).toFixed(1),
+      teamGrubsPerGame: +(s.teamGrubs/g).toFixed(1),
+      teamTowersPerGame: +(s.teamTowers/g).toFixed(1),
+      firstBloodRate: +(s.firstBloods/g*100).toFixed(1),
+      mainRole
+    });
+  }
+
+  players.sort((a,b) => b.games - a.games);
+
+  // Meta
+  const totalMatches = Math.round(matchIds.size);
+  const gameNights = dates.size;
+  const sortedDates = [...dates].sort();
+  const dateRange = sortedDates.length ? formatDate(sortedDates[0]) + ' — ' + formatDate(sortedDates[sortedDates.length-1]) : '';
+
+  return { players, totalMatches, gameNights, dateRange };
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const parts = d.split(/[-/]/);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Try YYYY-MM-DD or MM/DD/YYYY
+  let y, m, day;
+  if (parts[0].length === 4) { y=parts[0]; m=parseInt(parts[1]); day=parseInt(parts[2]); }
+  else { m=parseInt(parts[0]); day=parseInt(parts[1]); y=parts[2]; }
+  return months[(m||1)-1]+' '+day+', '+y;
+}
+
+// ─── Load data ───
+async function loadData() {
+  try {
+    const [matchRes, rosterRes] = await Promise.all([
+      fetch(MATCH_URL),
+      fetch(ROSTER_URL)
+    ]);
+    const matchText = await matchRes.text();
+    const rosterText = await rosterRes.text();
+
+    const matchRows = parseCSV(matchText);
+    const rosterRows = parseCSV(rosterText);
+
+    // Build roster map from Sheet3
+    const rosterMap = {};
+    for (const r of rosterRows) {
+      const player = r['Player'] || r['player'] || Object.values(r)[0] || '';
+      const team = r['FPL Team'] || r['fpl team'] || r['Team'] || Object.values(r)[1] || '';
+      if (player && team) {
+        rosterMap[player.trim()] = team.trim();
+      }
+    }
+    // Also add merged names
+    for (const [old, canonical] of Object.entries(NAME_MERGES)) {
+      if (rosterMap[old] && !rosterMap[canonical]) rosterMap[canonical] = rosterMap[old];
+      if (rosterMap[canonical] && !rosterMap[old]) rosterMap[old] = rosterMap[canonical];
+    }
+
+    const result = aggregate(matchRows, rosterMap);
+    PD = result.players;
+
+    // Update meta
+    document.getElementById('mPlayers').textContent = PD.length;
+    document.getElementById('mMatches').textContent = result.totalMatches;
+    document.getElementById('mNights').textContent = result.gameNights;
+    document.getElementById('mDates').textContent = result.dateRange;
+
+    // Init dropdowns
+    const ss = document.getElementById('statSel');
+    STATS.forEach(s => { const o = document.createElement('option'); o.value = s.key; o.textContent = s.name; ss.appendChild(o); });
+
+    const teamSet = [...new Set(PD.map(p => p.team))].sort();
+    const tSel = document.getElementById('teamSel');
+    tSel.innerHTML = '<option value="All">All Teams</option>';
+    teamSet.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; tSel.appendChild(o); });
+
+    document.getElementById('mTeams').textContent = teamSet.filter(t => t !== 'Sub').length;
+
+    // Show controls, render
+    document.getElementById('ctrlsWrap').style.display = 'flex';
+    document.getElementById('loadingEl').style.display = 'none';
+    render();
+
+  } catch (err) {
+    document.getElementById('loadingEl').innerHTML =
+      '<div class="load-error">⚠ FAILED TO LOAD DATA<br><br>'+
+      '<span style="font-size:10px;color:var(--dim)">Make sure the Google Sheet is shared as "Anyone with the link → Viewer"</span><br>'+
+      '<span style="font-size:10px;color:var(--dim)">Error: '+err.message+'</span></div>';
+  }
+}
+
+// ─── Render ───
+function setType(t) {
+  curType = t;
+  document.getElementById('bHigh').className = 'tbtn' + (t==='top10'?' ah':'');
+  document.getElementById('bLow').className = 'tbtn' + (t==='bot10'?' al':'');
+  document.getElementById('bAll').className = 'tbtn' + (t==='all'?' aa':'');
+  render();
+}
+
+function fmtVal(v, fmt) {
+  if (v===null||v===undefined) return '-';
+  if (fmt==='pct') return v.toFixed(1)+'%';
+  if (fmt==='num') return Math.round(v).toLocaleString('en-US');
+  if (fmt==='int') return Math.round(v).toLocaleString('en-US');
+  if (fmt==='dec') return v.toFixed(2);
+  return v.toString();
+}
+
+function render() {
+  if (!PD.length) return;
+  const statKey = document.getElementById('statSel').value;
+  const statCfg = STATS.find(s => s.key === statKey);
+  const team = document.getElementById('teamSel').value;
+  const minG = parseInt(document.getElementById('minGSel').value);
+  const checkedRoles = [...document.querySelectorAll('#roleChecks input:checked')].map(c => c.value);
+
+  let data = PD.filter(p => p.games >= minG);
+  data = data.filter(p => checkedRoles.includes(p.mainRole));
+  if (team !== 'All') data = data.filter(p => p.team === team);
+
+  // Sort first, then assign ranks, then search
+  const invert = statCfg && statCfg.invert;
+  data.sort((a,b) => invert ? a[statKey]-b[statKey] : b[statKey]-a[statKey]);
+  data.forEach((d,i) => d._rank = i+1);
+
+  const search = document.getElementById('searchBar').value.toLowerCase();
+  if (search) {
+    data = data.filter(p => p.player.toLowerCase().includes(search));
+  } else {
+    if (curType === 'top10') {
+      data = data.slice(0,10);
+    } else if (curType === 'bot10') {
+      data = data.reverse().slice(0,10);
+    }
+  }
+
+  const arrows = {top10:'▲ TOP 10', bot10:'▼ BOTTOM 10', all:'ALL PLAYERS'};
+  document.getElementById('chartTitle').textContent = (statCfg?statCfg.name:statKey)+' — '+arrows[curType];
+  const filters = [];
+  if (team !== 'All') filters.push(team.toUpperCase());
+  if (checkedRoles.length < 5) filters.push(checkedRoles.map(r=>r[0]+r.slice(1).toLowerCase()).join(', '));
+  if (minG > 1) filters.push(minG+'+ GAMES');
+  document.getElementById('chartSub').textContent = (filters.length ? filters.join(' // ')+' // ' : '') + 'SEASON 3';
+
+  const barsDiv = document.getElementById('bars');
+  if (!data.length) {
+    barsDiv.innerHTML = '<div class="nodata">NO PLAYERS MATCH THESE FILTERS</div>';
+    document.getElementById('playerCount').textContent = '';
+    return;
+  }
+
+  const maxVal = Math.max(...data.map(d => Math.abs(d[statKey])));
+
+  barsDiv.innerHTML = data.map((d,i) => {
+    const pct = (Math.abs(d[statKey])/maxVal*100).toFixed(1);
+    const color = TC[d.team] || '#6366f1';
+    const delay = Math.min(i*0.03,1.5);
+    const role = d.mainRole[0]+d.mainRole.slice(1).toLowerCase();
+    const sub = d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
+    const rank = d._rank || i+1;
+    const rc2 = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+    return '<div class="brow" style="animation-delay:'+delay+'s">'+
+      '<div class="rk '+rc2+'">'+rank+'</div>'+
+      '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
+      '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
+      '<div class="val" style="color:'+color+'">'+fmtVal(d[statKey],statCfg?statCfg.fmt:'dec')+'</div></div>';
+  }).join('');
+
+  document.getElementById('playerCount').textContent = 'Showing '+data.length+' of '+PD.length+' players';
+}
+
+// ─── Go! ───
+loadData();
+</script>
+</body>
+</html>
