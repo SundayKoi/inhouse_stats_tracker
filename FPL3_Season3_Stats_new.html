@@ -45,6 +45,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
 
+.role-checks{display:flex;gap:4px;flex-wrap:wrap}
+.rc{cursor:pointer}
+.rc input{display:none}
+.rb{display:block;padding:6px 10px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);transition:all .2s;text-align:center}
+.rc input:checked+.rb{border-color:var(--rc);color:var(--rc);background:color-mix(in srgb,var(--rc) 15%,var(--bg2))}
+.rc:hover .rb{border-color:var(--dim)}
+
 .brow{display:grid;grid-template-columns:32px 150px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
 @media(max-width:600px){.brow{grid-template-columns:24px 100px 1fr 55px;gap:4px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
@@ -98,7 +105,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
     <div class="ctrl">
       <label>Role Filter</label>
-      <select id="roleSel" onchange="render()"></select>
+      <div class="role-checks" id="roleChecks">
+        <label class="rc"><input type="checkbox" value="TOP" checked onchange="render()"><span class="rb" style="--rc:#ef4444">Top</span></label>
+        <label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="render()"><span class="rb" style="--rc:#22c55e">Jng</span></label>
+        <label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="render()"><span class="rb" style="--rc:#3b82f6">Mid</span></label>
+        <label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="render()"><span class="rb" style="--rc:#f59e0b">Bot</span></label>
+        <label class="rc"><input type="checkbox" value="UTILITY" checked onchange="render()"><span class="rb" style="--rc:#a855f7">Sup</span></label>
+      </div>
     </div>
     <div class="ctrl">
       <label>Min Games</label>
@@ -199,11 +212,11 @@ function getBarColor(role) {
 function render() {
   const statKey = ss.value;
   const statCfg = STATS.find(s => s.key===statKey);
-  const role = document.getElementById('roleSel').value;
+  const checkedRoles = [...document.querySelectorAll('#roleChecks input:checked')].map(c => c.value);
   const minGames = parseInt(document.getElementById('minGamesSel').value);
 
   let data = PD.filter(p => p.games >= minGames);
-  if (role !== 'All') data = data.filter(p => p.mainRole === role);
+  data = data.filter(p => checkedRoles.includes(p.mainRole));
 
   // Sort
   const invert = statCfg && statCfg.invert;
@@ -221,7 +234,7 @@ function render() {
   document.getElementById('chartTitle').textContent = (statCfg?statCfg.name:statKey) + ' — ' + arrows[curType];
   
   const filters = [];
-  if (role!=='All') filters.push(role);
+  if (checkedRoles.length < 5) filters.push(checkedRoles.map(r=>r[0]+r.slice(1).toLowerCase()).join(', '));
   if (minGames>1) filters.push(minGames+'+ GAMES');
   document.getElementById('chartSub').textContent = (filters.length ? filters.join(' // ') + ' // ' : '') + 'SEASON 3';
 
