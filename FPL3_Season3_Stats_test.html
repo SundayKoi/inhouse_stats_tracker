@@ -566,7 +566,7 @@ function render() {
     const pct = (Math.abs(d[statKey])/maxVal*100).toFixed(1);
     const color = TC[d.team] || '#6366f1';
     const delay = Math.min(i*0.03,1.5);
-    const roleMap={TOP:'Top',JUNGLE:'Jng',MIDDLE:'Mid',BOTTOM:'ADC',UTILITY:'Sup'};
+    const roleMap={TOP:'TOP',JUNGLE:'JNG',MIDDLE:'MID',BOTTOM:'ADC',UTILITY:'SUP'};
     const role=roleMap[d.mainRole]||d.mainRole;
     const sub = d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
     const rank = d._rank || i+1;
