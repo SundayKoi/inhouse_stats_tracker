@@ -292,6 +292,7 @@ function aggregate(matchRows, rosterMap) {
     if (dateMatch) {
       dateStr = `${dateMatch[1]}-${String(parseInt(dateMatch[2])+1).padStart(2,'0')}-${dateMatch[3].padStart(2,'0')}`;
     }
+    dateStr = dateStr.substring(0, 10);
     dates.add(dateStr);
 
     if (!ps[name]) ps[name] = {
