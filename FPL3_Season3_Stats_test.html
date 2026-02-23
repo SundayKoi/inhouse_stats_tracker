@@ -44,15 +44,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
-.brow{display:grid;grid-template-columns:32px 160px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
-@media(max-width:600px){.brow{grid-template-columns:24px 110px 1fr 55px;gap:4px}}
+.brow{display:grid;grid-template-columns:32px 220px 1fr 80px;align-items:center;gap:8px;margin-bottom:5px;opacity:0;transform:translateX(-15px);animation:si .35s ease forwards}
+@media(max-width:600px){.brow{grid-template-columns:24px 140px 1fr 55px;gap:4px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
 .brow .rk.r1{color:var(--gold);text-shadow:0 0 8px #ffd70040}
 .brow .rk.r2{color:var(--silver)}
 .brow .rk.r3{color:var(--bronze)}
 .brow .pi{overflow:hidden}
 .brow .pn{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.brow .tn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .tn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:500;color:#94a3b8;white-space:nowrap;overflow:visible}
 .bc{height:26px;background:#ffffff06;position:relative;overflow:hidden}
 .bf{height:100%;position:relative;transition:width .7s cubic-bezier(.22,1,.36,1);min-width:3px}
 .bf::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2px;background:#fff;opacity:.7;box-shadow:0 0 6px currentColor}
@@ -286,12 +286,18 @@ function aggregate(matchRows, rosterMap) {
 
     matchIds.add(r['Match ID'] || '');
     
-    // gviz returns dates as "Date(2026,0,19)" — parse that
+    // gviz returns dates as "Date(2026,0,19)" or "Date(2026,0,19,0,0,0)" — parse that
     let dateStr = r['Date'] || '';
-    const dateMatch = dateStr.match(/Date\((\d+),(\d+),(\d+)\)/);
+    const dateMatch = dateStr.match(/Date\((\d+),(\d+),(\d+)/);
     if (dateMatch) {
-      dateStr = `${dateMatch[1]}-${String(parseInt(dateMatch[2])+1).padStart(2,'0')}-${dateMatch[3].padStart(2,'0')}`;
+      dateStr = `${dateMatch[1]}-${String(parseInt(dateMatch[2])+1).padStart(2,'0')}-${String(parseInt(dateMatch[3])).padStart(2,'0')}`;
     }
+    // If it's already a normal date string like "1/19/2026", normalize it
+    else if (dateStr.includes('/')) {
+      const p = dateStr.split('/');
+      dateStr = `${p[2]}-${p[0].padStart(2,'0')}-${p[1].padStart(2,'0')}`;
+    }
+    // Strip time — only keep YYYY-MM-DD
     dateStr = dateStr.substring(0, 10);
     dates.add(dateStr);
 
@@ -392,6 +398,7 @@ function aggregate(matchRows, rosterMap) {
   // But match IDs from gviz might include empty strings
   matchIds.delete('');
   dates.delete('');
+  console.log('Unique dates:', [...dates]);
   const gameNights = dates.size;
   const sortedDates = [...dates].sort();
   const dateRange = sortedDates.length ? formatDate(sortedDates[0]) + ' — ' + formatDate(sortedDates[sortedDates.length-1]) : '';
