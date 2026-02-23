@@ -224,6 +224,7 @@ function render(){
   if(team!=='All')data=data.filter(p=>p.team===team);
 
   const search=document.getElementById('searchBar').value.toLowerCase();
+  data.forEach((d,i)=>d._rank=i+1);
   if(search)data=data.filter(p=>p.player.toLowerCase().includes(search));
 
   const invert=statCfg&&statCfg.invert;
@@ -257,16 +258,17 @@ function render(){
   barsDiv.innerHTML=data.map((d,i)=>{
     const pct=(Math.abs(d[statKey])/maxVal*100).toFixed(1);
     const color=TC[d.team]||'#6366f1';
-    const rc=i===0?'r1':i===1?'r2':i===2?'r3':'';
     const delay=Math.min(i*0.03,1.5);
     const role=d.mainRole[0]+d.mainRole.slice(1).toLowerCase();
     const sub=d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
+    const rank=d._rank||i+1;
+    const rc2=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     return '<div class="brow" style="animation-delay:'+delay+'s">'+
-      '<div class="rk '+rc+'">'+(i+1)+'</div>'+
-      '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
-      '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
-      '<div class="val" style="color:'+color+'">'+fmtVal(d[statKey],statCfg?statCfg.fmt:'dec')+'</div></div>';
-  }).join('');
+          '<div class="rk '+rc2+'">'+rank+'</div>'+
+          '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
+          '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
+          '<div class="val" style="color:'+color+'">'+fmtVal(d[statKey],statCfg?statCfg.fmt:'dec')+'</div></div>';
+      }).join('');
 
   document.getElementById('playerCount').textContent='Showing '+data.length+' of '+PD.length+' players';
 }
