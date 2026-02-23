@@ -187,6 +187,7 @@ body::after {
         <div class="tog">
           <button class="tbtn ah" id="bHigh" onclick="setType('Highest')">▲ TOP 10</button>
           <button class="tbtn" id="bLow" onclick="setType('Lowest')">▼ BOTTOM 10</button>
+          <button class="tbtn" id="bAll" onclick="setType('All')">ALL</button>
         </div>
       </div>
       <div class="ctrl">
@@ -245,6 +246,7 @@ function setType(t) {
   curType = t;
   document.getElementById('bHigh').className = 'tbtn' + (t==='Highest'?' ah':'');
   document.getElementById('bLow').className = 'tbtn' + (t==='Lowest'?' al':'');
+  document.getElementById('bAll').className = 'tbtn' + (t==='All'?' ah':'');
   render();
 }
 
@@ -259,9 +261,17 @@ function fmtVal(v, stat) {
 function render() {
   const stat = ss.value;
   const team = ts.value;
-  let data = PD.filter(d => d.stat===stat && d.type===curType);
+  let data;
+  if (curType === 'All') {
+    data = PD.filter(d => d.stat===stat);
+    // Deduplicate players (they may appear in both highest and lowest)
+    const seen = new Set();
+    data = data.filter(d => { if (seen.has(d.player)) return false; seen.add(d.player); return true; });
+  } else {
+    data = PD.filter(d => d.stat===stat && d.type===curType);
+  }
   if (team !== 'All') data = data.filter(d => d.team===team);
-  data.sort((a,b) => curType==='Highest' ? b.value-a.value : a.value-b.value);
+  data.sort((a,b) => b.value - a.value);
 
   const arrow = curType==='Highest' ? '▲' : '▼';
   document.getElementById('chartTitle').textContent = arrow + ' ' + curType + ' ' + stat;
