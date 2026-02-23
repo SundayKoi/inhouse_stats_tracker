@@ -122,8 +122,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <option value="10">10+</option>
       </select>
     </div>
+    <div class="ctrl">
+      <label>Search Player</label>
+      <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
+    </div>
   </div>
-
+  
   <div class="card">
     <div class="card-t" id="chartTitle"></div>
     <div class="card-s" id="chartSub"></div>
@@ -218,6 +222,9 @@ function render(){
   let data=PD.filter(p=>p.games>=minG);
   data=data.filter(p=>checkedRoles.includes(p.mainRole));
   if(team!=='All')data=data.filter(p=>p.team===team);
+
+  const search=document.getElementById('searchBar').value.toLowerCase();
+  if(search)data=data.filter(p=>p.player.toLowerCase().includes(search));
 
   const invert=statCfg&&statCfg.invert;
   if(curType==='top10'){
