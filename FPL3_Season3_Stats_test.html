@@ -123,6 +123,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </select>
     </div>
     <div class="ctrl">
+      <label>Season Phase</label>
+      <select id="phaseSel" onchange="render()">
+        <option value="All">All</option>
+        <option value="Regular">Regular Season</option>
+        <option value="Playoffs">Playoffs</option>
+      </select>
+    </div>
+    <div class="ctrl">
       <label>Search Player</label>
       <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
     </div>
@@ -438,6 +446,8 @@ async function loadData() {
 
     const result = aggregate(matchRows, rosterMap);
     PD = result.players;
+    window._matchRows = matchRows;  // Store for re-aggregation
+    window._rosterMap = rosterMap;
 
     // Update meta
     document.getElementById('mPlayers').textContent = PD.length;
@@ -488,7 +498,27 @@ function fmtVal(v, fmt) {
 }
 
 function render() {
-  if (!PD.length) return;
+  if (!PD.length && !window._matchRows) return;
+  
+  // Re-aggregate if phase filter is active
+  const phase = document.getElementById('phaseSel').value;
+  let rows = window._matchRows || [];
+  if (phase !== 'All') {
+    rows = rows.filter(r => (r['Season Phase'] || 'Regular') === phase);
+  }
+  if (window._matchRows) {
+    const result = aggregate(rows, window._rosterMap || {});
+    PD = result.players;
+    document.getElementById('mPlayers').textContent = PD.length;
+    document.getElementById('mMatches').textContent = result.totalMatches;
+    document.getElementById('mNights').textContent = result.gameNights;
+    document.getElementById('mDates').textContent = result.dateRange || '—';
+  }
+  if (!PD.length) {
+    document.getElementById('bars').innerHTML = '<div class="nodata">NO PLAYERS MATCH THESE FILTERS</div>';
+    document.getElementById('playerCount').textContent = '';
+    return;
+  }
   const statKey = document.getElementById('statSel').value;
   const statCfg = STATS.find(s => s.key === statKey);
   const team = document.getElementById('teamSel').value;
