@@ -23,10 +23,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .meta-bar{display:flex;justify-content:center;gap:24px;margin:12px 0 0;flex-wrap:wrap}
 .meta-item{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
 .meta-item span{color:var(--cyan);font-weight:700}
-.ctrls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 16px}
-.ctrls .row2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr auto 1fr;gap:10px;align-items:end}
-@media(max-width:768px){.ctrls{grid-template-columns:repeat(2,1fr)}.ctrls .row2{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.ctrls{grid-template-columns:1fr}.ctrls .row2{grid-template-columns:1fr}}
+.ctrls{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:24px 0 8px}
+.ctrls2{display:grid;grid-template-columns:auto 1fr 1fr;gap:10px;margin:0 0 16px}
+@media(max-width:768px){.ctrls{grid-template-columns:repeat(3,1fr)}.ctrls2{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.ctrls{grid-template-columns:1fr 1fr}.ctrls2{grid-template-columns:1fr}}
 .ctrl{min-width:0}
 .ctrl label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
 .ctrl select{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;appearance:none;cursor:pointer;transition:all .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
@@ -89,7 +89,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </header>
 
   <div class="ctrls" id="ctrlsWrap" style="display:none">
-    <!-- Row 1: Main controls -->
+    <!-- Row 1: Stat, View, Season, Phase, Min Games -->
     <div class="ctrl">
       <label>Stat</label>
       <select id="statSel" onchange="render()"></select>
@@ -103,9 +103,33 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
     <div class="ctrl">
-      <label>FPL Team</label>
-      <select id="teamSel" onchange="render()"></select>
+      <label>Season</label>
+      <select id="seasonSel" onchange="render()">
+        <option value="All">All Seasons</option>
+        <option value="S3" selected>Season 3</option>
+      </select>
     </div>
+    <div class="ctrl">
+      <label>Phase</label>
+      <select id="phaseSel" onchange="render()">
+        <option value="All">All</option>
+        <option value="Regular">Regular</option>
+        <option value="Playoffs">Playoffs</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label>Min Games</label>
+      <select id="minGSel" onchange="render()">
+        <option value="1">1+</option>
+        <option value="3">3+</option>
+        <option value="5" selected>5+</option>
+        <option value="8">8+</option>
+        <option value="10">10+</option>
+      </select>
+    </div>
+  </div>
+  <!-- Row 2: Role, Team, Search -->
+  <div class="ctrls2" id="ctrlsWrap2" style="display:none">
     <div class="ctrl">
       <label>Role</label>
       <div class="role-checks" id="roleChecks">
@@ -116,37 +140,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <label class="rc"><input type="checkbox" value="UTILITY" checked onchange="render()"><span class="rb" style="--rc:#a855f7">Sup</span></label>
       </div>
     </div>
-    <!-- Row 2: Filters -->
-    <div class="row2">
-      <div class="ctrl">
-        <label>Search Player</label>
-        <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
-      </div>
-      <div class="ctrl">
-        <label>Season</label>
-        <select id="seasonSel" onchange="render()">
-          <option value="All">All Seasons</option>
-          <option value="S3" selected>Season 3</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>Phase</label>
-        <select id="phaseSel" onchange="render()">
-          <option value="All">All</option>
-          <option value="Regular">Regular</option>
-          <option value="Playoffs">Playoffs</option>
-        </select>
-      </div>
-      <div class="ctrl">
-        <label>Min Games</label>
-        <select id="minGSel" onchange="render()">
-          <option value="1">1+</option>
-          <option value="3">3+</option>
-          <option value="5" selected>5+</option>
-          <option value="8">8+</option>
-          <option value="10">10+</option>
-        </select>
-      </div>
+    <div class="ctrl">
+      <label>FPL Team</label>
+      <select id="teamSel" onchange="render()"></select>
+    </div>
+    <div class="ctrl">
+      <label>Search Player</label>
+      <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
     </div>
   </div>
 
@@ -481,7 +481,8 @@ async function loadData() {
     document.getElementById('mTeams').textContent = teamSet.filter(t => t !== 'Sub').length;
 
     // Show controls, render
-    document.getElementById('ctrlsWrap').style.display = 'flex';
+    document.getElementById('ctrlsWrap').style.display = 'grid';
+    document.getElementById('ctrlsWrap2').style.display = 'grid';
     document.getElementById('loadingEl').style.display = 'none';
     render();
 
