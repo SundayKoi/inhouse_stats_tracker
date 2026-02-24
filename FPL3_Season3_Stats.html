@@ -131,6 +131,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </select>
     </div>
     <div class="ctrl">
+      <label>Season</label>
+      <select id="seasonSel" onchange="render()">
+        <option value="All">All Seasons</option>
+        <option value="S3" selected>Season 3</option>
+      </select>
+    </div>
+    <div class="ctrl">
       <label>Search Player</label>
       <input type="text" id="searchBar" placeholder="Type a name..." oninput="render()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 15px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'">
     </div>
@@ -524,11 +531,14 @@ function render() {
   const team = document.getElementById('teamSel').value;
   const minG = parseInt(document.getElementById('minGSel').value);
   const checkedRoles = [...document.querySelectorAll('#roleChecks input:checked')].map(c => c.value);
-
+  const season = document.getElementById('seasonSel').value;
+  
   let data = PD.filter(p => p.games >= minG);
   data = data.filter(p => checkedRoles.includes(p.mainRole));
   if (team !== 'All') data = data.filter(p => p.team === team);
-
+  if (season !== 'All') {
+  rows = rows.filter(r => (r['Season'] || '') === season);
+}
   // Sort first, then assign ranks, then search
   const invert = statCfg && statCfg.invert;
   data.sort((a,b) => invert ? a[statKey]-b[statKey] : b[statKey]-a[statKey]);
