@@ -281,7 +281,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="ctrl">
         <label>Min Games</label>
         <select id="minGSel" onchange="renderLeaderboard()">
-          <option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option><option value="10">10+</option>
+          <option value="1" selected>1+</option><option value="3">3+</option><option value="5">5+</option><option value="8">8+</option><option value="10">10+</option>
         </select>
       </div>
     </div>
@@ -457,6 +457,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     const pg = document.getElementById('pg-'+curTab);
     if (pg) pg.classList.add('active');
     renderCurrentTab();
+    // Scroll to tab content
+    setTimeout(() => pg.scrollIntoView({behavior:'smooth', block:'start'}), 50);
   });
 });
 
