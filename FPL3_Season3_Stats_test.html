@@ -70,6 +70,35 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .loading p{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--cyan);margin-top:16px;letter-spacing:2px}
 .load-error{text-align:center;padding:60px 0;font-family:'Share Tech Mono',monospace;color:var(--pink);font-size:12px}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border)}::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
+
+/* ─── Compare Dock ─── */
+.cmp-dock{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;display:none}
+.cmp-dock.active{display:block}
+.cmp-dock::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple))}
+.cmp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.cmp-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.cmp-clear{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--pink);cursor:pointer;letter-spacing:1px;padding:4px 10px;border:1px solid var(--pink);background:transparent;transition:all .2s}
+.cmp-clear:hover{background:#ff2d7b15}
+.cmp-body{display:flex;gap:20px;align-items:flex-start}
+@media(max-width:768px){.cmp-body{flex-direction:column;align-items:center}}
+.cmp-radar{flex:0 0 280px;height:280px;position:relative}
+@media(max-width:600px){.cmp-radar{flex:0 0 220px;height:220px}}
+.cmp-cards{flex:1;display:flex;gap:12px;flex-wrap:wrap}
+.cmp-card{flex:1;min-width:180px;max-width:280px;background:var(--bg2);border:1px solid var(--border);padding:14px;position:relative}
+.cmp-card .cmp-accent{position:absolute;top:0;left:0;right:0;height:2px}
+.cmp-card .cmp-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;margin-bottom:2px}
+.cmp-card .cmp-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:10px}
+.cmp-card .cmp-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.cmp-card .cmp-stat{display:flex;justify-content:space-between;font-size:12px}
+.cmp-card .cmp-stat .cmp-label{color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px}
+.cmp-card .cmp-stat .cmp-val{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700}
+.cmp-card .cmp-remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--dim);font-size:14px;cursor:pointer;line-height:1;padding:2px 6px;transition:color .2s}
+.cmp-card .cmp-remove:hover{color:var(--pink)}
+.cmp-empty{flex:1;min-width:180px;max-width:280px;border:1px dashed var(--border);padding:30px 14px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px}
+.cmp-hint{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);text-align:center;margin-bottom:12px;letter-spacing:1px}
+.brow{cursor:pointer}
+.brow:hover{background:#ffffff06}
+.brow.selected{background:linear-gradient(90deg,#00f0ff08,transparent)}
 </style>
 </head>
 <body>
@@ -160,6 +189,19 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
     <div class="player-count" id="playerCount"></div>
+  </div>
+
+  <!-- Compare Dock -->
+  <div class="cmp-dock" id="cmpDock">
+    <div class="cmp-header">
+      <div class="cmp-title">⚔ Player Comparison</div>
+      <button class="cmp-clear" onclick="clearCompare()">CLEAR ALL</button>
+    </div>
+    <div class="cmp-hint">Click players on the leaderboard to compare (up to 3)</div>
+    <div class="cmp-body">
+      <div class="cmp-radar"><canvas id="radarCanvas" width="280" height="280"></canvas></div>
+      <div class="cmp-cards" id="cmpCards"></div>
+    </div>
   </div>
 
   <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
@@ -589,7 +631,8 @@ function render() {
     const sub = d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';
     const rank = d._rank || i+1;
     const rc2 = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
-    return '<div class="brow" style="animation-delay:'+delay+'s">'+
+    const selected = comparePlayers.includes(d.player) ? ' selected' : '';
+    return '<div class="brow'+selected+'" style="animation-delay:'+delay+'s" onclick="toggleCompare(\''+d.player.replace(/'/g,"\\'")+'\')">'+ 
       '<div class="rk '+rc2+'">'+rank+'</div>'+
       '<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+
       '<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+
@@ -597,6 +640,189 @@ function render() {
   }).join('');
 
   document.getElementById('playerCount').textContent = 'Showing '+data.length+' of '+PD.length+' players';
+}
+
+// ─── Compare Dock ───
+let comparePlayers = [];
+const RADAR_STATS = [
+  {key:'kda', label:'KDA', max:12},
+  {key:'csPerMin', label:'CS/Min', max:10},
+  {key:'goldPerMin', label:'Gold/Min', max:500},
+  {key:'damagePerMin', label:'DMG/Min', max:800},
+  {key:'visionPerMin', label:'Vision/Min', max:2},
+  {key:'winRate', label:'Win Rate', max:100},
+];
+
+const COMPARE_STATS = [
+  {key:'kda', label:'KDA', fmt:'dec'},
+  {key:'killsPerGame', label:'K/G', fmt:'dec'},
+  {key:'deathsPerGame', label:'D/G', fmt:'dec'},
+  {key:'assistsPerGame', label:'A/G', fmt:'dec'},
+  {key:'csPerMin', label:'CS/M', fmt:'dec'},
+  {key:'goldPerMin', label:'G/M', fmt:'dec'},
+  {key:'damagePerMin', label:'DMG/M', fmt:'num'},
+  {key:'visionPerMin', label:'VIS/M', fmt:'dec'},
+  {key:'winRate', label:'WR%', fmt:'pct'},
+  {key:'games', label:'Games', fmt:'int'},
+];
+
+function toggleCompare(playerName) {
+  const idx = comparePlayers.indexOf(playerName);
+  if (idx >= 0) {
+    comparePlayers.splice(idx, 1);
+  } else if (comparePlayers.length < 3) {
+    comparePlayers.push(playerName);
+  }
+  renderCompare();
+  // Update selected highlights on leaderboard rows
+  document.querySelectorAll('.brow').forEach(row => {
+    const name = row.querySelector('.pn')?.textContent;
+    row.classList.toggle('selected', comparePlayers.includes(name));
+  });
+}
+
+function clearCompare() {
+  comparePlayers = [];
+  renderCompare();
+  document.querySelectorAll('.brow.selected').forEach(r => r.classList.remove('selected'));
+}
+
+function renderCompare() {
+  const dock = document.getElementById('cmpDock');
+  const cardsDiv = document.getElementById('cmpCards');
+  
+  if (!comparePlayers.length) {
+    dock.classList.remove('active');
+    return;
+  }
+  dock.classList.add('active');
+
+  // Get player data
+  const players = comparePlayers.map(name => PD.find(p => p.player === name)).filter(Boolean);
+  if (!players.length) { dock.classList.remove('active'); return; }
+
+  // Render cards
+  let cardsHTML = '';
+  players.forEach((p, i) => {
+    const color = TC[p.team] || '#6366f1';
+    const roleMap = {TOP:'Top',JUNGLE:'Jng',MIDDLE:'Mid',BOTTOM:'ADC',UTILITY:'Sup'};
+    const role = roleMap[p.mainRole] || p.mainRole;
+    
+    let statsHTML = '';
+    COMPARE_STATS.forEach(s => {
+      // Find best value among compared players for highlighting
+      const vals = players.map(pl => pl[s.key]);
+      const best = s.key === 'deathsPerGame' ? Math.min(...vals) : Math.max(...vals);
+      const isBest = players.length > 1 && p[s.key] === best;
+      const valColor = isBest ? color : 'var(--text)';
+      
+      statsHTML += `<div class="cmp-stat"><span class="cmp-label">${s.label}</span><span class="cmp-val" style="color:${valColor}">${fmtVal(p[s.key], s.fmt)}</span></div>`;
+    });
+
+    cardsHTML += `
+      <div class="cmp-card">
+        <div class="cmp-accent" style="background:${color}"></div>
+        <button class="cmp-remove" onclick="toggleCompare('${p.player.replace(/'/g,"\\'")}')" title="Remove">✕</button>
+        <div class="cmp-name" style="color:${color}">${p.player}</div>
+        <div class="cmp-sub">${p.team} · ${role} · ${p.games}g · ${p.winRate}% WR</div>
+        <div class="cmp-stats">${statsHTML}</div>
+      </div>`;
+  });
+
+  // Add empty slots
+  for (let i = players.length; i < 3; i++) {
+    cardsHTML += '<div class="cmp-empty">Click a player<br>to add</div>';
+  }
+  cardsDiv.innerHTML = cardsHTML;
+
+  // Draw radar chart
+  drawRadar(players);
+}
+
+function drawRadar(players) {
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const R = Math.min(W, H) * 0.35;
+  const n = RADAR_STATS.length;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw grid rings
+  for (let ring = 1; ring <= 4; ring++) {
+    const r = R * ring / 4;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#1a1a3060';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw axis lines and labels
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+    const x = cx + R * Math.cos(angle);
+    const y = cy + R * Math.sin(angle);
+    
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#1a1a3080';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Labels
+    const lx = cx + (R + 18) * Math.cos(angle);
+    const ly = cy + (R + 18) * Math.sin(angle);
+    ctx.font = '9px "Share Tech Mono", monospace';
+    ctx.fillStyle = '#4a5568';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(RADAR_STATS[i].label, lx, ly);
+  }
+
+  // Draw player polygons
+  players.forEach((p, pi) => {
+    const color = TC[p.team] || '#6366f1';
+    
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const si = i % n;
+      const stat = RADAR_STATS[si];
+      const val = Math.min(p[stat.key] / stat.max, 1);
+      const r = val * R;
+      const angle = (Math.PI * 2 * si / n) - Math.PI/2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color + '20';
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw dots at vertices
+    for (let i = 0; i < n; i++) {
+      const stat = RADAR_STATS[i];
+      const val = Math.min(p[stat.key] / stat.max, 1);
+      const r = val * R;
+      const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI*2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  });
 }
 
 // ─── Go! ───
