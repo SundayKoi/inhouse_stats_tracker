@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FPL Season 3 — Stats Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#06060c;--bg2:#0c0c16;--bg3:#12121e;--border:#1a1a30;--cyan:#00f0ff;--cyan-dim:#00f0ff25;--cyan-glow:#00f0ff40;--pink:#ff2d7b;--pink-glow:#ff2d7b40;--purple:#a855f7;--purple-glow:#a855f740;--green:#22c55e;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;--text:#e2e8f0;--dim:#4a5568}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -372,6 +373,62 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .typing{overflow:hidden;white-space:nowrap;border-right:2px solid var(--cyan);animation:typing 1.5s steps(22,end),blinkCaret .5s step-end infinite}
 @keyframes typing{from{width:0}to{width:100%}}
 @keyframes blinkCaret{50%{border-color:transparent}}
+
+/* ─── CHAMPION PORTRAITS ─── */
+.champ-icon{width:24px;height:24px;border-radius:4px;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--border);background:var(--bg2);transition:all .3s}
+.champ-icon:hover{transform:scale(1.3);border-color:var(--cyan);box-shadow:0 0 10px var(--cyan-dim);z-index:10;position:relative}
+.champ-icon-lg{width:36px;height:36px;border-radius:5px;object-fit:cover;border:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.champ-icon-sm{width:18px;height:18px;border-radius:3px;object-fit:cover;vertical-align:middle;margin-right:3px;border:1px solid var(--border);background:var(--bg2)}
+.champ-icon-xl{width:48px;height:48px;border-radius:6px;object-fit:cover;border:2px solid var(--border);background:var(--bg2);transition:all .3s}
+
+/* Champion pool grid with portraits */
+.prof-champ-icon{display:flex;align-items:center;gap:10px}
+.prof-champ{gap:8px}
+
+/* Leaderboard row champion icon */
+.brow .champ-mini{width:22px;height:22px;border-radius:3px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;margin-right:4px;vertical-align:middle}
+
+/* ─── SVG RANK BADGES ─── */
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;position:relative}
+.rank-badge svg{position:absolute;inset:0;width:100%;height:100%}
+.rank-badge .rank-num{position:relative;z-index:1;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;margin-top:1px}
+
+/* ─── PLAYER HOVER PREVIEW ─── */
+.player-preview{position:fixed;z-index:300;background:var(--bg);border:1px solid var(--border);padding:14px;min-width:240px;max-width:300px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.player-preview.visible{opacity:1}
+.player-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.player-preview .pp-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.player-preview .pp-champs{display:flex;gap:3px;margin-bottom:8px}
+.player-preview .pp-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700}
+.player-preview .pp-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
+.player-preview .pp-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.player-preview .pp-stat{text-align:center;background:var(--bg2);padding:6px 4px}
+.player-preview .pp-stat-val{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700}
+.player-preview .pp-stat-label{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);letter-spacing:1px}
+
+/* ─── PLAYER TRADING CARD ─── */
+.trading-card-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:350;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.trading-card-overlay.active{display:flex}
+.trading-card{width:320px;background:var(--bg);border:2px solid var(--border);position:relative;overflow:hidden;padding:0;box-shadow:0 0 60px rgba(0,0,0,.8)}
+.trading-card .tc-top{position:relative;padding:20px 20px 16px;text-align:center;overflow:hidden}
+.trading-card .tc-top::before{content:'';position:absolute;inset:0;opacity:.08}
+.trading-card .tc-glow{position:absolute;top:0;left:0;right:0;height:4px;animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.trading-card .tc-team-bg{position:absolute;inset:0;opacity:.06}
+.trading-card .tc-role-badge{font-size:28px;margin-bottom:4px;position:relative}
+.trading-card .tc-player-name{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;position:relative;letter-spacing:1px}
+.trading-card .tc-team-name{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;position:relative;opacity:.6;margin-top:2px}
+.trading-card .tc-rating{position:absolute;top:16px;right:16px;font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;opacity:.9}
+.trading-card .tc-mid{padding:0 20px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.trading-card .tc-stat{text-align:center;padding:8px 4px;background:var(--bg2);border:1px solid var(--border)}
+.trading-card .tc-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700}
+.trading-card .tc-stat-label{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+.trading-card .tc-champs{display:flex;justify-content:center;gap:4px;padding:10px 20px;border-top:1px solid var(--border)}
+.trading-card .tc-bottom{padding:8px 20px 12px;text-align:center;border-top:1px solid var(--border)}
+.trading-card .tc-bottom-text{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:2px}
+.trading-card .tc-close{position:absolute;top:8px;left:12px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;z-index:1;transition:all .2s}
+.trading-card .tc-close:hover{color:var(--pink)}
+.trading-card .tc-save{position:absolute;top:8px;left:36px;background:none;border:1px solid var(--dim);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 8px;cursor:pointer;z-index:1;transition:all .2s;letter-spacing:1px}
+.trading-card .tc-save:hover{border-color:var(--cyan);color:var(--cyan)}
 </style>
 </head>
 <body>
@@ -437,6 +494,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
 </div>
 <button class="btt" id="bttBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">▲</button>
+<div class="player-preview" id="playerPreview"></div>
+<div class="trading-card-overlay" id="tradingCardOverlay"></div>
 <div class="toast" id="toast"></div>
 <script>
 // PARTICLE SYSTEM
@@ -485,7 +544,7 @@ async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROS
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
-function renderLeaderboard(){const rows=getFilteredRows();const res=aggregate(rows,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';const pt=document.getElementById('teamSel').value;const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});if(ts.includes(pt))tS.value=pt;else tS.value='All';document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;if(!PD.length){document.getElementById('bars').innerHTML='<div class="nodata">NO DATA</div>';return}const sk=document.getElementById('statSel').value;const sc=STATS.find(s=>s.key===sk);const team=document.getElementById('teamSel').value;const mg=parseInt(document.getElementById('minGSel').value);const cr=[...document.querySelectorAll('#roleChecks input:checked')].map(c=>c.value);let data=PD.filter(p=>p.games>=mg).filter(p=>cr.includes(p.mainRole));if(team!=='All')data=data.filter(p=>p.team===team);const inv=sc&&sc.invert;data.sort((a,b)=>inv?a[sk]-b[sk]:b[sk]-a[sk]);data.forEach((d,i)=>d._rank=i+1);const srch=document.getElementById('searchBar').value.toLowerCase();if(srch)data=data.filter(p=>p.player.toLowerCase().includes(srch));else{if(curType==='top10')data=data.slice(0,10);else if(curType==='bot10'){data=data.reverse().slice(0,10)}}const ar={top10:'▲ TOP 10',bot10:'▼ BOTTOM 10',all:'ALL PLAYERS'};document.getElementById('chartTitle').textContent=(sc?sc.name:sk)+' — '+ar[curType];const fl=[];if(team!=='All')fl.push(team.toUpperCase());if(cr.length<5)fl.push(cr.map(r=>ROLE_MAP[r]||r).join(', '));if(mg>1)fl.push(mg+'+ GAMES');const sl=document.getElementById('seasonSel').value==='All'?'ALL SEASONS':document.getElementById('seasonSel').value.toUpperCase();document.getElementById('chartSub').textContent=(fl.length?fl.join(' // ')+' // ':'')+sl;const bd=document.getElementById('bars');if(!data.length){bd.innerHTML='<div class="nodata">NO PLAYERS MATCH FILTERS</div>';document.getElementById('playerCount').textContent='';return}const mx=Math.max(...data.map(d=>Math.abs(d[sk])));bd.innerHTML=data.map((d,i)=>{const pct=(Math.abs(d[sk])/mx*100).toFixed(1);const color=TC[d.team]||'#6366f1';const delay=Math.min(i*0.03,1.5);const role=ROLE_MAP[d.mainRole]||d.mainRole;const sub=d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';const rank=d._rank||i+1;const rc2=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';const sel=comparePlayers.includes(d.player)?' selected':'';return'<div class="brow'+sel+'" style="animation-delay:'+delay+'s" onclick="toggleCompare(\''+d.player.replace(/'/g,"\\'")+'\')" ondblclick="event.stopPropagation();openProfile(\''+d.player.replace(/'/g,"\\'")+'\')">'+'<div class="rk '+rc2+'">'+rank+'</div>'+'<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+'<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+'<div class="val" style="color:'+color+'">'+fmtVal(d[sk],sc?sc.fmt:'dec')+'</div></div>'}).join('');document.getElementById('playerCount').textContent='Showing '+data.length+' of '+PD.length+' players · Double-click for player profile'}
+function renderLeaderboard(){const rows=getFilteredRows();const res=aggregate(rows,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';const pt=document.getElementById('teamSel').value;const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});if(ts.includes(pt))tS.value=pt;else tS.value='All';document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;if(!PD.length){document.getElementById('bars').innerHTML='<div class="nodata">NO DATA</div>';return}const sk=document.getElementById('statSel').value;const sc=STATS.find(s=>s.key===sk);const team=document.getElementById('teamSel').value;const mg=parseInt(document.getElementById('minGSel').value);const cr=[...document.querySelectorAll('#roleChecks input:checked')].map(c=>c.value);let data=PD.filter(p=>p.games>=mg).filter(p=>cr.includes(p.mainRole));if(team!=='All')data=data.filter(p=>p.team===team);const inv=sc&&sc.invert;data.sort((a,b)=>inv?a[sk]-b[sk]:b[sk]-a[sk]);data.forEach((d,i)=>d._rank=i+1);const srch=document.getElementById('searchBar').value.toLowerCase();if(srch)data=data.filter(p=>p.player.toLowerCase().includes(srch));else{if(curType==='top10')data=data.slice(0,10);else if(curType==='bot10'){data=data.reverse().slice(0,10)}}const ar={top10:'▲ TOP 10',bot10:'▼ BOTTOM 10',all:'ALL PLAYERS'};document.getElementById('chartTitle').textContent=(sc?sc.name:sk)+' — '+ar[curType];const fl=[];if(team!=='All')fl.push(team.toUpperCase());if(cr.length<5)fl.push(cr.map(r=>ROLE_MAP[r]||r).join(', '));if(mg>1)fl.push(mg+'+ GAMES');const sl=document.getElementById('seasonSel').value==='All'?'ALL SEASONS':document.getElementById('seasonSel').value.toUpperCase();document.getElementById('chartSub').textContent=(fl.length?fl.join(' // ')+' // ':'')+sl;const bd=document.getElementById('bars');if(!data.length){bd.innerHTML='<div class="nodata">NO PLAYERS MATCH FILTERS</div>';document.getElementById('playerCount').textContent='';return}const mx=Math.max(...data.map(d=>Math.abs(d[sk])));bd.innerHTML=data.map((d,i)=>{const pct=(Math.abs(d[sk])/mx*100).toFixed(1);const color=TC[d.team]||'#6366f1';const delay=Math.min(i*0.03,1.5);const role=ROLE_MAP[d.mainRole]||d.mainRole;const sub=d.team+' · '+role+' · '+d.games+'g · '+d.winRate+'% WR';const rank=d._rank||i+1;const rc2=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';const sel=comparePlayers.includes(d.player)?' selected':'';return'<div class="brow'+sel+'" style="animation-delay:'+delay+'s" onclick="toggleCompare(\''+d.player.replace(/'/g,"\\'")+'\')" ondblclick="event.stopPropagation();openProfile(\''+d.player.replace(/'/g,"\\'")+'\')">'+'<div class="rk '+rc2+'">'+rank+'</div>'+'<div class="pi"><div class="pn">'+d.player+'</div><div class="tn">'+sub+'</div></div>'+'<div class="bc"><div class="bf" style="width:'+pct+'%;background:'+color+';color:'+color+'"></div></div>'+'<div class="val" style="color:'+color+'">'+fmtVal(d[sk],sc?sc.fmt:'dec')+'</div></div>'}).join('');document.getElementById('playerCount').textContent='Showing '+data.length+' of '+PD.length+' players · Double-click for profile · Right-click for player card'}
 
 // COMPARE
 const RADAR_STATS=[{key:'kda',label:'KDA',max:12},{key:'csPerMin',label:'CS/Min',max:10},{key:'goldPerMin',label:'Gold/Min',max:500},{key:'damagePerMin',label:'DMG/Min',max:800},{key:'visionPerMin',label:'Vision/Min',max:2},{key:'winRate',label:'Win Rate',max:100}];
@@ -695,7 +754,7 @@ function renderBestGameCard(p,color){
 // ════════════════════════════════════════
 // UI SOUND EFFECTS (optional toggle)
 // ════════════════════════════════════════
-let soundEnabled=true;
+let soundEnabled=false;
 const audioCtx=typeof AudioContext!=='undefined'?new AudioContext():null;
 function playTick(){
   if(!soundEnabled||!audioCtx)return;
@@ -798,6 +857,306 @@ openProfile=function(pn){
 // Patch onGlobalFilter to rebuild ticker
 const _origOnGlobalFilter=onGlobalFilter;
 onGlobalFilter=function(){_origOnGlobalFilter();buildTicker();animateMetaNumbers()};
+
+// ════════════════════════════════════════
+// DATA DRAGON CHAMPION PORTRAITS
+// ════════════════════════════════════════
+const DD_VERSION='16.4.1';
+let DD_BASE=`https://ddragon.leagueoflegends.com/cdn/${DD_VERSION}/img/champion/`;
+
+// Auto-fetch latest DDragon version so newest champs always have icons
+(async function(){try{
+  const r=await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+  const v=await r.json();
+  if(v&&v[0]){DD_BASE=`https://ddragon.leagueoflegends.com/cdn/${v[0]}/img/champion/`;console.log('DDragon version:',v[0])}
+}catch(e){console.log('Using fallback DDragon version',DD_VERSION)}})();
+
+// Champion name -> DDragon filename mapping (handles special cases)
+const CHAMP_KEY_OVERRIDES={
+  "Aurelion Sol":"AurelionSol","Bel'Veth":"Belveth","Cho'Gath":"Chogath",
+  "Dr. Mundo":"DrMundo","Hwei":"Hwei","Jarvan IV":"JarvanIV",
+  "K'Sante":"KSante","Kai'Sa":"Kaisa","Kha'Zix":"Khazix",
+  "Kog'Maw":"KogMaw","Lee Sin":"LeeSin",
+  "Master Yi":"MasterYi","Miss Fortune":"MissFortune","Nunu & Willump":"Nunu",
+  "Rek'Sai":"RekSai","Renata Glasc":"Renata","Tahm Kench":"TahmKench",
+  "Twisted Fate":"TwistedFate","Vel'Koz":"Velkoz","Wukong":"MonkeyKing",
+  "Xin Zhao":"XinZhao","Zaahen":"Zaahen","Yunara":"Yunara",
+  "Bel Veth":"Belveth","Kog Maw":"KogMaw","Rek Sai":"RekSai",
+  "Cho Gath":"Chogath","Kha Zix":"Khazix","Kai Sa":"Kaisa",
+  "K Sante":"KSante","Vel Koz":"Velkoz"
+};
+
+function getChampImgUrl(champName){
+  if(!champName||champName==='Unknown')return'';
+  const override=CHAMP_KEY_OVERRIDES[champName];
+  if(override)return DD_BASE+override+'.png';
+  // Default: remove spaces and special chars
+  const key=champName.replace(/[' .]/g,'');
+  return DD_BASE+key+'.png';
+}
+
+function champImg(name,cls){
+  const url=getChampImgUrl(name);
+  if(!url)return'';
+  return`<img src="${url}" alt="${name}" class="${cls||'champ-icon'}" loading="lazy" onerror="this.style.display='none'">`;
+}
+
+// ════════════════════════════════════════
+// SVG RANK BADGES (crown for 1st, medals for 2nd/3rd)
+// ════════════════════════════════════════
+function rankBadge(rank,color){
+  if(rank===1)return`<span class="rk r1" style="font-size:18px">🥇</span>`;
+  if(rank===2)return`<span class="rk r2" style="font-size:18px">🥈</span>`;
+  if(rank===3)return`<span class="rk r3" style="font-size:18px">🥉</span>`;
+  return`<span class="rk">${rank}</span>`;
+}
+
+// ════════════════════════════════════════
+// PLAYER HOVER PREVIEW
+// ════════════════════════════════════════
+const preview=document.getElementById('playerPreview');
+let previewTimeout=null;
+
+function showPreview(playerName,e){
+  const p=PD.find(x=>x.player===playerName);
+  if(!p)return;
+  clearTimeout(previewTimeout);
+  const c=TC[p.team]||'#6366f1';
+  const rl=ROLE_MAP[p.mainRole]||p.mainRole;
+  const icon=ROLE_ICONS[p.mainRole]||'';
+  // Top 3 champions
+  const cm={};(p.champData||[]).forEach(x=>{cm[x.champ]=(cm[x.champ]||0)+1});
+  const top3=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const champsHTML=top3.map(([ch])=>champImg(ch,'champ-icon-sm')).join('');
+
+  preview.innerHTML=`<div class="pp-header"><div>${icon} <span class="pp-name" style="color:${c}">${p.player}</span><div class="pp-sub">${p.team} · ${rl} · ${p.games}G · ${p.wins}W ${p.losses}L</div></div></div><div class="pp-champs">${champsHTML}</div><div class="pp-stats"><div class="pp-stat"><div class="pp-stat-val" style="color:${c}">${p.kda}</div><div class="pp-stat-label">KDA</div></div><div class="pp-stat"><div class="pp-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':c}">${p.winRate}%</div><div class="pp-stat-label">WIN RATE</div></div><div class="pp-stat"><div class="pp-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="pp-stat-label">DMG/MIN</div></div><div class="pp-stat"><div class="pp-stat-val" style="color:${c}">${p.csPerMin}</div><div class="pp-stat-label">CS/MIN</div></div><div class="pp-stat"><div class="pp-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="pp-stat-label">VIS/MIN</div></div><div class="pp-stat"><div class="pp-stat-val" style="color:${c}">${p.killsPerGame}/${p.deathsPerGame}/${p.assistsPerGame}</div><div class="pp-stat-label">K/D/A PER G</div></div></div>`;
+  // Position
+  const x=Math.min(e.clientX+15,innerWidth-310);
+  const y=Math.min(e.clientY+15,innerHeight-280);
+  preview.style.left=x+'px';preview.style.top=y+'px';
+  preview.classList.add('visible');
+}
+
+function hidePreview(){previewTimeout=setTimeout(()=>{preview.classList.remove('visible')},100)}
+
+function attachPreviewListeners(){
+  document.querySelectorAll('[data-player-hover]').forEach(el=>{
+    if(el.dataset.previewBound)return;el.dataset.previewBound='1';
+    el.addEventListener('mouseenter',e=>showPreview(el.dataset.playerHover,e));
+    el.addEventListener('mousemove',e=>{
+      if(preview.classList.contains('visible')){
+        const x=Math.min(e.clientX+15,innerWidth-310);
+        const y=Math.min(e.clientY+15,innerHeight-280);
+        preview.style.left=x+'px';preview.style.top=y+'px';
+      }
+    });
+    el.addEventListener('mouseleave',hidePreview);
+  });
+}
+
+// ════════════════════════════════════════
+// PLAYER TRADING CARD
+// ════════════════════════════════════════
+function openTradingCard(playerName){
+  const p=PD.find(x=>x.player===playerName);if(!p)return;
+  const c=TC[p.team]||'#6366f1';
+  const rl=ROLE_MAP[p.mainRole]||p.mainRole;
+  const icon=ROLE_ICONS[p.mainRole]||'✦';
+  const el=PD.filter(x=>x.games>=3);el.forEach(x=>x.powerScore=calcPowerScore(x,el));
+  const ps=p.powerScore||calcPowerScore(p,el);
+  // Top 5 champs
+  const cm={};(p.champData||[]).forEach(x=>{cm[x.champ]=(cm[x.champ]||0)+1});
+  const top5=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  const overlay=document.getElementById('tradingCardOverlay');
+  overlay.innerHTML=`<div class="trading-card"><div class="tc-glow" style="background:linear-gradient(90deg,${c},var(--cyan),${c})"></div><button class="tc-close" onclick="closeTradingCard()">✕</button><button class="tc-save" onclick="saveTradingCard()">📷 SAVE</button><div class="tc-top"><div class="tc-team-bg" style="background:${c}"></div><div class="tc-role-badge">${icon}</div><div class="tc-player-name" style="color:${c}">${p.player}</div><div class="tc-team-name">${p.team} · ${rl}</div><div class="tc-rating" style="color:${c}">${ps}</div></div><div class="tc-mid"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.kda}</div><div class="tc-stat-label">KDA</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':'var(--text)'}">${p.winRate}%</div><div class="tc-stat-label">Win Rate</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.games}</div><div class="tc-stat-label">Games</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.killsPerGame}</div><div class="tc-stat-label">K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.deathsPerGame}</div><div class="tc-stat-label">D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.assistsPerGame}</div><div class="tc-stat-label">A/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.csPerMin}</div><div class="tc-stat-label">CS/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="tc-stat-label">DMG/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="tc-stat-label">VIS/Min</div></div></div><div class="tc-champs">${top5.map(([ch])=>champImg(ch,'champ-icon-lg')).join('')}</div><div class="tc-bottom"><div class="tc-bottom-text">FPL SEASON 3 · FRANCHISE PREMIER LEAGUE</div></div></div>`;
+  overlay.classList.add('active');
+  fireConfetti(c);playSuccess();
+}
+
+function closeTradingCard(){document.getElementById('tradingCardOverlay').classList.remove('active')}
+document.getElementById('tradingCardOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('tradingCardOverlay'))closeTradingCard()});
+
+function saveTradingCard(){
+  const card=document.querySelector('.trading-card');
+  if(!card)return;
+  const btn=card.querySelector('.tc-save');
+  const closeBtn=card.querySelector('.tc-close');
+  if(btn)btn.style.display='none';
+  if(closeBtn)closeBtn.style.display='none';
+  showToast('Generating image...');
+  html2canvas(card,{backgroundColor:'#06060c',scale:2,useCORS:true,allowTaint:true,logging:false}).then(canvas=>{
+    const link=document.createElement('a');
+    const name=card.querySelector('.tc-player-name')?.textContent||'player';
+    link.download='FPL_Card_'+name.replace(/\s+/g,'_')+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    showToast('Card saved as PNG!');
+  }).catch(e=>{
+    console.error('Save failed:',e);
+    showToast('Save failed — try screenshot instead');
+  }).finally(()=>{
+    if(btn)btn.style.display='';
+    if(closeBtn)closeBtn.style.display='';
+  });
+}
+
+// ════════════════════════════════════════
+// PATCH FUNCTIONS TO ADD CHAMPION PORTRAITS
+// ════════════════════════════════════════
+
+// Patch renderLeaderboard to add champion icons + hover preview + rank badges
+const _origRenderLB2=renderLeaderboard;
+renderLeaderboard=function(){
+  _origRenderLB2();
+  // Add most-played champion icon to each row
+  document.querySelectorAll('.brow').forEach(row=>{
+    const pn=row.querySelector('.pn');
+    if(!pn||pn.dataset.champed)return;
+    pn.dataset.champed='1';
+    const name=pn.textContent;
+    const p=PD.find(x=>x.player===name);
+    if(!p||!p.champData||!p.champData.length)return;
+    // Find most played champ
+    const cm={};p.champData.forEach(x=>{cm[x.champ]=(cm[x.champ]||0)+1});
+    const top=Object.entries(cm).sort((a,b)=>b[1]-a[1])[0];
+    if(top){
+      const img=document.createElement('img');
+      img.src=getChampImgUrl(top[0]);img.className='champ-mini';img.alt=top[0];
+      img.loading='lazy';img.onerror=function(){this.style.display='none'};
+      pn.insertBefore(img,pn.firstChild);
+    }
+    // Add hover preview data attribute
+    pn.dataset.playerHover=name;
+    // Make row right-clickable for trading card
+    row.addEventListener('contextmenu',e=>{e.preventDefault();openTradingCard(name)});
+  });
+  // Replace rank numbers with SVG badges for top 3
+  document.querySelectorAll('.brow .rk').forEach(el=>{
+    if(el.dataset.badged)return;el.dataset.badged='1';
+    const rank=parseInt(el.textContent);
+    if(rank>=1&&rank<=3){
+      const color=rank===1?'var(--gold)':rank===2?'var(--silver)':'var(--bronze)';
+      el.innerHTML=rankBadge(rank,color);
+      el.classList.remove('r1','r2','r3');
+    }
+  });
+  attachPreviewListeners();
+};
+
+// Patch renderChampions to add champion icons
+const _origRenderChamps2=renderChampions;
+renderChampions=function(){
+  _origRenderChamps2();
+  document.querySelectorAll('.champ-table .champ-name').forEach(td=>{
+    if(td.dataset.iconed)return;td.dataset.iconed='1';
+    const name=td.textContent.trim();
+    td.innerHTML=champImg(name,'champ-icon')+name;
+  });
+};
+
+// Patch renderRecords to add champion icons
+const _origRenderRecords2=renderRecords;
+renderRecords=function(){
+  _origRenderRecords2();
+  document.querySelectorAll('.record-card .rec-detail').forEach(el=>{
+    if(el.dataset.iconed)return;el.dataset.iconed='1';
+    const text=el.textContent;
+    const champName=text.split(' · ')[0].trim();
+    if(champName)el.innerHTML=champImg(champName,'champ-icon-sm')+text;
+  });
+  // Add hover preview to record player names
+  document.querySelectorAll('.record-card .rec-player').forEach(el=>{
+    if(el.dataset.previewBound)return;
+    el.dataset.playerHover=el.textContent.trim();
+  });
+  setTimeout(()=>{initHoloShimmer();attachPreviewListeners()},50);
+};
+
+// Patch openProfile to add champion portraits in champion pool + trading card button
+const _origOpenProfile2=openProfile;
+openProfile=function(pn){
+  _origOpenProfile2(pn);
+  // Add champion icons to champion pool
+  document.querySelectorAll('.prof-champ').forEach(el=>{
+    if(el.dataset.iconed)return;el.dataset.iconed='1';
+    const nameEl=el.querySelector('.prof-champ-name');
+    if(!nameEl)return;
+    const name=nameEl.textContent.trim();
+    const img=document.createElement('img');
+    img.src=getChampImgUrl(name);img.className='champ-icon-lg';img.alt=name;
+    img.loading='lazy';img.onerror=function(){this.style.display='none'};
+    el.insertBefore(img,el.firstChild);
+    el.style.gap='10px';
+  });
+  // Add trading card button to profile header
+  const header=document.querySelector('.prof-header');
+  if(header&&!header.dataset.tcBtn){
+    header.dataset.tcBtn='1';
+    const btn=document.createElement('button');
+    btn.className='prof-share';btn.innerHTML='<span>🃏 CARD</span>';
+    btn.style.marginLeft='8px';
+    btn.onclick=()=>openTradingCard(pn);
+    header.querySelector('div:last-child')?.appendChild(btn);
+  }
+};
+
+// Patch renderMVP to add champion icons to weekly cards
+const _origRenderMVP2=renderMVP;
+renderMVP=function(){
+  _origRenderMVP2();
+  // Add hover preview to MVP names
+  document.querySelectorAll('.mvp-crown .mvp-name, .mvp-week-card .mwc-name').forEach(el=>{
+    const name=el.textContent.trim();
+    el.dataset.playerHover=name;
+  });
+  attachPreviewListeners();
+};
+
+// Patch renderTeams to add hover previews
+const _origRenderTeams2=renderTeams;
+renderTeams=function(){
+  _origRenderTeams2();
+  document.querySelectorAll('.team-card .tc-roster span').forEach(el=>{
+    el.dataset.playerHover=el.textContent.trim();
+  });
+  attachPreviewListeners();
+};
+
+// Patch renderPower to add hover previews + rank badges + champ icons
+const _origRenderPower2=renderPower;
+renderPower=function(){
+  _origRenderPower2();
+  document.querySelectorAll('.pr-row .pr-name').forEach(el=>{
+    el.dataset.playerHover=el.textContent.trim();
+  });
+  // Add champion icon to power ranking rows
+  document.querySelectorAll('.pr-row .pr-info').forEach(el=>{
+    if(el.dataset.champed)return;el.dataset.champed='1';
+    const nameEl=el.querySelector('.pr-name');
+    if(!nameEl)return;
+    const name=nameEl.textContent.trim();
+    const p=PD.find(x=>x.player===name);
+    if(!p||!p.champData||!p.champData.length)return;
+    const cm={};p.champData.forEach(x=>{cm[x.champ]=(cm[x.champ]||0)+1});
+    const top=Object.entries(cm).sort((a,b)=>b[1]-a[1])[0];
+    if(top){
+      const img=document.createElement('img');
+      img.src=getChampImgUrl(top[0]);img.className='champ-icon-sm';img.alt=top[0];
+      img.loading='lazy';img.onerror=function(){this.style.display='none'};
+      nameEl.insertBefore(img,nameEl.firstChild);
+    }
+  });
+  // Replace top 3 rank numbers with badges
+  document.querySelectorAll('.pr-row .pr-rank').forEach((el,i)=>{
+    if(el.dataset.badged)return;el.dataset.badged='1';
+    if(i<3){
+      const color=i===0?'var(--gold)':i===1?'var(--silver)':'var(--bronze)';
+      el.innerHTML=rankBadge(i+1,color);
+    }
+  });
+  attachPreviewListeners();
+};
 
 // GO
 loadData();
