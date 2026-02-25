@@ -695,7 +695,7 @@ function renderBestGameCard(p,color){
 // ════════════════════════════════════════
 // UI SOUND EFFECTS (optional toggle)
 // ════════════════════════════════════════
-let soundEnabled=false;
+let soundEnabled=true;
 const audioCtx=typeof AudioContext!=='undefined'?new AudioContext():null;
 function playTick(){
   if(!soundEnabled||!audioCtx)return;
