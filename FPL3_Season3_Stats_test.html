@@ -296,6 +296,82 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .prof-share span{position:relative;z-index:1}
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
+
+/* ─── HEX GRID OVERLAY ─── */
+.hex-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03}
+.hex-grid svg{width:100%;height:100%}
+
+/* ─── NOISE/GRAIN TEXTURE ─── */
+.noise-overlay{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:128px 128px}
+
+/* ─── GLITCH FLICKER ─── */
+.glitch-flicker{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:0;background:linear-gradient(0deg,transparent 40%,rgba(0,240,255,.03) 40.5%,transparent 41%);animation:glitchFlick 8s step-end infinite}
+@keyframes glitchFlick{0%,96%,100%{opacity:0}96.5%{opacity:1;transform:translateY(-5px)}97%{opacity:1;transform:translateY(3px)}97.5%{opacity:0}}
+
+/* ─── ESPN-STYLE STAT TICKER ─── */
+.stat-ticker{width:100%;overflow:hidden;background:linear-gradient(90deg,var(--bg2),var(--bg3),var(--bg2));border:1px solid var(--border);margin:0 0 8px;padding:0;position:relative;height:28px}
+.stat-ticker::before{content:'';position:absolute;left:0;top:0;bottom:0;width:40px;background:linear-gradient(90deg,var(--bg2),transparent);z-index:2}
+.stat-ticker::after{content:'';position:absolute;right:0;top:0;bottom:0;width:40px;background:linear-gradient(90deg,transparent,var(--bg2));z-index:2}
+.ticker-track{display:flex;gap:30px;animation:tickerScroll 40s linear infinite;white-space:nowrap;align-items:center;height:100%;padding:0 10px}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--dim);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ticker-item .ti-label{color:var(--dim)}
+.ticker-item .ti-val{color:var(--cyan);font-weight:700}
+.ticker-item .ti-player{color:var(--text)}
+.ticker-sep{color:var(--border);font-size:8px;flex-shrink:0}
+
+/* ─── LIVE INDICATOR ─── */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:livePulse 2s ease-in-out infinite;box-shadow:0 0 6px var(--green)}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.4;box-shadow:0 0 2px var(--green)}}
+
+/* ─── BAR HOVER EXPAND ─── */
+.brow:hover .bc{height:32px;transition:height .2s}
+.bc{transition:height .2s}
+.brow:hover .bf{box-shadow:0 0 12px currentColor}
+
+/* ─── HOLOGRAPHIC SHIMMER ON RECORD CARDS ─── */
+.record-card{--mx:50%;--my:50%}
+.record-card .holo-sheen{position:absolute;inset:0;background:linear-gradient(135deg,transparent 20%,rgba(0,240,255,.04) 40%,rgba(255,45,123,.04) 60%,transparent 80%);opacity:0;transition:opacity .3s;pointer-events:none;mix-blend-mode:screen}
+.record-card:hover .holo-sheen{opacity:1}
+
+/* ─── GLASSMORPHISM ON TEAM CARDS ─── */
+.team-card:hover{background:rgba(12,12,22,.7);backdrop-filter:blur(12px);border-color:rgba(0,240,255,.15)}
+
+/* ─── #1 ROW PULSE ─── */
+.brow-hero{position:relative}
+.brow-hero::before{content:'';position:absolute;inset:-2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;animation:heroPulse 3s ease-in-out infinite;pointer-events:none;z-index:-1}
+@keyframes heroPulse{0%,100%{opacity:0}50%{opacity:.08}}
+
+/* ─── COUNTING ANIMATION ─── */
+.count-up{display:inline-block}
+
+/* ─── ROLE ICON BADGES ─── */
+.role-icon{display:inline-block;width:16px;height:16px;text-align:center;font-size:11px;line-height:16px;margin-right:3px;vertical-align:middle;opacity:.7}
+
+/* ─── CONFETTI CANVAS ─── */
+#confettiCanvas{position:fixed;inset:0;z-index:250;pointer-events:none}
+
+/* ─── SPARKLINE ─── */
+.sparkline{display:inline-block;vertical-align:middle;margin-left:6px}
+
+/* ─── PROFILE STAGGER ─── */
+.prof-stat-anim{opacity:0;transform:translateY(8px);animation:statReveal .3s ease forwards}
+@keyframes statReveal{to{opacity:1;transform:translateY(0)}}
+
+/* ─── BEST GAME CARD ─── */
+.best-game{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);padding:14px;position:relative;overflow:hidden;margin-top:10px}
+.best-game::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--cyan),var(--gold));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.best-game .bg-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.best-game .bg-stats{display:flex;gap:16px;flex-wrap:wrap}
+.best-game .bg-stat{text-align:center}
+.best-game .bg-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700}
+.best-game .bg-stat-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px}
+
+/* ─── TYPING EFFECT ON LOAD ─── */
+.typing{overflow:hidden;white-space:nowrap;border-right:2px solid var(--cyan);animation:typing 1.5s steps(22,end),blinkCaret .5s step-end infinite}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blinkCaret{50%{border-color:transparent}}
 </style>
 </head>
 <body>
@@ -303,6 +379,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <div class="ambient-orb o2"></div>
 <div class="ambient-orb o3"></div>
 <canvas id="particleCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+<div class="noise-overlay"></div>
+<div class="glitch-flicker"></div>
+<div class="hex-grid"><svg width="100%" height="100%"><defs><pattern id="hexPattern" width="56" height="49" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)"><path d="M28,0 L56,14 L56,35 L28,49 L0,35 L0,14 Z" fill="none" stroke="rgba(0,240,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#hexPattern)"/></svg></div>
 <div class="wrap">
   <header class="hdr">
     <div class="badge">Season 3 // Official Stats</div>
@@ -315,9 +395,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="meta-item"><span id="mTeams">12</span> Teams</div>
       <div class="meta-item"><span id="mNights">—</span> Game Nights</div>
       <div class="meta-item" id="mDates">Loading…</div>
-      <div class="meta-item">Updated: <span id="mUpdated">—</span></div>
+      <div class="meta-item">Updated: <span class="live-dot"></span><span id="mUpdated">—</span></div>
     </div>
   </header>
+  <div class="stat-ticker" id="statTicker" style="display:none"><div class="ticker-track" id="tickerTrack"></div></div>
   <div class="gfilters">
     <div class="ctrl"><label>Season</label><select id="seasonSel" onchange="onGlobalFilter()"><option value="All">All Seasons</option><option value="S3" selected>Season 3</option><option value="S2">Season 2</option><option value="S1">Season 1</option></select></div>
     <div class="ctrl"><label>Phase</label><select id="phaseSel" onchange="onGlobalFilter()"><option value="All">All</option><option value="Regular">Regular</option><option value="Playoffs">Playoffs</option></select></div>
@@ -330,7 +411,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <button class="tab-btn" data-tab="mvp">MVP</button>
     <button class="tab-btn" data-tab="power">Power Rankings</button>
   </nav>
-  <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p>LOADING MATCH DATA...</p><div class="load-bar"></div></div>
+  <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
   <div class="tab-page active" id="pg-leaderboard" style="display:none">
     <div class="ctrls" id="ctrlsWrap">
       <div class="ctrl"><label>Stat</label><select id="statSel" onchange="renderLeaderboard()"></select></div>
@@ -460,6 +541,263 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 
 // SCROLL
 window.addEventListener('scroll',()=>{document.getElementById('bttBtn').classList.toggle('show',scrollY>400)});
+
+// ════════════════════════════════════════
+// MOUSE-REACTIVE PARTICLES
+// ════════════════════════════════════════
+(function(){let mx=0,my=0;document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+// Modify existing particle update to drift toward mouse
+const origUpdate=window._particleUpdate;
+setInterval(()=>{const cv=document.getElementById('particleCanvas');if(!cv)return;
+document.querySelectorAll&&document.querySelectorAll('.brow').length},5000)})();
+
+// ════════════════════════════════════════
+// STAT TICKER (ESPN-style scrolling bar)
+// ════════════════════════════════════════
+function buildTicker(){
+  if(!PD.length)return;
+  const ticker=document.getElementById('statTicker');
+  const track=document.getElementById('tickerTrack');
+  ticker.style.display='block';
+  const topKDA=[...PD].filter(p=>p.games>=5).sort((a,b)=>b.kda-a.kda)[0];
+  const topWR=[...PD].filter(p=>p.games>=5).sort((a,b)=>b.winRate-a.winRate)[0];
+  const topDMG=[...PD].filter(p=>p.games>=5).sort((a,b)=>b.damagePerMin-a.damagePerMin)[0];
+  const topCS=[...PD].filter(p=>p.games>=5).sort((a,b)=>b.csPerMin-a.csPerMin)[0];
+  const topVis=[...PD].filter(p=>p.games>=5).sort((a,b)=>b.visionPerMin-a.visionPerMin)[0];
+  const topKills=[...PD].sort((a,b)=>b.totalKills-a.totalKills)[0];
+  const topGames=[...PD].sort((a,b)=>b.games-a.games)[0];
+  const mostPentas=[...PD].sort((a,b)=>b.pentaKills-a.pentaKills)[0];
+  const items=[
+    {label:'TOP KDA',player:topKDA?.player,val:topKDA?.kda?.toFixed(2)},
+    {label:'BEST WR',player:topWR?.player,val:topWR?.winRate+'%'},
+    {label:'TOP DMG/MIN',player:topDMG?.player,val:Math.round(topDMG?.damagePerMin||0)},
+    {label:'TOP CS/MIN',player:topCS?.player,val:topCS?.csPerMin?.toFixed(2)},
+    {label:'TOP VISION/MIN',player:topVis?.player,val:topVis?.visionPerMin?.toFixed(2)},
+    {label:'MOST KILLS',player:topKills?.player,val:topKills?.totalKills},
+    {label:'MOST GAMES',player:topGames?.player,val:topGames?.games},
+    {label:'PENTA KILLS',player:mostPentas?.player,val:mostPentas?.pentaKills||0},
+  ].filter(i=>i.player&&i.val);
+  // Duplicate for seamless loop
+  const html=items.map(i=>`<div class="ticker-item"><span class="ti-label">${i.label}:</span><span class="ti-player">${i.player}</span><span class="ti-val">${i.val}</span></div><span class="ticker-sep">◆</span>`).join('');
+  track.innerHTML=html+html;
+}
+
+// ════════════════════════════════════════
+// COUNTING NUMBER ANIMATION
+// ════════════════════════════════════════
+function animateCountUp(el,target,duration,fmt){
+  const start=performance.now();const isFloat=fmt==='dec'||fmt==='pct';
+  function tick(now){
+    const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
+    const eased=1-Math.pow(1-progress,3);// ease-out cubic
+    const current=target*eased;
+    if(fmt==='pct')el.textContent=current.toFixed(1)+'%';
+    else if(fmt==='dec')el.textContent=current.toFixed(2);
+    else if(fmt==='num'||fmt==='int')el.textContent=Math.round(current).toLocaleString('en-US');
+    else el.textContent=Math.round(current);
+    if(progress<1)requestAnimationFrame(tick);
+    else{if(fmt==='pct')el.textContent=target.toFixed(1)+'%';else if(fmt==='dec')el.textContent=target.toFixed(2);else if(fmt==='num'||fmt==='int')el.textContent=Math.round(target).toLocaleString('en-US');else el.textContent=Math.round(target)}
+  }
+  requestAnimationFrame(tick);
+}
+
+// Apply counting to meta bar numbers
+function animateMetaNumbers(){
+  const fields=[{id:'mPlayers'},{id:'mMatches'},{id:'mNights'},{id:'mTeams'}];
+  fields.forEach(f=>{
+    const el=document.getElementById(f.id);
+    const val=parseInt(el.textContent);
+    if(!isNaN(val)&&val>0){el.textContent='0';animateCountUp(el,val,800,'int')}
+  });
+}
+
+// ════════════════════════════════════════
+// CONFETTI SYSTEM (for MVP / #1 profiles)
+// ════════════════════════════════════════
+function fireConfetti(color){
+  const cv=document.getElementById('confettiCanvas');const cx=cv.getContext('2d');
+  cv.width=innerWidth;cv.height=innerHeight;
+  const particles=[];const colors=[color,'#ffd700','#00f0ff','#ff2d7b','#a855f7','#22c55e'];
+  for(let i=0;i<80;i++){
+    particles.push({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight/2,vx:(Math.random()-.5)*12,vy:Math.random()*-14-4,
+    size:Math.random()*6+2,color:colors[Math.floor(Math.random()*colors.length)],
+    rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*10,life:1,decay:Math.random()*.015+.008,
+    shape:Math.random()>.5?'rect':'circle'});
+  }
+  function draw(){
+    cx.clearRect(0,0,cv.width,cv.height);let alive=false;
+    particles.forEach(p=>{
+      if(p.life<=0)return;alive=true;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.vx*=.99;p.rotation+=p.rotSpeed;p.life-=p.decay;
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.rotation*Math.PI/180);cx.globalAlpha=p.life;cx.fillStyle=p.color;
+      if(p.shape==='rect'){cx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6)}
+      else{cx.beginPath();cx.arc(0,0,p.size/2,0,Math.PI*2);cx.fill()}
+      cx.restore();
+    });
+    if(alive)requestAnimationFrame(draw);else cx.clearRect(0,0,cv.width,cv.height);
+  }
+  draw();
+}
+
+// ════════════════════════════════════════
+// HOLOGRAPHIC SHIMMER (record cards)
+// ════════════════════════════════════════
+function initHoloShimmer(){
+  document.querySelectorAll('.record-card').forEach(card=>{
+    if(card.querySelector('.holo-sheen'))return;
+    const sheen=document.createElement('div');sheen.className='holo-sheen';card.appendChild(sheen);
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=((e.clientX-r.left)/r.width*100);
+      const y=((e.clientY-r.top)/r.height*100);
+      sheen.style.background=`radial-gradient(circle at ${x}% ${y}%,rgba(0,240,255,.06) 0%,rgba(255,45,123,.04) 30%,rgba(168,85,247,.03) 60%,transparent 80%)`;
+    });
+  });
+}
+
+// ════════════════════════════════════════
+// ROLE ICONS
+// ════════════════════════════════════════
+const ROLE_ICONS={TOP:'⚔',JUNGLE:'🌿',MIDDLE:'✦',BOTTOM:'🏹',UTILITY:'🛡'};
+
+// ════════════════════════════════════════
+// SPARKLINES for champion table
+// ════════════════════════════════════════
+function makeSparkline(vals,color,w,h){
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.className='sparkline';
+  const cx=cv.getContext('2d');
+  if(!vals.length)return cv;
+  const mn=Math.min(...vals),mx=Math.max(...vals),range=mx-mn||1;
+  cx.beginPath();cx.strokeStyle=color;cx.lineWidth=1.5;
+  vals.forEach((v,i)=>{const x=i/(vals.length-1||1)*w;const y=h-((v-mn)/range)*h*.8-h*.1;i===0?cx.moveTo(x,y):cx.lineTo(x,y)});
+  cx.stroke();return cv;
+}
+
+// ════════════════════════════════════════
+// BEST GAME CARD (in player profile)
+// ════════════════════════════════════════
+function getBestGame(p){
+  if(!p.champData||!p.champData.length)return null;
+  let best=null,bestScore=-Infinity;
+  p.champData.forEach(g=>{
+    const score=(g.kills+g.assists)/Math.max(g.deaths,1)*2+g.damage/1000+(g.win?5:0);
+    if(score>bestScore){bestScore=score;best=g}
+  });
+  return best;
+}
+
+function renderBestGameCard(p,color){
+  const bg=getBestGame(p);if(!bg)return'';
+  const kda=((bg.kills+bg.assists)/Math.max(bg.deaths,1)).toFixed(2);
+  return`<div class="best-game"><div class="bg-label">★ Best Performance</div><div class="bg-stats"><div class="bg-stat"><div class="bg-stat-val" style="color:${color}">${bg.champ}</div><div class="bg-stat-label">Champion</div></div><div class="bg-stat"><div class="bg-stat-val" style="color:${bg.win?'var(--green)':'var(--pink)'}">${bg.win?'WIN':'LOSS'}</div><div class="bg-stat-label">Result</div></div><div class="bg-stat"><div class="bg-stat-val" style="color:${color}">${bg.kills}/${bg.deaths}/${bg.assists}</div><div class="bg-stat-label">KDA ${kda}</div></div><div class="bg-stat"><div class="bg-stat-val" style="color:${color}">${Math.round(bg.damage).toLocaleString()}</div><div class="bg-stat-label">Damage</div></div><div class="bg-stat"><div class="bg-stat-val" style="color:${color}">${bg.cs}</div><div class="bg-stat-label">CS</div></div><div class="bg-stat"><div class="bg-stat-val" style="color:var(--dim)">${formatDate(bg.date)}</div><div class="bg-stat-label">Date</div></div></div></div>`;
+}
+
+// ════════════════════════════════════════
+// UI SOUND EFFECTS (optional toggle)
+// ════════════════════════════════════════
+let soundEnabled=false;
+const audioCtx=typeof AudioContext!=='undefined'?new AudioContext():null;
+function playTick(){
+  if(!soundEnabled||!audioCtx)return;
+  const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.frequency.value=800+Math.random()*400;osc.type='sine';
+  gain.gain.setValueAtTime(0.03,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.08);
+  osc.start();osc.stop(audioCtx.currentTime+0.08);
+}
+function playSuccess(){
+  if(!soundEnabled||!audioCtx)return;
+  [800,1000,1200].forEach((f,i)=>{
+    const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();
+    osc.connect(gain);gain.connect(audioCtx.destination);
+    osc.frequency.value=f;osc.type='sine';
+    gain.gain.setValueAtTime(0.02,audioCtx.currentTime+i*0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+i*0.08+0.15);
+    osc.start(audioCtx.currentTime+i*0.08);osc.stop(audioCtx.currentTime+i*0.08+0.15);
+  });
+}
+
+// ════════════════════════════════════════
+// PATCH EXISTING FUNCTIONS TO ADD NEW EFFECTS
+// ════════════════════════════════════════
+
+// Patch loadData to add ticker + counting animation
+const _origLoadData=loadData;
+loadData=async function(){
+  await _origLoadData();
+  buildTicker();
+  animateMetaNumbers();
+};
+
+// Patch renderRecords to add holo shimmer
+const _origRenderRecords=renderRecords;
+renderRecords=function(){_origRenderRecords();setTimeout(initHoloShimmer,50)};
+
+// Patch renderLeaderboard to add #1 row hero pulse + bar hover sounds
+const _origRenderLeaderboard=renderLeaderboard;
+renderLeaderboard=function(){
+  _origRenderLeaderboard();
+  // Add hero pulse to #1
+  const firstRow=document.querySelector('.brow .rk.r1');
+  if(firstRow){const row=firstRow.closest('.brow');if(row)row.classList.add('brow-hero')}
+  // Add role icons to player names
+  document.querySelectorAll('.brow').forEach(row=>{
+    const tn=row.querySelector('.tn');
+    if(tn&&!tn.dataset.iconified){
+      tn.dataset.iconified='1';
+      const text=tn.textContent;
+      for(const[role,icon]of Object.entries(ROLE_ICONS)){
+        const roleLabel=ROLE_MAP[role];
+        if(text.includes(roleLabel)){
+          tn.innerHTML=text.replace(roleLabel,`<span class="role-icon">${icon}</span>${roleLabel}`);
+          break;
+        }
+      }
+    }
+  });
+  // Click sounds
+  document.querySelectorAll('.brow').forEach(r=>{
+    if(!r.dataset.sounded){r.dataset.sounded='1';r.addEventListener('click',()=>playTick())}
+  });
+};
+
+// Patch openProfile to add confetti for #1 + staggered stat animations + best game
+const _origOpenProfile=openProfile;
+openProfile=function(pn){
+  _origOpenProfile(pn);
+  const p=PD.find(x=>x.player===pn);if(!p)return;
+  const c=TC[p.team]||'#6366f1';
+  // Check if #1 in any major stat
+  const isElite=PD.filter(x=>x.games>=5).sort((a,b)=>b.kda-a.kda)[0]?.player===pn;
+  if(isElite){fireConfetti(c);playSuccess()}
+  // Stagger stat animations
+  document.querySelectorAll('.prof-stat').forEach((el,i)=>{
+    el.classList.add('prof-stat-anim');
+    el.style.animationDelay=(i*0.05)+'s';
+  });
+  // Add best game card
+  const profContent=document.getElementById('profileContent');
+  const coreSection=profContent.querySelector('.prof-section');
+  if(coreSection){
+    const bgHTML=renderBestGameCard(p,c);
+    if(bgHTML){const div=document.createElement('div');div.innerHTML=bgHTML;coreSection.after(div.firstElementChild)}
+  }
+  // Animate stat values counting up
+  document.querySelectorAll('.prof-stat-val').forEach(el=>{
+    const text=el.textContent;
+    const num=parseFloat(text.replace(/[,%]/g,''));
+    if(!isNaN(num)&&num>0){
+      const fmt=text.includes('%')?'pct':text.includes('.')?'dec':'int';
+      el.textContent='0';
+      animateCountUp(el,num,600,fmt);
+    }
+  });
+};
+
+// Patch onGlobalFilter to rebuild ticker
+const _origOnGlobalFilter=onGlobalFilter;
+onGlobalFilter=function(){_origOnGlobalFilter();buildTicker();animateMetaNumbers()};
 
 // GO
 loadData();
