@@ -250,6 +250,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <select id="seasonSel" onchange="onGlobalFilter()">
         <option value="All">All Seasons</option>
         <option value="S3" selected>Season 3</option>
+        <option value="S2" selected>Season 2</option>
+        <option value="S1" selected>Season 1</option>
       </select>
     </div>
     <div class="ctrl">
@@ -456,16 +458,17 @@ const STATS = [
 
 const TC = {
   // S1 teams
-  "Flannel Equinox":"#6366f1","Astronauts":"#ef4444","Gladiators":"#f59e0b","Womenphobia":"#8b5cf6",
-  "TD Phoenix":"#ec4899","Rising Tide Raiders":"#22c55e","Gamblers":"#eab308",
-  "Flannel Banana Bandits":"#f97316","Dota Enjoyers":"#64748b","The Everstone Elite":"#a855f7",
+  "Astronauts":"#ef4444","Definitely Not Esports":"#f87171","Divine Ascension":"#14b8a6",
+  "Dorado Gaming":"#a3e635","Dota Enjoyers":"#64748b","Final Boss":"#e879f9",
+  "Flannel Banana Bandits":"#f97316","Flannel Equinox":"#6366f1","Gamblers":"#eab308",
+  "Gladiators":"#f59e0b","Iridescent Dawn":"#fbbf24","Legacy Esports":"#fb7185",
+  "Literal Monkeys":"#f472b6","MetaShift":"#3b82f6","Rising Tide Raiders":"#22c55e",
+  "Silversong":"#2dd4bf","TD Phoenix":"#ec4899","TFF":"#38bdf8",
+  "The Everstone Elite":"#a855f7","To The Moon":"#c084fc","Womenphobia":"#8b5cf6","XSV":"#fb923c",
   // S2 teams
-  "Literal Monkeys":"#f472b6","TFF":"#38bdf8","XSV":"#fb923c","MINT":"#34d399",
-  "To The Moon":"#c084fc","Iridescent Dawn":"#fbbf24","Definitely Not Esports":"#f87171",
-  "MetaShift":"#3b82f6","Flannel Esports":"#818cf8","Silversong":"#2dd4bf",
-  "Final Boss":"#e879f9","Divine Ascension":"#14b8a6",
-  // S3 teams
-  "Legacy Esports":"#fb7185","Dorado Gaming":"#a3e635",
+  "MINT":"#34d399","Flannel Esports":"#818cf8",
+  // S3 teams (original set)
+  // (Many S3 teams overlap with S1 — these are the S3-only additions if any)
   // Shared
   "Sub":"#475569"
 };
