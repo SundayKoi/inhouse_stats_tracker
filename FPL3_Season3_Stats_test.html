@@ -429,6 +429,37 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .trading-card .tc-close:hover{color:var(--pink)}
 .trading-card .tc-save{position:absolute;top:8px;left:36px;background:none;border:1px solid var(--dim);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 8px;cursor:pointer;z-index:1;transition:all .2s;letter-spacing:1px}
 .trading-card .tc-save:hover{border-color:var(--cyan);color:var(--cyan)}
+/* ─── PLAYER LOOKUP ─── */
+.lookup-suggestions{display:flex;gap:6px;flex-wrap:wrap}
+.lookup-sug{background:var(--bg2);border:1px solid var(--border);padding:6px 12px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:6px}
+.lookup-sug:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-1px)}
+.lookup-sug .ls-team{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
+
+.lookup-profile{animation:pageIn .4s ease}
+.lookup-header{display:flex;gap:20px;align-items:center;padding:20px;background:var(--bg2);border:1px solid var(--border);margin-bottom:16px;flex-wrap:wrap;position:relative;overflow:hidden}
+.lookup-header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.lookup-header .lh-icon{font-size:32px}
+.lookup-header .lh-name{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900}
+.lookup-header .lh-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
+.lookup-header .lh-rating{font-family:'Orbitron',sans-serif;font-size:40px;font-weight:900;margin-left:auto}
+.lookup-header .lh-rating-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;text-align:right}
+
+.lookup-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:768px){.lookup-grid{grid-template-columns:1fr}}
+.lookup-card{background:var(--bg2);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden}
+.lookup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.lookup-card .lc-title{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;text-shadow:0 0 6px var(--cyan-dim)}
+
+.lookup-game-row{display:grid;grid-template-columns:26px 100px 1fr 60px 50px;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid #ffffff06;font-size:12px;transition:background .2s}
+.lookup-game-row:hover{background:#ffffff06}
+.lookup-game-row .lgr-result{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;padding:2px 6px;text-align:center}
+.lookup-game-row .lgr-champ{font-weight:600;display:flex;align-items:center;gap:4px}
+.lookup-game-row .lgr-kda{font-family:'Share Tech Mono',monospace;font-size:11px}
+.lookup-game-row .lgr-date{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
+
+.lookup-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.lookup-actions button{background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 14px;cursor:pointer;letter-spacing:1px;transition:all .3s}
+.lookup-actions button:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--cyan-dim)}
 </style>
 </head>
 <body>
@@ -467,6 +498,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <button class="tab-btn" data-tab="records">Records</button>
     <button class="tab-btn" data-tab="mvp">MVP</button>
     <button class="tab-btn" data-tab="power">Power Rankings</button>
+    <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
   <div class="tab-page active" id="pg-leaderboard" style="display:none">
@@ -490,6 +522,18 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
+  <div class="tab-page" id="pg-lookup">
+    <div class="card">
+      <div class="card-t">🔍 Player Lookup</div>
+      <div class="card-s">Search any FPL player for a deep-dive stat breakdown</div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:end">
+        <div class="ctrl" style="flex:1;min-width:220px"><label>Player Name</label><input type="text" id="lookupInput" placeholder="Start typing a name..." style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;padding:10px 14px;transition:all .3s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 20px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'" oninput="renderLookupSuggestions()"></div>
+        <button onclick="executeLookup()" style="background:var(--cyan);border:none;color:var(--bg);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;padding:10px 20px;cursor:pointer;letter-spacing:1px;transition:all .3s;height:40px" onmouseover="this.style.boxShadow='0 0 20px var(--cyan-glow)'" onmouseout="this.style.boxShadow='none'">LOOKUP</button>
+      </div>
+      <div id="lookupSuggestions" style="margin-bottom:16px"></div>
+      <div id="lookupResult"></div>
+    </div>
+  </div>
   <div class="modal-overlay" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeProfile()">✕</button><div id="profileContent"></div></div></div>
   <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
 </div>
@@ -1156,6 +1200,194 @@ renderPower=function(){
     }
   });
   attachPreviewListeners();
+};
+
+// ════════════════════════════════════════
+// PLAYER LOOKUP FEATURE
+// ════════════════════════════════════════
+
+function renderLookupSuggestions(){
+  const q=document.getElementById('lookupInput').value.toLowerCase().trim();
+  const box=document.getElementById('lookupSuggestions');
+  if(!q||q.length<1){box.innerHTML='';return}
+  const matches=PD.filter(p=>p.player.toLowerCase().includes(q)).slice(0,8);
+  if(!matches.length){box.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">No players found</div>';return}
+  box.innerHTML='<div class="lookup-suggestions">'+matches.map(p=>{
+    const c=TC[p.team]||'#6366f1';
+    return`<div class="lookup-sug" onclick="runLookup('${p.player.replace(/'/g,"\\'")}')"><span style="color:${c}">${p.player}</span><span class="ls-team">${p.team}</span></div>`;
+  }).join('')+'</div>';
+}
+
+function executeLookup(){
+  const q=document.getElementById('lookupInput').value.trim();
+  if(!q)return;
+  const exact=PD.find(p=>p.player.toLowerCase()===q.toLowerCase());
+  if(exact){runLookup(exact.player);return}
+  const partial=PD.find(p=>p.player.toLowerCase().includes(q.toLowerCase()));
+  if(partial){runLookup(partial.player);return}
+  document.getElementById('lookupResult').innerHTML='<div class="nodata">No player found matching "'+q+'"</div>';
+}
+
+document.getElementById('lookupInput').addEventListener('keydown',e=>{if(e.key==='Enter')executeLookup()});
+
+function runLookup(playerName){
+  document.getElementById('lookupInput').value=playerName;
+  document.getElementById('lookupSuggestions').innerHTML='';
+  const p=PD.find(x=>x.player===playerName);
+  if(!p){document.getElementById('lookupResult').innerHTML='<div class="nodata">Player not found</div>';return}
+
+  const c=TC[p.team]||'#6366f1';
+  const rl=ROLE_MAP[p.mainRole]||p.mainRole;
+  const icon=ROLE_ICONS[p.mainRole]||'✦';
+  const el=PD.filter(x=>x.games>=3);
+  el.forEach(x=>x.powerScore=calcPowerScore(x,el));
+  const ps=p.powerScore||calcPowerScore(p,el);
+  el.sort((a,b)=>b.powerScore-a.powerScore);
+  const rank=el.findIndex(x=>x.player===playerName)+1;
+
+  // Percentile ranks
+  function pctRank(key,inv){
+    const vals=PD.filter(x=>x.games>=3).map(x=>x[key]).sort((a,b)=>a-b);
+    const idx=vals.filter(v=>inv?v>p[key]:v<p[key]).length;
+    return Math.round(idx/vals.length*100);
+  }
+
+  // Game log from raw data
+  const rows=getFilteredRows();
+  const gameLog=[];
+  for(const r of rows){
+    let n=r['Summoner Name']||'';
+    if(NAME_MERGES[n])n=NAME_MERGES[n];
+    if(n!==playerName)continue;
+    gameLog.push({
+      date:parseDate(r['Date']||''),
+      champ:r['Champion']||'Unknown',
+      win:r['Win']==='Win',
+      kills:parseFloat(r['Kills'])||0,
+      deaths:parseFloat(r['Deaths'])||0,
+      assists:parseFloat(r['Assists'])||0,
+      cs:parseFloat(r['CS'])||0,
+      damage:parseFloat(r['Total Damage to Champions'])||0,
+      gold:parseFloat(r['Gold Earned'])||0,
+      duration:parseFloat(r['Game Duration (min)'])||0,
+      vision:parseFloat(r['Vision Score'])||0,
+      team:(r['FPL Team']||'').trim(),
+      role:r['Role']||''
+    });
+  }
+  gameLog.sort((a,b)=>b.date.localeCompare(a.date));
+
+  // Champion breakdown
+  const cm={};(p.champData||[]).forEach(x=>{
+    if(!cm[x.champ])cm[x.champ]={games:0,wins:0,kills:0,deaths:0,assists:0,damage:0,cs:0};
+    const ch=cm[x.champ];ch.games++;ch.wins+=(x.win?1:0);ch.kills+=x.kills;ch.deaths+=x.deaths;ch.assists+=x.assists;ch.damage+=x.damage;ch.cs+=x.cs;
+  });
+  const champList=Object.entries(cm).map(([n,x])=>({
+    name:n,games:x.games,wr:+(x.wins/x.games*100).toFixed(0),
+    kda:+((x.kills+x.assists)/Math.max(x.deaths,1)).toFixed(2),
+    avgDmg:Math.round(x.damage/x.games),avgCS:Math.round(x.cs/x.games)
+  })).sort((a,b)=>b.games-a.games);
+
+  // Streaks
+  let curStreak=0,bestWin=0,bestLoss=0,curWS=0,curLS=0;
+  const sortedGames=[...gameLog].sort((a,b)=>a.date.localeCompare(b.date));
+  sortedGames.forEach(g=>{
+    if(g.win){curWS++;curLS=0;if(curWS>bestWin)bestWin=curWS}
+    else{curLS++;curWS=0;if(curLS>bestLoss)bestLoss=curLS}
+  });
+  const lastGames=gameLog.slice(0,5);
+  const recentWR=lastGames.length?Math.round(lastGames.filter(g=>g.win).length/lastGames.length*100):0;
+
+  // Build HTML
+  let h=`<div class="lookup-profile">`;
+
+  // Header
+  h+=`<div class="lookup-header" style="--tc:${c}"><div class="lh-icon">${icon}</div><div><div class="lh-name" style="color:${c}">${p.player}</div><div class="lh-sub">${p.team} · ${rl} · ${p.games} Games · ${p.wins}W ${p.losses}L · ${p.winRate}% WR</div></div><div style="margin-left:auto;text-align:right"><div class="lh-rating" style="color:${c}">${ps}</div><div class="lh-rating-label">POWER RATING #${rank}</div></div></div>`;
+
+  // Stats grid
+  h+=`<div class="lookup-grid">`;
+
+  // Core stats with percentiles
+  h+=`<div class="lookup-card"><div class="lc-title">Core Statistics</div>`;
+  const coreStats=[
+    {label:'KDA',val:p.kda,fmt:'dec',key:'kda',pct:pctRank('kda')},
+    {label:'Kills/Game',val:p.killsPerGame,fmt:'dec',key:'killsPerGame',pct:pctRank('killsPerGame')},
+    {label:'Deaths/Game',val:p.deathsPerGame,fmt:'dec',key:'deathsPerGame',pct:pctRank('deathsPerGame',true)},
+    {label:'Assists/Game',val:p.assistsPerGame,fmt:'dec',key:'assistsPerGame',pct:pctRank('assistsPerGame')},
+    {label:'CS/Min',val:p.csPerMin,fmt:'dec',key:'csPerMin',pct:pctRank('csPerMin')},
+    {label:'Gold/Min',val:p.goldPerMin,fmt:'dec',key:'goldPerMin',pct:pctRank('goldPerMin')},
+    {label:'Damage/Min',val:p.damagePerMin,fmt:'num',key:'damagePerMin',pct:pctRank('damagePerMin')},
+    {label:'Vision/Min',val:p.visionPerMin,fmt:'dec',key:'visionPerMin',pct:pctRank('visionPerMin')},
+  ];
+  coreStats.forEach(s=>{
+    const bc=s.pct>=75?'var(--green)':s.pct>=50?'var(--cyan)':s.pct>=25?'var(--gold)':'var(--pink)';
+    h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #ffffff06"><span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim)">${s.label}</span><span style="display:flex;align-items:center;gap:8px"><span style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:${c}">${fmtVal(s.val,s.fmt)}</span><span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:${bc};min-width:35px;text-align:right">Top ${100-s.pct}%</span></span></div>`;
+  });
+  h+=`</div>`;
+
+  // Streaks & trends
+  h+=`<div class="lookup-card"><div class="lc-title">Streaks & Trends</div>`;
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">`;
+  h+=`<div style="background:var(--bg3);padding:10px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--green)">${bestWin}</div><div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">BEST WIN STREAK</div></div>`;
+  h+=`<div style="background:var(--bg3);padding:10px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--pink)">${bestLoss}</div><div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">WORST LOSS STREAK</div></div>`;
+  h+=`<div style="background:var(--bg3);padding:10px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:${recentWR>=50?'var(--green)':'var(--pink)'}">${recentWR}%</div><div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">LAST 5 WIN RATE</div></div>`;
+  h+=`<div style="background:var(--bg3);padding:10px;text-align:center"><div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:${c}">${champList.length}</div><div style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">UNIQUE CHAMPS</div></div>`;
+  h+=`</div>`;
+  // Last 5 results
+  h+=`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:6px;letter-spacing:1px">LAST 5 RESULTS</div>`;
+  h+=`<div style="display:flex;gap:4px">`;
+  lastGames.forEach(g=>{
+    h+=`<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;background:${g.win?'#22c55e15':'#ff2d7b15'};border:1px solid ${g.win?'var(--green)':'var(--pink)'};color:${g.win?'var(--green)':'var(--pink)'}">${g.win?'W':'L'}</div>`;
+  });
+  h+=`</div></div>`;
+
+  // Champion pool
+  h+=`<div class="lookup-card" style="grid-column:1/-1"><div class="lc-title">Champion Pool</div>`;
+  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">`;
+  champList.slice(0,12).forEach(ch=>{
+    const wc=ch.wr>=55?'var(--green)':ch.wr<=45?'var(--pink)':'var(--text)';
+    h+=`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);padding:8px;border:1px solid transparent;transition:all .2s" onmouseover="this.style.borderColor='var(--border)'" onmouseout="this.style.borderColor='transparent'">${champImg(ch.name,'champ-icon')}<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ch.name}</div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)">${ch.games}g · ${ch.kda} KDA · ${Math.round(ch.avgDmg).toLocaleString()} DMG</div></div><div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:${wc}">${ch.wr}%</div></div>`;
+  });
+  h+=`</div></div>`;
+
+  // Game Log
+  h+=`<div class="lookup-card" style="grid-column:1/-1"><div class="lc-title">Game Log (Last 20)</div>`;
+  h+=`<div style="overflow-x:auto">`;
+  gameLog.slice(0,20).forEach(g=>{
+    const kda=`${g.kills}/${g.deaths}/${g.assists}`;
+    const kdaNum=((g.kills+g.assists)/Math.max(g.deaths,1)).toFixed(1);
+    h+=`<div class="lookup-game-row"><div class="lgr-result" style="background:${g.win?'#22c55e15':'#ff2d7b15'};color:${g.win?'var(--green)':'var(--pink)'}">${g.win?'W':'L'}</div><div class="lgr-champ">${champImg(g.champ,'champ-icon-sm')}${g.champ}</div><div class="lgr-kda">${kda} <span style="color:var(--dim)">(${kdaNum})</span> · ${Math.round(g.damage).toLocaleString()} DMG · ${g.cs} CS</div><div class="lgr-date">${g.duration.toFixed(0)}m</div><div class="lgr-date">${g.date.slice(5)}</div></div>`;
+  });
+  h+=`</div></div>`;
+
+  h+=`</div>`; // end lookup-grid
+
+  // Actions
+  h+=`<div class="lookup-actions"><button onclick="openProfile('${playerName.replace(/'/g,"\\'")}')">📊 Full Profile</button><button onclick="openTradingCard('${playerName.replace(/'/g,"\\'")}')">🃏 Trading Card</button><button onclick="toggleCompare('${playerName.replace(/'/g,"\\'")}');switchTab('leaderboard',true)">⚔ Add to Compare</button></div>`;
+
+  h+=`</div>`; // end lookup-profile
+
+  document.getElementById('lookupResult').innerHTML=h;
+}
+
+function renderLookup(){
+  // Just ensure input is visible, don't clear results
+  const input=document.getElementById('lookupInput');
+  if(input&&!input.value&&PD.length){
+    // Show some random suggestions
+    const sample=PD.filter(p=>p.games>=5).sort(()=>Math.random()-.5).slice(0,6);
+    document.getElementById('lookupSuggestions').innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim);margin-bottom:8px;letter-spacing:1px">POPULAR PLAYERS</div><div class="lookup-suggestions">'+sample.map(p=>{
+      const c=TC[p.team]||'#6366f1';
+      return`<div class="lookup-sug" onclick="runLookup('${p.player.replace(/'/g,"\\'")}')"><span style="color:${c}">${p.player}</span><span class="ls-team">${p.team} · ${p.games}g</span></div>`;
+    }).join('')+'</div>';
+  }
+}
+
+// Add lookup to tab rendering
+const _origRenderCurrentTab=renderCurrentTab;
+renderCurrentTab=function(){
+  if(curTab==='lookup'){renderLookup();return}
+  _origRenderCurrentTab();
 };
 
 // GO
