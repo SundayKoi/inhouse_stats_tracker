@@ -560,12 +560,21 @@ function onGlobalFilter() {
 // ════════════════════════════════════════
 function aggregate(matchRows, rosterMap) {
   const ps = {}, matchIds = new Set(), dates = new Set();
+  // Build roster from these rows — most recent date wins
+  const playerTeamDates = {}; // name -> {team, date}
   for (const r of matchRows) {
     let name = r['Summoner Name'] || '';
     if (NAME_MERGES[name]) name = NAME_MERGES[name];
     if (!name) continue;
-    matchIds.add(r['Match ID'] || '');
+    const team = (r['FPL Team']||'').trim();
     const dateStr = parseDate(r['Date'] || '');
+    // Track most recent team per player
+    if (name && team) {
+      if (!playerTeamDates[name] || dateStr > playerTeamDates[name].date) {
+        playerTeamDates[name] = {team, date:dateStr};
+      }
+    }
+    matchIds.add(r['Match ID'] || '');
     dates.add(dateStr);
     if (!ps[name]) ps[name] = {games:0,kills:0,deaths:0,assists:0,cs:0,gold:0,damage:0,damageTaken:0,vision:0,duration:0,wins:0,doubles:0,triples:0,quadras:0,pentas:0,wardsPlaced:0,wardsKilled:0,controlWards:0,turretKills:0,turretDamage:0,objectiveDamage:0,damageMitigated:0,teamDragons:0,teamBarons:0,teamHeralds:0,teamGrubs:0,teamTowers:0,firstBloods:0,roles:[],champions:[]};
     const p = ps[name], n = k => parseFloat(r[k])||0;
@@ -585,7 +594,7 @@ function aggregate(matchRows, rosterMap) {
   }
   const players = [];
   for (const [name,s] of Object.entries(ps)) {
-    const g=s.games, d=s.duration||1, team=rosterMap[name]||'Sub';
+    const g=s.games, d=s.duration||1, team=(playerTeamDates[name]?playerTeamDates[name].team:null)||rosterMap[name]||'Sub';
     const mainRole = s.roles.length ? [...new Set(s.roles)].sort((a,b)=>s.roles.filter(x=>x===b).length-s.roles.filter(x=>x===a).length)[0] : 'MIDDLE';
     players.push({
       player:name, team, games:g, wins:s.wins, losses:g-s.wins,
@@ -682,6 +691,14 @@ function renderLeaderboard() {
   document.getElementById('mMatches').textContent=result.totalMatches;
   document.getElementById('mNights').textContent=result.gameNights;
   document.getElementById('mDates').textContent=result.dateRange||'—';
+  // Refresh team dropdown to match filtered season
+  const prevTeam=document.getElementById('teamSel').value;
+  const teamSet=[...new Set(PD.map(p=>p.team))].sort();
+  const tSel=document.getElementById('teamSel');
+  tSel.innerHTML='<option value="All">All Teams</option>';
+  teamSet.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tSel.appendChild(o);});
+  if(teamSet.includes(prevTeam)) tSel.value=prevTeam; else tSel.value='All';
+  document.getElementById('mTeams').textContent=teamSet.filter(t=>t!=='Sub').length;
   if(!PD.length){document.getElementById('bars').innerHTML='<div class="nodata">NO DATA</div>';return;}
   const statKey=document.getElementById('statSel').value;
   const statCfg=STATS.find(s=>s.key===statKey);
@@ -702,7 +719,8 @@ function renderLeaderboard() {
   if(team!=='All')filters.push(team.toUpperCase());
   if(checkedRoles.length<5)filters.push(checkedRoles.map(r=>ROLE_MAP[r]||r).join(', '));
   if(minG>1)filters.push(minG+'+ GAMES');
-  document.getElementById('chartSub').textContent=(filters.length?filters.join(' // ')+' // ':'')+'SEASON 3';
+  const seasonLabel=document.getElementById('seasonSel').value==='All'?'ALL SEASONS':document.getElementById('seasonSel').value.toUpperCase();
+  document.getElementById('chartSub').textContent=(filters.length?filters.join(' // ')+' // ':'')+seasonLabel;
   const barsDiv=document.getElementById('bars');
   if(!data.length){barsDiv.innerHTML='<div class="nodata">NO PLAYERS MATCH FILTERS</div>';document.getElementById('playerCount').textContent='';return;}
   const maxVal=Math.max(...data.map(d=>Math.abs(d[statKey])));
