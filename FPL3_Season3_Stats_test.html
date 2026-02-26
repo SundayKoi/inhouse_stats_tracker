@@ -1523,12 +1523,7 @@ let sheetConfigLoaded=false;
 
 // Load config: Sheet Config tab > localStorage > hardcoded defaults
 function loadConfig(){
-  try{
-    const saved=localStorage.getItem('fpl_dashboard_config_'+SHEET_ID);
-    if(saved){adminConfig=JSON.parse(saved);
-      for(const k in DEFAULT_CONFIG){if(!(k in adminConfig))adminConfig[k]=DEFAULT_CONFIG[k]}
-    }else{adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG))}
-  }catch(e){adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG))}
+  adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 }
 
 // Load config from Google Sheet "Config" tab
@@ -1601,9 +1596,7 @@ async function loadSheetConfig(){
 }
 
 
-function saveConfig(){
-  try{localStorage.setItem('fpl_dashboard_config_'+SHEET_ID,JSON.stringify(adminConfig))}catch(e){}
-}
+function saveConfig(){/* Config lives in Google Sheet Config tab, not localStorage */}
 
 
 function applyConfig(){
