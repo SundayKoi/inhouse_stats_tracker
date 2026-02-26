@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FPL Season 3 — Stats Dashboard</title>
+<title>Stats Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -554,7 +554,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </header>
   <div class="stat-ticker" id="statTicker" style="display:none"><div class="ticker-track" id="tickerTrack"></div></div>
   <div class="gfilters">
-    <div class="ctrl"><label>Season</label><select id="seasonSel" onchange="onGlobalFilter()"><option value="All">All Seasons</option><option value="S3" selected>Season 3</option><option value="S2">Season 2</option><option value="S1">Season 1</option></select></div>
+    <div class="ctrl"><label>Season</label><select id="seasonSel" onchange="onGlobalFilter()"><option value="All">All Seasons</option></select></div>
     <div class="ctrl"><label>Phase</label><select id="phaseSel" onchange="onGlobalFilter()"><option value="All">All</option><option value="Regular">Regular</option><option value="Playoffs">Playoffs</option></select></div>
   </div>
   <nav class="tab-nav" id="tabNav">
@@ -577,7 +577,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
     <div class="ctrls2">
       <div class="ctrl"><label>Role</label><div class="role-checks" id="roleChecks"><label class="rc"><input type="checkbox" value="TOP" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#ef4444">Top</span></label><label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#22c55e">Jng</span></label><label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#3b82f6">Mid</span></label><label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#f59e0b">Adc</span></label><label class="rc"><input type="checkbox" value="UTILITY" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#a855f7">Sup</span></label></div></div>
-      <div class="ctrl"><label>Teams</label><select id="teamSel" onchange="renderLeaderboard()"></select></div>
+      <div class="ctrl"><label>Team</label><select id="teamSel" onchange="renderLeaderboard()"></select></div>
       <div class="ctrl"><label>Search Player</label><input type="text" id="searchBar" placeholder="Type a name..." oninput="renderLeaderboard()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .3s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 20px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></div>
     </div>
     <div class="card"><div class="card-t" id="chartTitle"></div><div class="card-s" id="chartSub"></div><div id="bars"></div><div class="player-count" id="playerCount"></div></div>
@@ -591,7 +591,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">🔍 Player Lookup</div>
-      <div class="card-s">Search any FPL player for a deep-dive stat breakdown</div>
+      <div class="card-s">Search any player for a deep-dive stat breakdown</div>
       <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:end">
         <div class="ctrl" style="flex:1;min-width:220px"><label>Player Name</label><input type="text" id="lookupInput" placeholder="Start typing a name..." style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;padding:10px 14px;transition:all .3s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 20px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'" oninput="renderLookupSuggestions()"></div>
         <button onclick="executeLookup()" style="background:var(--cyan);border:none;color:var(--bg);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;padding:10px 20px;cursor:pointer;letter-spacing:1px;transition:all .3s;height:40px" onmouseover="this.style.boxShadow='0 0 20px var(--cyan-glow)'" onmouseout="this.style.boxShadow='none'">LOOKUP</button>
@@ -615,7 +615,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="admin-panel" id="adminPanelBox" style="display:none">
     <button class="admin-close" onclick="closeAdmin()">✕</button>
     <h2>⚙ DASHBOARD CONFIGURATION</h2>
-    <div class="admin-sub">Changes are saved to this browser and apply immediately</div>
+    <div class="admin-sub">Edit settings below → Save → Copy Config for Sheet → Paste into your Google Sheet Config tab for everyone to see changes</div>
     <div id="adminContent"></div>
   </div>
 </div>
@@ -906,10 +906,21 @@ function playSuccess(){
 // PATCH EXISTING FUNCTIONS TO ADD NEW EFFECTS
 // ════════════════════════════════════════
 
-// Patch loadData to add ticker + counting animation
+// Patch loadData to add ticker + counting animation + auto-populate season dropdown
 const _origLoadData=loadData;
 loadData=async function(){
   await _origLoadData();
+  // Auto-populate season dropdown from data
+  const seasons=[...new Set(RAW.map(r=>(r['Season']||'').trim()).filter(s=>s))].sort();
+  const sel=document.getElementById('seasonSel');
+  sel.innerHTML='<option value="All">All Seasons</option>';
+  seasons.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s;o.textContent=s.replace(/^S(\d)/,'Season $1');
+    sel.appendChild(o);
+  });
+  // Select the latest season by default if available
+  if(seasons.length){sel.value=seasons[seasons.length-1];onGlobalFilter()}
   buildTicker();
   animateMetaNumbers();
 };
@@ -1094,7 +1105,7 @@ function openTradingCard(playerName){
   const top5=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,5);
 
   const overlay=document.getElementById('tradingCardOverlay');
-  overlay.innerHTML=`<div class="trading-card"><div class="tc-glow" style="background:linear-gradient(90deg,${c},var(--cyan),${c})"></div><button class="tc-close" onclick="closeTradingCard()">✕</button><button class="tc-save" onclick="saveTradingCard()">📷 SAVE</button><div class="tc-top"><div class="tc-team-bg" style="background:${c}"></div><div class="tc-role-badge">${icon}</div><div class="tc-player-name" style="color:${c}">${p.player}</div><div class="tc-team-name">${p.team} · ${rl}</div><div class="tc-rating" style="color:${c}">${ps}</div></div><div class="tc-mid"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.kda}</div><div class="tc-stat-label">KDA</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':'var(--text)'}">${p.winRate}%</div><div class="tc-stat-label">Win Rate</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.games}</div><div class="tc-stat-label">Games</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.killsPerGame}</div><div class="tc-stat-label">K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.deathsPerGame}</div><div class="tc-stat-label">D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.assistsPerGame}</div><div class="tc-stat-label">A/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.csPerMin}</div><div class="tc-stat-label">CS/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="tc-stat-label">DMG/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="tc-stat-label">VIS/Min</div></div></div><div class="tc-champs">${top5.map(([ch])=>champImg(ch,'champ-icon-lg')).join('')}</div><div class="tc-bottom"><div class="tc-bottom-text">FPL SEASON 3 · FRANCHISE PREMIER LEAGUE</div></div></div>`;
+  overlay.innerHTML=`<div class="trading-card"><div class="tc-glow" style="background:linear-gradient(90deg,${c},var(--cyan),${c})"></div><button class="tc-close" onclick="closeTradingCard()">✕</button><button class="tc-save" onclick="saveTradingCard()">📷 SAVE</button><div class="tc-top"><div class="tc-team-bg" style="background:${c}"></div><div class="tc-role-badge">${icon}</div><div class="tc-player-name" style="color:${c}">${p.player}</div><div class="tc-team-name">${p.team} · ${rl}</div><div class="tc-rating" style="color:${c}">${ps}</div></div><div class="tc-mid"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.kda}</div><div class="tc-stat-label">KDA</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':'var(--text)'}">${p.winRate}%</div><div class="tc-stat-label">Win Rate</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.games}</div><div class="tc-stat-label">Games</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.killsPerGame}</div><div class="tc-stat-label">K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.deathsPerGame}</div><div class="tc-stat-label">D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.assistsPerGame}</div><div class="tc-stat-label">A/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.csPerMin}</div><div class="tc-stat-label">CS/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="tc-stat-label">DMG/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="tc-stat-label">VIS/Min</div></div></div><div class="tc-champs">${top5.map(([ch])=>champImg(ch,'champ-icon-lg')).join('')}</div><div class="tc-bottom"><div class="tc-bottom-text">${adminConfig.seasonLabel.toUpperCase()} · ${adminConfig.leagueName}</div></div></div>`;
   overlay.classList.add('active');
   fireConfetti(c);playSuccess();
 }
@@ -1113,7 +1124,7 @@ function saveTradingCard(){
   html2canvas(card,{backgroundColor:'#06060c',scale:2,useCORS:true,allowTaint:true,logging:false}).then(canvas=>{
     const link=document.createElement('a');
     const name=card.querySelector('.tc-player-name')?.textContent||'player';
-    link.download='FPL_Card_'+name.replace(/\s+/g,'_')+'.png';
+    link.download=(adminConfig.leagueName.replace(/[^a-zA-Z0-9]/g,'_'))+'_Card_'+name.replace(/\s+/g,'_')+'.png';
     link.href=canvas.toDataURL('image/png');
     link.click();
     showToast('Card saved as PNG!');
@@ -1476,14 +1487,16 @@ renderCurrentTab=function(){
 // ════════════════════════════════════════
 
 // Per-customer passwords (baked in by deployment tool)
-const ADMIN_PASSWORDS={'fpl2025':'admin'};
+const ADMIN_PASSWORDS={
+  'fpl2025':'master',
+};
 
 const DEFAULT_CONFIG={
   sheetId:'1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU',
   leagueName:'FRANCHISE PREMIER LEAGUE',
   subtitle:'PLAYER PERFORMANCE DASHBOARD',
   seasonLabel:'Season 3 // Official Stats',
-  creditLine:'Stats Dashboard',
+  creditLine:'Stats compiled by Drib x Lizzo Mukkbang',
   footerText:'FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS',
   colorPrimary:'#00f0ff',
   colorSecondary:'#ff2d7b',
@@ -1501,7 +1514,7 @@ const DEFAULT_CONFIG={
   ],
   teamColors:{},
   minGamesDefault:5,
-  sheetName:'Raw Stats',
+  sheetName:'Sheet1',
 };
 
 let adminConfig=null;
@@ -1524,10 +1537,12 @@ async function loadSheetConfig(){
     const sid=adminConfig.sheetId||DEFAULT_CONFIG.sheetId;
     const rows=await new Promise((resolve,reject)=>{
       const cb='_gcfg_'+Math.random().toString(36).slice(2);
-      const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config';
+      const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config&headers=1';
       window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{
         const cols=r.table.cols.map(c=>c.label||c.id);
+        console.log('Config columns:',cols);
         const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
+        console.log('Config first 3 rows:',rows.slice(0,3));
         resolve(rows)}catch(e){reject(e)}};
       const s=document.createElement('script');s.src=url;
       s.onerror=function(){delete window[cb];reject(new Error('No Config tab'))};
@@ -1535,10 +1550,16 @@ async function loadSheetConfig(){
     });
     const cfg={};
     rows.forEach(function(r){
-      const key=r['Key']||r['key']||Object.values(r)[0]||'';
-      const val=r['Value']||r['value']||Object.values(r)[1]||'';
-      if(key.trim())cfg[key.trim()]=val.trim();
+      const keys=Object.keys(r);
+      var key='',val='';
+      if(r['Key']!==undefined){key=r['Key'];val=r['Value']||''}
+      else if(r['key']!==undefined){key=r['key'];val=r['value']||''}
+      else if(keys.length>=2){key=r[keys[0]]||'';val=r[keys[1]]||''}
+      if(key.trim()&&key.trim()!=='Key'&&key.trim()!=='key'){
+        cfg[key.trim()]=val.trim();
+      }
     });
+    console.log('Parsed config:',cfg);
     if(cfg.leagueName)adminConfig.leagueName=cfg.leagueName;
     if(cfg.subtitle)adminConfig.subtitle=cfg.subtitle;
     if(cfg.seasonLabel)adminConfig.seasonLabel=cfg.seasonLabel;
@@ -1553,8 +1574,9 @@ async function loadSheetConfig(){
     var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabLookup:'lookup'};
     for(var cfgKey in tabMap){
       if(cfg[cfgKey]!==undefined){
+        var v=String(cfg[cfgKey]).toLowerCase();
         var tab=adminConfig.tabs.find(function(t){return t.id===tabMap[cfgKey]});
-        if(tab)tab.enabled=cfg[cfgKey].toLowerCase()==='true';
+        if(tab)tab.enabled=(v==='true'||v==='yes'||v==='1');
       }
     }
     if(cfg.tabOrder){
@@ -1567,11 +1589,13 @@ async function loadSheetConfig(){
     for(var k in cfg){if(k.indexOf('teamColor_')===0){adminConfig.teamColors[k.replace('teamColor_','')]=cfg[k]}}
     sheetConfigLoaded=true;
     console.log('Sheet config loaded successfully');
+    console.log('Final config:',adminConfig.leagueName,adminConfig.colorPrimary,adminConfig.colorSecondary);
   }catch(e){
-    console.log('No Config tab found, using defaults');
+    console.log('Config tab error, using defaults:',e.message||e);
     sheetConfigLoaded=false;
   }
 }
+
 
 function saveConfig(){
   try{localStorage.setItem('fpl_dashboard_config_'+DEFAULT_CONFIG.sheetId,JSON.stringify(adminConfig))}catch(e){}
@@ -1586,6 +1610,7 @@ function applyConfig(){
   if(c.sheetId)window._cfgSheetId=c.sheetId;
 
   // Text content
+  document.title=c.leagueName+' — Stats Dashboard';
   const h1=document.querySelector('.hdr h1');if(h1){h1.textContent=c.leagueName;h1.dataset.text=c.leagueName}
   const sub=document.querySelector('.hdr .sub');if(sub)sub.textContent=c.subtitle;
   const badge=document.querySelector('.badge');if(badge)badge.textContent=c.seasonLabel;
@@ -1731,8 +1756,9 @@ function renderAdminPanel(){
   h+=`</ul></div>`;
 
   // Team Colors
-  h+=`<div class="admin-section"><h3>🎨 Team Colors</h3><div class="admin-hint" style="margin-bottom:10px">Override colors for specific teams. Leave blank to use defaults.</div><div id="adminTeamColors">`;
+  h+=`<div class="admin-section"><h3>🎨 Team Colors</h3><div class="admin-hint" style="margin-bottom:10px">Change colors for each team's bars, cards, and stats. After saving, use "Copy Config for Sheet" to make changes visible to all viewers.</div><div id="adminTeamColors">`;
   const allTeams=[...new Set(PD.map(p=>p.team))].filter(t=>t&&t!=='Sub').sort();
+  if(!allTeams.length){h+=`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim)">Teams will appear here once data loads. Close admin, wait for dashboard to load, then reopen.</div>`}
   allTeams.forEach(t=>{
     const col=c.teamColors[t]||TC[t]||'#6366f1';
     h+=`<div class="admin-team-row"><input type="text" value="${t}" readonly style="color:${col};font-weight:700"><input type="color" value="${col}" data-team="${t}" onchange="updateTeamColor(this)"><button onclick="resetTeamColor('${t.replace(/'/g,"\\'")}',this)" title="Reset">↺</button></div>`;
@@ -1814,12 +1840,12 @@ function saveAdminConfig(){
   applyConfig();
   renderCurrentTab();
 
+  // Show sheet config copy prompt prominently
+  showSheetConfigInstructions();
+
   const saved=document.getElementById('adminSaved');
   saved.classList.add('show');
-  setTimeout(()=>saved.classList.remove('show'),2000);
-
-  // Show sheet config instructions
-  showSheetConfigInstructions();
+  setTimeout(()=>saved.classList.remove('show'),3000);
 }
 
 function previewAdminConfig(){
