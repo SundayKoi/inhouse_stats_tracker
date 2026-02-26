@@ -1534,14 +1534,15 @@ function loadConfig(){
 // Load config from Google Sheet "Config" tab
 async function loadSheetConfig(){
   try{
-    const sid=adminConfig.sheetId||DEFAULT_CONFIG.sheetId;
+    const sid=SHEET_ID;
     const rows=await new Promise((resolve,reject)=>{
       const cb='_gcfg_'+Math.random().toString(36).slice(2);
       const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config&headers=1';
-      window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{
+      const timeout=setTimeout(function(){delete window[cb];reject(new Error('Config tab request timed out'))},5000);
+      window[cb]=function(r){clearTimeout(timeout);delete window[cb];document.body.removeChild(s);try{
         console.log('Config gviz response status:',r.status,r.errors||'no errors');
         console.log('Config gviz table:',r.table?'exists':'MISSING');
-        if(!r.table||!r.table.cols){console.log('Full response:',JSON.stringify(r).substring(0,500));reject(new Error('No table in response'));return}
+        if(!r.table||!r.table.cols){console.log('Full response:',JSON.stringify(r).substring(0,500));reject(new Error('No table in response - sheet may not be published to web'));return}
         const cols=r.table.cols.map(c=>c.label||c.id);
         console.log('Config columns:',cols);
         const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
@@ -1956,7 +1957,7 @@ function initTabDragDrop(){
 const _origLoadSheetJSONP=loadSheetJSONP;
 loadSheetJSONP=function(sheet){
   loadConfig();
-  const sid=adminConfig.sheetId||SHEET_ID;
+  const sid=SHEET_ID;
   const sn=adminConfig.sheetName||sheet;
   return new Promise((resolve,reject)=>{
     const cb='_gviz_cb_'+Math.random().toString(36).slice(2);
