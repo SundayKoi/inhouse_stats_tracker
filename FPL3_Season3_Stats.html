@@ -461,71 +461,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .lookup-actions button{background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 14px;cursor:pointer;letter-spacing:1px;transition:all .3s}
 .lookup-actions button:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--cyan-dim)}
 /* ─── ADMIN PANEL ─── */
-.admin-gear{position:fixed;bottom:24px;left:24px;width:36px;height:36px;background:var(--bg3);border:1px solid var(--border);color:var(--dim);font-size:16px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center;transition:all .3s;opacity:.7;border-radius:4px}
-.admin-gear:hover{opacity:1;color:var(--cyan);border-color:var(--cyan);transform:rotate(90deg);box-shadow:0 0 15px var(--cyan-dim)}
 
-.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;overflow-y:auto;backdrop-filter:blur(6px)}
-.admin-overlay.active{display:block;animation:modalIn .3s ease}
 
-.admin-login{max-width:360px;margin:15vh auto;padding:30px;background:var(--bg);border:1px solid var(--border);position:relative}
-.admin-login::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink));animation:cardEdge 3s linear infinite;background-size:200% 100%}
-.admin-login h2{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;margin-bottom:16px;color:var(--cyan)}
-.admin-login input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 14px;margin-bottom:12px;outline:none;transition:border-color .3s}
-.admin-login input:focus{border-color:var(--cyan)}
-.admin-login button{width:100%;background:var(--cyan);border:none;color:var(--bg);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;padding:10px;cursor:pointer;letter-spacing:2px;transition:all .3s}
-.admin-login button:hover{box-shadow:0 0 20px var(--cyan-glow)}
-.admin-login .admin-err{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--pink);margin-top:8px;display:none}
 
-.admin-panel{max-width:700px;margin:40px auto;padding:24px;background:var(--bg);border:1px solid var(--border);position:relative}
-.admin-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
-.admin-panel h2{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;margin-bottom:4px;color:var(--cyan)}
-.admin-panel .admin-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px;letter-spacing:1px}
-.admin-panel .admin-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;transition:all .3s}
-.admin-panel .admin-close:hover{color:var(--pink);transform:rotate(90deg)}
 
-.admin-section{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.admin-section:last-child{border-bottom:none}
-.admin-section h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text);margin-bottom:12px}
 
-.admin-field{margin-bottom:12px}
-.admin-field label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
-.admin-field input,.admin-field select,.admin-field textarea{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:500;padding:8px 12px;outline:none;transition:border-color .3s}
-.admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{border-color:var(--cyan)}
-.admin-field textarea{min-height:60px;resize:vertical;font-family:'Share Tech Mono',monospace;font-size:11px}
-.admin-field .admin-hint{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-top:3px}
 
-.admin-color-row{display:flex;gap:12px;flex-wrap:wrap}
-.admin-color-field{flex:1;min-width:120px}
-.admin-color-field label{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
-.admin-color-field .color-wrap{display:flex;gap:6px;align-items:center}
-.admin-color-field input[type="color"]{width:36px;height:30px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;padding:2px}
-.admin-color-field input[type="text"]{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 8px;outline:none}
 
-.admin-tabs-list{list-style:none;padding:0}
-.admin-tabs-list li{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);margin-bottom:4px;cursor:grab;transition:all .2s;user-select:none}
-.admin-tabs-list li:hover{border-color:var(--dim)}
-.admin-tabs-list li.dragging{opacity:.4;border-color:var(--cyan)}
-.admin-tabs-list li .atl-handle{color:var(--dim);font-size:14px;cursor:grab}
-.admin-tabs-list li .atl-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;flex:1}
-.admin-tabs-list li .atl-toggle{position:relative;width:36px;height:20px;background:var(--border);border-radius:10px;cursor:pointer;transition:background .3s}
-.admin-tabs-list li .atl-toggle.on{background:var(--cyan)}
-.admin-tabs-list li .atl-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:var(--text);border-radius:50%;transition:transform .3s}
-.admin-tabs-list li .atl-toggle.on::after{transform:translateX(16px)}
 
-.admin-team-row{display:grid;grid-template-columns:1fr 50px 30px;gap:8px;align-items:center;margin-bottom:4px}
-.admin-team-row input{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:13px;padding:6px 8px;outline:none}
-.admin-team-row input[type="color"]{width:30px;height:28px;padding:1px;cursor:pointer}
-.admin-team-row button{background:none;border:none;color:var(--dim);font-size:14px;cursor:pointer;transition:color .2s}
-.admin-team-row button:hover{color:var(--pink)}
 
-.admin-btn{background:var(--cyan);border:none;color:var(--bg);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;padding:10px 20px;cursor:pointer;letter-spacing:1px;transition:all .3s;margin-right:8px}
-.admin-btn:hover{box-shadow:0 0 20px var(--cyan-glow)}
-.admin-btn.danger{background:var(--pink)}
-.admin-btn.danger:hover{box-shadow:0 0 20px var(--pink-glow)}
-.admin-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--text)}
-.admin-btn.secondary:hover{border-color:var(--cyan);color:var(--cyan)}
-.admin-saved{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;opacity:0;transition:opacity .3s}
-.admin-saved.show{opacity:1}
 </style>
 </head>
 <body>
@@ -604,21 +548,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
 </div>
 <button class="btt" id="bttBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">▲</button>
-<button class="admin-gear" id="adminGear" onclick="openAdminLogin()" title="Admin Panel">⚙</button>
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-login" id="adminLoginBox">
-    <h2>⚙ ADMIN ACCESS</h2>
-    <input type="password" id="adminPwInput" placeholder="Enter admin password..." onkeydown="if(event.key==='Enter')adminLogin()">
-    <button onclick="adminLogin()">AUTHENTICATE</button>
-    <div class="admin-err" id="adminErr">Invalid password</div>
-  </div>
-  <div class="admin-panel" id="adminPanelBox" style="display:none">
-    <button class="admin-close" onclick="closeAdmin()">✕</button>
-    <h2>⚙ DASHBOARD CONFIGURATION</h2>
-    <div class="admin-sub">Edit settings below → Save → Copy Config for Sheet → Paste into your Google Sheet Config tab for everyone to see changes</div>
-    <div id="adminContent"></div>
-  </div>
-</div>
 <div class="player-preview" id="playerPreview"></div>
 <div class="trading-card-overlay" id="tradingCardOverlay"></div>
 <div class="toast" id="toast"></div>
@@ -1483,21 +1412,15 @@ renderCurrentTab=function(){
 };
 
 // ════════════════════════════════════════
-// ADMIN PANEL & CONFIGURATION SYSTEM
+// SHEET CONFIG SYSTEM (reads from Google Sheet "Config" tab)
 // ════════════════════════════════════════
 
-// Per-customer passwords (baked in by deployment tool)
-const ADMIN_PASSWORDS={
-  'fpl2025':'master',
-};
-
 const DEFAULT_CONFIG={
-  sheetId:'1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU',
   leagueName:'FRANCHISE PREMIER LEAGUE',
   subtitle:'PLAYER PERFORMANCE DASHBOARD',
   seasonLabel:'Season 3 // Official Stats',
   creditLine:'Stats compiled by Drib x Lizzo Mukkbang',
-  footerText:'FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS',
+  footerText:'FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS',
   colorPrimary:'#00f0ff',
   colorSecondary:'#ff2d7b',
   colorAccent:'#a855f7',
@@ -1510,56 +1433,40 @@ const DEFAULT_CONFIG={
     {id:'records',name:'Records',enabled:true},
     {id:'mvp',name:'MVP',enabled:true},
     {id:'power',name:'Power Rankings',enabled:true},
-    {id:'lookup',name:'🔍 Player Lookup',enabled:true},
+    {id:'lookup',name:'\u{1f50d} Player Lookup',enabled:true},
   ],
   teamColors:{},
   minGamesDefault:5,
-  sheetName:'Sheet1',
 };
 
-let adminConfig=null;
-let adminLoggedIn=false;
-let sheetConfigLoaded=false;
+let adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
-// Load config: Sheet Config tab > localStorage > hardcoded defaults
-function loadConfig(){
-  try{
-    const saved=localStorage.getItem('fpl_dashboard_config_'+DEFAULT_CONFIG.sheetId);
-    if(saved){adminConfig=JSON.parse(saved);
-      for(const k in DEFAULT_CONFIG){if(!(k in adminConfig))adminConfig[k]=DEFAULT_CONFIG[k]}
-    }else{adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG))}
-  }catch(e){adminConfig=JSON.parse(JSON.stringify(DEFAULT_CONFIG))}
-}
-
-// Load config from Google Sheet "Config" tab
 async function loadSheetConfig(){
   try{
-    const sid=adminConfig.sheetId||DEFAULT_CONFIG.sheetId;
-    const rows=await new Promise((resolve,reject)=>{
+    const sid=SHEET_ID;
+    const rows=await new Promise(function(resolve,reject){
       const cb='_gcfg_'+Math.random().toString(36).slice(2);
       const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config&headers=1';
-      window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{
-        const cols=r.table.cols.map(c=>c.label||c.id);
-        console.log('Config columns:',cols);
-        const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
-        console.log('Config first 3 rows:',rows.slice(0,3));
+      const timeout=setTimeout(function(){delete window[cb];reject(new Error('Config request timed out'))},5000);
+      window[cb]=function(r){clearTimeout(timeout);delete window[cb];document.body.removeChild(s);try{
+        if(!r.table||!r.table.cols){reject(new Error('No Config table'));return}
+        const cols=r.table.cols.map(function(c){return c.label||c.id});
+        const rows=r.table.rows.map(function(row){var o={};row.c.forEach(function(cell,i){o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
         resolve(rows)}catch(e){reject(e)}};
-      const s=document.createElement('script');s.src=url;
-      s.onerror=function(){delete window[cb];reject(new Error('No Config tab'))};
+      var s=document.createElement('script');s.src=url;
+      s.onerror=function(){clearTimeout(timeout);delete window[cb];reject(new Error('Config tab not found'))};
       document.body.appendChild(s);
     });
-    const cfg={};
+    var cfg={};
     rows.forEach(function(r){
-      const keys=Object.keys(r);
+      var keys=Object.keys(r);
       var key='',val='';
       if(r['Key']!==undefined){key=r['Key'];val=r['Value']||''}
       else if(r['key']!==undefined){key=r['key'];val=r['value']||''}
       else if(keys.length>=2){key=r[keys[0]]||'';val=r[keys[1]]||''}
-      if(key.trim()&&key.trim()!=='Key'&&key.trim()!=='key'){
-        cfg[key.trim()]=val.trim();
-      }
+      if(key.trim()&&key.trim()!=='Key'&&key.trim()!=='key'){cfg[key.trim()]=val.trim()}
     });
-    console.log('Parsed config:',cfg);
+    console.log('Config from sheet:',cfg);
     if(cfg.leagueName)adminConfig.leagueName=cfg.leagueName;
     if(cfg.subtitle)adminConfig.subtitle=cfg.subtitle;
     if(cfg.seasonLabel)adminConfig.seasonLabel=cfg.seasonLabel;
@@ -1587,390 +1494,60 @@ async function loadSheetConfig(){
       adminConfig.tabs=reordered;
     }
     for(var k in cfg){if(k.indexOf('teamColor_')===0){adminConfig.teamColors[k.replace('teamColor_','')]=cfg[k]}}
-    sheetConfigLoaded=true;
-    console.log('Sheet config loaded successfully');
-    console.log('Final config:',adminConfig.leagueName,adminConfig.colorPrimary,adminConfig.colorSecondary);
+    console.log('Sheet config applied:',adminConfig.leagueName,adminConfig.colorPrimary);
   }catch(e){
-    console.log('Config tab error, using defaults:',e.message||e);
-    sheetConfigLoaded=false;
+    console.log('No Config tab, using defaults:',e.message);
   }
 }
-
-
-function saveConfig(){
-  try{localStorage.setItem('fpl_dashboard_config_'+DEFAULT_CONFIG.sheetId,JSON.stringify(adminConfig))}catch(e){}
-}
-
 
 function applyConfig(){
-  if(!adminConfig)loadConfig();
-  const c=adminConfig;
+  var c=adminConfig;
   try{
-  // Sheet ID
-  if(c.sheetId)window._cfgSheetId=c.sheetId;
-
-  // Text content
-  document.title=c.leagueName+' — Stats Dashboard';
-  const h1=document.querySelector('.hdr h1');if(h1){h1.textContent=c.leagueName;h1.dataset.text=c.leagueName}
-  const sub=document.querySelector('.hdr .sub');if(sub)sub.textContent=c.subtitle;
-  const badge=document.querySelector('.badge');if(badge)badge.textContent=c.seasonLabel;
-  const cred=document.querySelector('.hdr .cred');if(cred)cred.textContent=c.creditLine;
-  const ftr=document.querySelector('.ftr');if(ftr)ftr.textContent=c.footerText;
-
-  // Colors
-  const root=document.documentElement.style;
-  if(c.colorPrimary){
-    root.setProperty('--cyan',c.colorPrimary);
-    root.setProperty('--cyan-dim',c.colorPrimary+'25');
-    root.setProperty('--cyan-glow',c.colorPrimary+'40');
-  }
-  if(c.colorSecondary){
-    root.setProperty('--pink',c.colorSecondary);
-    root.setProperty('--pink-glow',c.colorSecondary+'40');
-  }
-  if(c.colorAccent){
-    root.setProperty('--purple',c.colorAccent);
-    root.setProperty('--purple-glow',c.colorAccent+'40');
-  }
-  if(c.colorBg&&c.colorBg!=='#06060c'){
-    root.setProperty('--bg',c.colorBg);
-  }
-
-  // Logo
-  let logoEl=document.getElementById('customLogo');
-  if(c.logoUrl){
-    if(!logoEl){logoEl=document.createElement('img');logoEl.id='customLogo';logoEl.style.cssText='max-height:50px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto';document.querySelector('.hdr').insertBefore(logoEl,document.querySelector('.badge'))}
-    logoEl.src=c.logoUrl;
-  }else if(logoEl){logoEl.remove()}
-
-  // Tabs — order & visibility
-  const nav=document.getElementById('tabNav');
-  const existing=[...nav.querySelectorAll('.tab-btn')];
-  nav.innerHTML='';
-  c.tabs.forEach(t=>{
-    if(!t.enabled)return;
-    const btn=existing.find(b=>b.dataset.tab===t.id);
-    if(btn){btn.textContent=t.name;nav.appendChild(btn)}
-    else{const nb=document.createElement('button');nb.className='tab-btn';nb.dataset.tab=t.id;nb.textContent=t.name;nb.addEventListener('click',()=>switchTab(t.id,true));nav.appendChild(nb)}
-  });
-  // Hide disabled tab pages
-  c.tabs.forEach(t=>{
-    const pg=document.getElementById('pg-'+t.id);
-    if(pg&&!t.enabled)pg.style.display='none';
-    if(pg&&t.enabled)pg.style.removeProperty('display');
-  });
-
-  // Team colors override
-  if(c.teamColors&&Object.keys(c.teamColors).length){
-    for(const[team,color]of Object.entries(c.teamColors)){
-      TC[team]=color;
+    document.title=c.leagueName+' — Stats Dashboard';
+    var h1=document.querySelector('.hdr h1');if(h1){h1.textContent=c.leagueName;h1.dataset.text=c.leagueName}
+    var sub=document.querySelector('.hdr .sub');if(sub)sub.textContent=c.subtitle;
+    var badge=document.querySelector('.badge');if(badge)badge.textContent=c.seasonLabel;
+    var cred=document.querySelector('.hdr .cred');if(cred)cred.textContent=c.creditLine;
+    var ftr=document.querySelector('.ftr');if(ftr)ftr.textContent=c.footerText;
+    var root=document.documentElement.style;
+    if(c.colorPrimary){root.setProperty('--cyan',c.colorPrimary);root.setProperty('--cyan-dim',c.colorPrimary+'25');root.setProperty('--cyan-glow',c.colorPrimary+'40')}
+    if(c.colorSecondary){root.setProperty('--pink',c.colorSecondary);root.setProperty('--pink-glow',c.colorSecondary+'40')}
+    if(c.colorAccent){root.setProperty('--purple',c.colorAccent);root.setProperty('--purple-glow',c.colorAccent+'40')}
+    if(c.colorBg&&c.colorBg!=='#06060c'){root.setProperty('--bg',c.colorBg)}
+    var logoEl=document.getElementById('customLogo');
+    if(c.logoUrl){
+      if(!logoEl){logoEl=document.createElement('img');logoEl.id='customLogo';logoEl.style.cssText='max-height:50px;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto';document.querySelector('.hdr').insertBefore(logoEl,document.querySelector('.badge'))}
+      logoEl.src=c.logoUrl;
+    }else if(logoEl){logoEl.remove()}
+    var nav=document.getElementById('tabNav');
+    var existing=[].slice.call(nav.querySelectorAll('.tab-btn'));
+    nav.innerHTML='';
+    c.tabs.forEach(function(t){
+      if(!t.enabled)return;
+      var btn=existing.find(function(b){return b.dataset.tab===t.id});
+      if(btn){btn.textContent=t.name;nav.appendChild(btn)}
+      else{var nb=document.createElement('button');nb.className='tab-btn';nb.dataset.tab=t.id;nb.textContent=t.name;nb.addEventListener('click',function(){switchTab(t.id,true)});nav.appendChild(nb)}
+    });
+    c.tabs.forEach(function(t){
+      var pg=document.getElementById('pg-'+t.id);
+      if(pg&&!t.enabled)pg.style.display='none';
+      if(pg&&t.enabled)pg.style.removeProperty('display');
+    });
+    if(c.teamColors&&Object.keys(c.teamColors).length){
+      for(var team in c.teamColors){TC[team]=c.teamColors[team]}
     }
-  }
-
-  // Min games default
-  const mgSel=document.getElementById('minGSel');
-  if(mgSel){
-    const opt=[...mgSel.options].find(o=>o.value===String(c.minGamesDefault));
-    if(opt)mgSel.value=c.minGamesDefault;
-  }
-  console.log('Config applied:',c.leagueName,c.colorPrimary,c.colorSecondary);
+    var mgSel=document.getElementById('minGSel');
+    if(mgSel){
+      var opt=[].slice.call(mgSel.options).find(function(o){return o.value===String(c.minGamesDefault)});
+      if(opt)mgSel.value=c.minGamesDefault;
+    }
   }catch(err){console.error('applyConfig error:',err)}
 }
 
-// Override SHEET_ID to use config
-const _origSheetId=SHEET_ID;
-Object.defineProperty(window,'_cfgSheetId',{set(v){},get(){return null}});
-
-// LOGIN
-function openAdminLogin(){
-  document.getElementById('adminOverlay').classList.add('active');
-  document.getElementById('adminLoginBox').style.display='';
-  document.getElementById('adminPanelBox').style.display='none';
-  document.getElementById('adminErr').style.display='none';
-  setTimeout(()=>document.getElementById('adminPwInput').focus(),100);
-}
-
-function adminLogin(){
-  const pw=document.getElementById('adminPwInput').value.trim();
-  if(ADMIN_PASSWORDS[pw]){
-    adminLoggedIn=true;
-    document.getElementById('adminLoginBox').style.display='none';
-    document.getElementById('adminPanelBox').style.display='';
-    renderAdminPanel();
-  }else{
-    document.getElementById('adminErr').style.display='block';
-    document.getElementById('adminPwInput').value='';
-    setTimeout(()=>document.getElementById('adminErr').style.display='none',2000);
-  }
-}
-
-function closeAdmin(){
-  document.getElementById('adminOverlay').classList.remove('active');
-  document.getElementById('adminPwInput').value='';
-  adminLoggedIn=false;
-}
-
-document.getElementById('adminOverlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('adminOverlay'))closeAdmin();
-});
-
-// RENDER ADMIN PANEL
-function renderAdminPanel(){
-  const c=adminConfig;
-  let h='';
-
-  // Data Source
-  h+=`<div class="admin-section"><h3>📊 Data Source</h3>
-    <div class="admin-field"><label>Google Sheet ID</label><input type="text" id="cfg_sheetId" value="${c.sheetId}"><div class="admin-hint">The long ID from your Google Sheets URL</div></div>
-    <div class="admin-field"><label>Sheet Tab Name</label><input type="text" id="cfg_sheetName" value="${c.sheetName||'Sheet1'}"><div class="admin-hint">Name of the tab/worksheet to pull data from</div></div>
-  </div>`;
-
-  // Branding
-  h+=`<div class="admin-section"><h3>🏷 Branding</h3>
-    <div class="admin-field"><label>League / Tournament Name</label><input type="text" id="cfg_leagueName" value="${c.leagueName}"></div>
-    <div class="admin-field"><label>Subtitle</label><input type="text" id="cfg_subtitle" value="${c.subtitle}"></div>
-    <div class="admin-field"><label>Season Badge Label</label><input type="text" id="cfg_seasonLabel" value="${c.seasonLabel}"></div>
-    <div class="admin-field"><label>Credit Line</label><input type="text" id="cfg_creditLine" value="${c.creditLine}"></div>
-    <div class="admin-field"><label>Footer Text</label><input type="text" id="cfg_footerText" value="${c.footerText}"></div>
-    <div class="admin-field"><label>Logo URL (optional)</label><input type="text" id="cfg_logoUrl" value="${c.logoUrl||''}" placeholder="https://..."><div class="admin-hint">Leave blank for no logo</div></div>
-  </div>`;
-
-  // Colors
-  h+=`<div class="admin-section"><h3>🎨 Colors</h3>
-    <div class="admin-color-row">
-      <div class="admin-color-field"><label>Primary (Cyan)</label><div class="color-wrap"><input type="color" id="cfg_colorPrimary_c" value="${c.colorPrimary}" oninput="document.getElementById('cfg_colorPrimary').value=this.value"><input type="text" id="cfg_colorPrimary" value="${c.colorPrimary}" oninput="document.getElementById('cfg_colorPrimary_c').value=this.value"></div></div>
-      <div class="admin-color-field"><label>Secondary (Pink)</label><div class="color-wrap"><input type="color" id="cfg_colorSecondary_c" value="${c.colorSecondary}" oninput="document.getElementById('cfg_colorSecondary').value=this.value"><input type="text" id="cfg_colorSecondary" value="${c.colorSecondary}" oninput="document.getElementById('cfg_colorSecondary_c').value=this.value"></div></div>
-      <div class="admin-color-field"><label>Accent (Purple)</label><div class="color-wrap"><input type="color" id="cfg_colorAccent_c" value="${c.colorAccent}" oninput="document.getElementById('cfg_colorAccent').value=this.value"><input type="text" id="cfg_colorAccent" value="${c.colorAccent}" oninput="document.getElementById('cfg_colorAccent_c').value=this.value"></div></div>
-    </div>
-    <div class="admin-color-row" style="margin-top:10px">
-      <div class="admin-color-field"><label>Background</label><div class="color-wrap"><input type="color" id="cfg_colorBg_c" value="${c.colorBg}" oninput="document.getElementById('cfg_colorBg').value=this.value"><input type="text" id="cfg_colorBg" value="${c.colorBg}" oninput="document.getElementById('cfg_colorBg_c').value=this.value"></div></div>
-    </div>
-  </div>`;
-
-  // Tabs
-  h+=`<div class="admin-section"><h3>📑 Tabs (drag to reorder, toggle to show/hide)</h3>
-    <ul class="admin-tabs-list" id="adminTabsList">`;
-  c.tabs.forEach((t,i)=>{
-    h+=`<li draggable="true" data-idx="${i}"><span class="atl-handle">☰</span><span class="atl-name">${t.name}</span><div class="atl-toggle ${t.enabled?'on':''}" data-tab-id="${t.id}" onclick="toggleAdminTab(this)"></div></li>`;
-  });
-  h+=`</ul></div>`;
-
-  // Team Colors
-  h+=`<div class="admin-section"><h3>🎨 Team Colors</h3><div class="admin-hint" style="margin-bottom:10px">Change colors for each team's bars, cards, and stats. After saving, use "Copy Config for Sheet" to make changes visible to all viewers.</div><div id="adminTeamColors">`;
-  const allTeams=[...new Set(PD.map(p=>p.team))].filter(t=>t&&t!=='Sub').sort();
-  if(!allTeams.length){h+=`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim)">Teams will appear here once data loads. Close admin, wait for dashboard to load, then reopen.</div>`}
-  allTeams.forEach(t=>{
-    const col=c.teamColors[t]||TC[t]||'#6366f1';
-    h+=`<div class="admin-team-row"><input type="text" value="${t}" readonly style="color:${col};font-weight:700"><input type="color" value="${col}" data-team="${t}" onchange="updateTeamColor(this)"><button onclick="resetTeamColor('${t.replace(/'/g,"\\'")}',this)" title="Reset">↺</button></div>`;
-  });
-  h+=`</div></div>`;
-
-  // Settings
-  h+=`<div class="admin-section"><h3>⚙ Settings</h3>
-    <div class="admin-field"><label>Default Min Games Filter</label><select id="cfg_minGamesDefault"><option value="1" ${c.minGamesDefault==1?'selected':''}>1+</option><option value="3" ${c.minGamesDefault==3?'selected':''}>3+</option><option value="5" ${c.minGamesDefault==5?'selected':''}>5+</option><option value="8" ${c.minGamesDefault==8?'selected':''}>8+</option><option value="10" ${c.minGamesDefault==10?'selected':''}>10+</option></select></div>
-  </div>`;
-
-  // Actions
-  h+=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-    <button class="admin-btn" onclick="saveAdminConfig()">💾 SAVE & APPLY</button>
-    <button class="admin-btn secondary" onclick="previewAdminConfig()">👁 PREVIEW</button>
-    <button class="admin-btn danger" onclick="resetAdminConfig()">🗑 RESET TO DEFAULTS</button>
-    <span class="admin-saved" id="adminSaved">✓ Saved!</span>
-  </div>
-  <div style="margin-top:12px"><button class="admin-btn secondary" onclick="exportSheetConfig()">📋 Copy Config for Sheet</button><button class="admin-btn secondary" onclick="exportConfig()">📤 Export JSON</button><button class="admin-btn secondary" onclick="document.getElementById('importInput').click()">📥 Import JSON</button><input type="file" id="importInput" accept=".json" style="display:none" onchange="importConfig(event)"></div>`;
-
-  document.getElementById('adminContent').innerHTML=h;
-
-  // Setup drag and drop for tabs
-  initTabDragDrop();
-}
-
-function toggleAdminTab(el){
-  el.classList.toggle('on');
-}
-
-function updateTeamColor(input){
-  const team=input.dataset.team;
-  const row=input.closest('.admin-team-row');
-  row.querySelector('input[type="text"]').style.color=input.value;
-}
-
-function resetTeamColor(team,btn){
-  const row=btn.closest('.admin-team-row');
-  const defaultColor=TC[team]||'#6366f1';
-  row.querySelector('input[type="color"]').value=defaultColor;
-  row.querySelector('input[type="text"]').style.color=defaultColor;
-}
-
-function saveAdminConfig(){
-  const c=adminConfig;
-  c.sheetId=document.getElementById('cfg_sheetId').value.trim();
-  c.sheetName=document.getElementById('cfg_sheetName').value.trim()||'Sheet1';
-  c.leagueName=document.getElementById('cfg_leagueName').value.trim();
-  c.subtitle=document.getElementById('cfg_subtitle').value.trim();
-  c.seasonLabel=document.getElementById('cfg_seasonLabel').value.trim();
-  c.creditLine=document.getElementById('cfg_creditLine').value.trim();
-  c.footerText=document.getElementById('cfg_footerText').value.trim();
-  c.logoUrl=document.getElementById('cfg_logoUrl').value.trim();
-  c.colorPrimary=document.getElementById('cfg_colorPrimary').value.trim();
-  c.colorSecondary=document.getElementById('cfg_colorSecondary').value.trim();
-  c.colorAccent=document.getElementById('cfg_colorAccent').value.trim();
-  c.colorBg=document.getElementById('cfg_colorBg').value.trim();
-  c.minGamesDefault=parseInt(document.getElementById('cfg_minGamesDefault').value);
-
-  // Tabs order & visibility
-  const items=[...document.querySelectorAll('#adminTabsList li')];
-  c.tabs=items.map(li=>{
-    const idx=parseInt(li.dataset.idx);
-    const orig=adminConfig.tabs[idx];
-    const tog=li.querySelector('.atl-toggle');
-    return{id:orig.id,name:orig.name,enabled:tog.classList.contains('on')};
-  });
-
-  // Team colors
-  c.teamColors={};
-  document.querySelectorAll('#adminTeamColors .admin-team-row').forEach(row=>{
-    const team=row.querySelector('input[type="text"]').value;
-    const color=row.querySelector('input[type="color"]').value;
-    c.teamColors[team]=color;
-  });
-
-  // Save to localStorage for this browser
-  saveConfig();
-  applyConfig();
-  renderCurrentTab();
-
-  // Show sheet config copy prompt prominently
-  showSheetConfigInstructions();
-
-  const saved=document.getElementById('adminSaved');
-  saved.classList.add('show');
-  setTimeout(()=>saved.classList.remove('show'),3000);
-}
-
-function previewAdminConfig(){
-  saveAdminConfig();
-  closeAdmin();
-  renderCurrentTab();
-}
-
-function resetAdminConfig(){
-  if(!confirm('Reset all settings to defaults? This cannot be undone.'))return;
-  adminConfig={...DEFAULT_CONFIG,tabs:DEFAULT_CONFIG.tabs.map(t=>({...t}))};
-  saveConfig();
-  applyConfig();
-  renderAdminPanel();
-  renderCurrentTab();
-  const saved=document.getElementById('adminSaved');
-  saved.classList.add('show');
-  setTimeout(()=>saved.classList.remove('show'),2000);
-}
-
-function exportConfig(){
-  const blob=new Blob([JSON.stringify(adminConfig,null,2)],{type:'application/json'});
-  const link=document.createElement('a');
-  link.download='fpl_dashboard_config.json';
-  link.href=URL.createObjectURL(blob);
-  link.click();
-  showToast('Config exported!');
-}
-
-function exportSheetConfig(){
-  const c=adminConfig;
-  const tabOrder=c.tabs.map(t=>t.id).join(',');
-  let tsv='Key\tValue\n';
-  tsv+='leagueName\t'+c.leagueName+'\n';
-  tsv+='subtitle\t'+c.subtitle+'\n';
-  tsv+='seasonLabel\t'+c.seasonLabel+'\n';
-  tsv+='creditLine\t'+c.creditLine+'\n';
-  tsv+='footerText\t'+c.footerText+'\n';
-  tsv+='colorPrimary\t'+c.colorPrimary+'\n';
-  tsv+='colorSecondary\t'+c.colorSecondary+'\n';
-  tsv+='colorAccent\t'+c.colorAccent+'\n';
-  tsv+='colorBg\t'+c.colorBg+'\n';
-  tsv+='logoUrl\t'+(c.logoUrl||'')+'\n';
-  tsv+='minGamesDefault\t'+c.minGamesDefault+'\n';
-  c.tabs.forEach(t=>{
-    const cfgKey='tab'+t.id.charAt(0).toUpperCase()+t.id.slice(1);
-    tsv+=cfgKey+'\t'+(t.enabled?'true':'false')+'\n';
-  });
-  tsv+='tabOrder\t'+tabOrder+'\n';
-  if(c.teamColors){for(const[team,color]of Object.entries(c.teamColors)){tsv+='teamColor_'+team+'\t'+color+'\n'}}
-  navigator.clipboard.writeText(tsv).then(()=>showToast('Sheet config copied! Paste into your Config tab in Google Sheets')).catch(()=>{
-    prompt('Copy this and paste into your Config tab:',tsv);
-  });
-}
-
-function showSheetConfigInstructions(){
-  const existing=document.getElementById('sheetConfigMsg');
-  if(existing)existing.remove();
-  const div=document.createElement('div');
-  div.id='sheetConfigMsg';
-  div.style.cssText='margin-top:16px;padding:14px;background:var(--bg2);border:1px solid var(--green);font-family:"Share Tech Mono",monospace;font-size:10px;color:var(--green);line-height:1.6';
-  div.innerHTML='✓ Settings saved to this browser.<br><br>'+
-    'To make these changes visible to <strong>everyone</strong> who views your dashboard:<br>'+
-    '1. Click <strong>📋 COPY CONFIG FOR SHEET</strong> below<br>'+
-    '2. Open your Google Sheet<br>'+
-    '3. Create a new tab called <strong>Config</strong><br>'+
-    '4. Paste into cell A1<br><br>'+
-    'The dashboard reads this Config tab on every page load, so everyone sees the same settings.<br><br>'+
-    '<button class="admin-btn" onclick="exportSheetConfig()" style="font-size:10px;padding:6px 14px">📋 COPY CONFIG FOR SHEET</button>';
-  const actions=document.querySelector('#adminContent > div:last-child');
-  if(actions)actions.after(div);
-}
-
-function importConfig(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(ev){
-    try{
-      const imported=JSON.parse(ev.target.result);
-      adminConfig={...DEFAULT_CONFIG,...imported};
-      saveConfig();
-      applyConfig();
-      renderAdminPanel();
-      renderCurrentTab();
-      showToast('Config imported & applied!');
-    }catch(err){showToast('Invalid config file')}
-  };
-  reader.readAsText(file);
-  e.target.value='';
-}
-
-// TAB DRAG AND DROP
-function initTabDragDrop(){
-  const list=document.getElementById('adminTabsList');
-  if(!list)return;
-  let dragEl=null;
-  list.querySelectorAll('li').forEach(li=>{
-    li.addEventListener('dragstart',e=>{dragEl=li;li.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
-    li.addEventListener('dragend',()=>{li.classList.remove('dragging');dragEl=null});
-    li.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';const rect=li.getBoundingClientRect();const mid=rect.top+rect.height/2;if(e.clientY<mid)list.insertBefore(dragEl,li);else list.insertBefore(dragEl,li.nextSibling)});
-  });
-}
-
-// OVERRIDE loadSheetJSONP to use configured sheet ID
-const _origLoadSheetJSONP=loadSheetJSONP;
-loadSheetJSONP=function(sheet){
-  loadConfig();
-  const sid=adminConfig.sheetId||SHEET_ID;
-  const sn=adminConfig.sheetName||sheet;
-  return new Promise((resolve,reject)=>{
-    const cb='_gviz_cb_'+Math.random().toString(36).slice(2);
-    const url=`https://docs.google.com/spreadsheets/d/${sid}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sn)}`;
-    window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});resolve(rows)}catch(e){reject(e)}};
-    const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s);
-  });
-};
-
-// Apply config on page load (before data loads)
-loadConfig();
-applyConfig();
-
-// GO — load sheet config first, then data
+// GO — load sheet config, apply, then load data
 async function init(){
   await loadSheetConfig();
-  applyConfig(); // re-apply with sheet overrides
+  applyConfig();
   await loadData();
   buildTicker();
   animateMetaNumbers();
