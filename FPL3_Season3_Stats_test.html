@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FPL Season 3 — Stats Dashboard</title>
+<title>Stats Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -461,7 +461,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .lookup-actions button{background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 14px;cursor:pointer;letter-spacing:1px;transition:all .3s}
 .lookup-actions button:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--cyan-dim)}
 /* ─── ADMIN PANEL ─── */
-.admin-gear{position:fixed;bottom:24px;left:24px;width:36px;height:36px;background:var(--bg3);border:1px solid var(--border);color:var(--dim);font-size:16px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center;transition:all .3s;opacity:.4}
+.admin-gear{position:fixed;bottom:24px;left:24px;width:36px;height:36px;background:var(--bg3);border:1px solid var(--border);color:var(--dim);font-size:16px;cursor:pointer;z-index:50;display:flex;align-items:center;justify-content:center;transition:all .3s;opacity:.7;border-radius:4px}
 .admin-gear:hover{opacity:1;color:var(--cyan);border-color:var(--cyan);transform:rotate(90deg);box-shadow:0 0 15px var(--cyan-dim)}
 
 .admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;overflow-y:auto;backdrop-filter:blur(6px)}
@@ -554,7 +554,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </header>
   <div class="stat-ticker" id="statTicker" style="display:none"><div class="ticker-track" id="tickerTrack"></div></div>
   <div class="gfilters">
-    <div class="ctrl"><label>Season</label><select id="seasonSel" onchange="onGlobalFilter()"><option value="All">All Seasons</option><option value="S3" selected>Season 3</option><option value="S2">Season 2</option><option value="S1">Season 1</option></select></div>
+    <div class="ctrl"><label>Season</label><select id="seasonSel" onchange="onGlobalFilter()"><option value="All">All Seasons</option></select></div>
     <div class="ctrl"><label>Phase</label><select id="phaseSel" onchange="onGlobalFilter()"><option value="All">All</option><option value="Regular">Regular</option><option value="Playoffs">Playoffs</option></select></div>
   </div>
   <nav class="tab-nav" id="tabNav">
@@ -577,7 +577,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
     <div class="ctrls2">
       <div class="ctrl"><label>Role</label><div class="role-checks" id="roleChecks"><label class="rc"><input type="checkbox" value="TOP" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#ef4444">Top</span></label><label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#22c55e">Jng</span></label><label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#3b82f6">Mid</span></label><label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#f59e0b">Adc</span></label><label class="rc"><input type="checkbox" value="UTILITY" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#a855f7">Sup</span></label></div></div>
-      <div class="ctrl"><label>FPL Team</label><select id="teamSel" onchange="renderLeaderboard()"></select></div>
+      <div class="ctrl"><label>Team</label><select id="teamSel" onchange="renderLeaderboard()"></select></div>
       <div class="ctrl"><label>Search Player</label><input type="text" id="searchBar" placeholder="Type a name..." oninput="renderLeaderboard()" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;padding:8px 12px;transition:all .3s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 20px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></div>
     </div>
     <div class="card"><div class="card-t" id="chartTitle"></div><div class="card-s" id="chartSub"></div><div id="bars"></div><div class="player-count" id="playerCount"></div></div>
@@ -591,7 +591,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">🔍 Player Lookup</div>
-      <div class="card-s">Search any FPL player for a deep-dive stat breakdown</div>
+      <div class="card-s">Search any player for a deep-dive stat breakdown</div>
       <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:end">
         <div class="ctrl" style="flex:1;min-width:220px"><label>Player Name</label><input type="text" id="lookupInput" placeholder="Start typing a name..." style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;padding:10px 14px;transition:all .3s;outline:none" onfocus="this.style.borderColor='var(--cyan)';this.style.boxShadow='0 0 20px #00f0ff15'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'" oninput="renderLookupSuggestions()"></div>
         <button onclick="executeLookup()" style="background:var(--cyan);border:none;color:var(--bg);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;padding:10px 20px;cursor:pointer;letter-spacing:1px;transition:all .3s;height:40px" onmouseover="this.style.boxShadow='0 0 20px var(--cyan-glow)'" onmouseout="this.style.boxShadow='none'">LOOKUP</button>
@@ -615,7 +615,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="admin-panel" id="adminPanelBox" style="display:none">
     <button class="admin-close" onclick="closeAdmin()">✕</button>
     <h2>⚙ DASHBOARD CONFIGURATION</h2>
-    <div class="admin-sub">Changes are saved to this browser and apply immediately</div>
+    <div class="admin-sub">Edit settings below → Save → Copy Config for Sheet → Paste into your Google Sheet Config tab for everyone to see changes</div>
     <div id="adminContent"></div>
   </div>
 </div>
@@ -658,14 +658,14 @@ function onGlobalFilter(){const r=getFilteredRows();const res=aggregate(r,ROSTER
 // AGGREGATE
 function aggregate(matchRows,rosterMap){
 const ps={},mids=new Set(),dates=new Set(),ptd={};
-for(const r of matchRows){let name=r['Summoner Name']||'';if(NAME_MERGES[name])name=NAME_MERGES[name];if(!name)continue;const team=(r['FPL Team']||'').trim();const ds=parseDate(r['Date']||'');if(name&&team){if(!ptd[name]||ds>ptd[name].date)ptd[name]={team,date:ds}}mids.add(r['Match ID']||'');dates.add(ds);
+for(const r of matchRows){let name=r['Summoner Name']||'';if(NAME_MERGES[name])name=NAME_MERGES[name];if(!name)continue;const team=(r['Teams']||'').trim();const ds=parseDate(r['Date']||'');if(name&&team){if(!ptd[name]||ds>ptd[name].date)ptd[name]={team,date:ds}}mids.add(r['Match ID']||'');dates.add(ds);
 if(!ps[name])ps[name]={games:0,kills:0,deaths:0,assists:0,cs:0,gold:0,damage:0,damageTaken:0,vision:0,duration:0,wins:0,doubles:0,triples:0,quadras:0,pentas:0,wardsPlaced:0,wardsKilled:0,controlWards:0,turretKills:0,turretDamage:0,objectiveDamage:0,damageMitigated:0,teamDragons:0,teamBarons:0,teamHeralds:0,teamGrubs:0,teamTowers:0,firstBloods:0,roles:[],champions:[]};
 const p=ps[name],n=k=>parseFloat(r[k])||0;p.games++;p.kills+=n('Kills');p.deaths+=n('Deaths');p.assists+=n('Assists');p.cs+=n('CS');p.gold+=n('Gold Earned');p.damage+=n('Total Damage to Champions');p.damageTaken+=n('Damage Taken');p.vision+=n('Vision Score');p.duration+=n('Game Duration (min)');p.wins+=(r['Win']==='Win'?1:0);p.doubles+=n('Double Kills');p.triples+=n('Triple Kills');p.quadras+=n('Quadra Kills');p.pentas+=n('Penta Kills');p.wardsPlaced+=n('Wards Placed');p.wardsKilled+=n('Wards Killed');p.controlWards+=n('Control Wards Bought');p.turretKills+=n('Turret Kills');p.turretDamage+=n('Turret Damage');p.objectiveDamage+=n('Objective Damage');p.damageMitigated+=n('Damage Mitigated');p.teamDragons+=n('Team Dragons');p.teamBarons+=n('Team Barons');p.teamHeralds+=n('Team Heralds');p.teamGrubs+=n('Team Grubs');p.teamTowers+=n('Team Towers');p.firstBloods+=(r['Team First Blood']==='Yes'?1:0);p.roles.push(r['Role']||'MIDDLE');p.champions.push({champ:r['Champion']||'Unknown',win:r['Win']==='Win',kills:n('Kills'),deaths:n('Deaths'),assists:n('Assists'),cs:n('CS'),damage:n('Total Damage to Champions'),duration:n('Game Duration (min)'),date:ds})}
 const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.duration||1,team=(ptd[name]?ptd[name].team:null)||rosterMap[name]||'Sub';const mainRole=s.roles.length?[...new Set(s.roles)].sort((a,b)=>s.roles.filter(x=>x===b).length-s.roles.filter(x=>x===a).length)[0]:'MIDDLE';
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['FPL Team']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(decodeURIComponent(pp)),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(decodeURIComponent(pp)),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -680,7 +680,7 @@ function renderCompare(){const dk=document.getElementById('cmpDock'),cd=document
 function drawRadar(pls){const cv=document.getElementById('radarCanvas'),cx=cv.getContext('2d');const W=cv.width,H=cv.height,cX=W/2,cY=H/2,R=Math.min(W,H)*.35,n=RADAR_STATS.length;cx.clearRect(0,0,W,H);for(let ring=1;ring<=4;ring++){const r=R*ring/4;cx.beginPath();for(let i=0;i<=n;i++){const a=Math.PI*2*i/n-Math.PI/2,x=cX+r*Math.cos(a),y=cY+r*Math.sin(a);i===0?cx.moveTo(x,y):cx.lineTo(x,y)}cx.strokeStyle='#1a1a3060';cx.lineWidth=1;cx.stroke()}for(let i=0;i<n;i++){const a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.moveTo(cX,cY);cx.lineTo(cX+R*Math.cos(a),cY+R*Math.sin(a));cx.strokeStyle='#1a1a3080';cx.stroke();cx.font='9px "Share Tech Mono",monospace';cx.fillStyle='#4a5568';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(RADAR_STATS[i].label,cX+(R+18)*Math.cos(a),cY+(R+18)*Math.sin(a))}pls.forEach(p=>{const c=TC[p.team]||'#6366f1';cx.beginPath();for(let i=0;i<=n;i++){const si=i%n,v=Math.min(p[RADAR_STATS[si].key]/RADAR_STATS[si].max,1),r=v*R,a=Math.PI*2*si/n-Math.PI/2;i===0?cx.moveTo(cX+r*Math.cos(a),cY+r*Math.sin(a)):cx.lineTo(cX+r*Math.cos(a),cY+r*Math.sin(a))}cx.closePath();cx.fillStyle=c+'20';cx.fill();cx.strokeStyle=c;cx.lineWidth=2;cx.stroke();for(let i=0;i<n;i++){const v=Math.min(p[RADAR_STATS[i].key]/RADAR_STATS[i].max,1),r=v*R,a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.arc(cX+r*Math.cos(a),cY+r*Math.sin(a),3,0,Math.PI*2);cx.fillStyle=c;cx.fill()}})}
 
 // TEAMS
-function renderTeams(){const rows=getFilteredRows();const tms={};for(const r of rows){const tm=(r['FPL Team']||'').trim();if(!tm)continue;if(!tms[tm])tms[tm]={wins:0,losses:0,kills:0,deaths:0,assists:0,damage:0,duration:0,games:0,players:new Set()};const t=tms[tm];t.games++;t.wins+=(r['Win']==='Win'?1:0);t.losses+=(r['Win']==='Loss'?1:0);t.kills+=(parseFloat(r['Kills'])||0);t.deaths+=(parseFloat(r['Deaths'])||0);t.assists+=(parseFloat(r['Assists'])||0);t.damage+=(parseFloat(r['Total Damage to Champions'])||0);t.duration+=(parseFloat(r['Game Duration (min)'])||0);let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];t.players.add(n)}const sorted=Object.entries(tms).filter(([t])=>t!=='Sub'&&t).sort((a,b)=>{const wa=a[1].wins/(a[1].wins+a[1].losses)||0,wb=b[1].wins/(b[1].wins+b[1].losses)||0;return wb-wa});document.getElementById('teamGrid').innerHTML=sorted.map(([name,t])=>{const c=TC[name]||'#6366f1';const mw=Math.round(t.wins/5),ml=Math.round(t.losses/5);const wr=((mw/(mw+ml))*100||0).toFixed(1);const ak=(t.kills/t.games).toFixed(1);const ad=(t.deaths/t.games).toFixed(1);const dp=(t.damage/t.duration).toFixed(0);const ros=[...t.players].map(p=>`<span onclick="openProfile('${p.replace(/'/g,"\\'")}')">${p}</span>`).join(', ');return`<div class="team-card"><div class="tc-accent" style="background:${c}"></div><div class="tc-name" style="color:${c}">${name}</div><div class="tc-record"><span style="color:var(--green)">${mw}W</span> - <span style="color:var(--pink)">${ml}L</span> · ${wr}% WR</div><div class="tc-stats"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ak}</div><div class="tc-stat-label">Avg K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ad}</div><div class="tc-stat-label">Avg D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${dp}</div><div class="tc-stat-label">DMG/Min</div></div></div><div class="tc-roster">${ros}</div></div>`}).join('')}
+function renderTeams(){const rows=getFilteredRows();const tms={};for(const r of rows){const tm=(r['Teams']||'').trim();if(!tm)continue;if(!tms[tm])tms[tm]={wins:0,losses:0,kills:0,deaths:0,assists:0,damage:0,duration:0,games:0,players:new Set()};const t=tms[tm];t.games++;t.wins+=(r['Win']==='Win'?1:0);t.losses+=(r['Win']==='Loss'?1:0);t.kills+=(parseFloat(r['Kills'])||0);t.deaths+=(parseFloat(r['Deaths'])||0);t.assists+=(parseFloat(r['Assists'])||0);t.damage+=(parseFloat(r['Total Damage to Champions'])||0);t.duration+=(parseFloat(r['Game Duration (min)'])||0);let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];t.players.add(n)}const sorted=Object.entries(tms).filter(([t])=>t!=='Sub'&&t).sort((a,b)=>{const wa=a[1].wins/(a[1].wins+a[1].losses)||0,wb=b[1].wins/(b[1].wins+b[1].losses)||0;return wb-wa});document.getElementById('teamGrid').innerHTML=sorted.map(([name,t])=>{const c=TC[name]||'#6366f1';const mw=Math.round(t.wins/5),ml=Math.round(t.losses/5);const wr=((mw/(mw+ml))*100||0).toFixed(1);const ak=(t.kills/t.games).toFixed(1);const ad=(t.deaths/t.games).toFixed(1);const dp=(t.damage/t.duration).toFixed(0);const ros=[...t.players].map(p=>`<span onclick="openProfile('${p.replace(/'/g,"\\'")}')">${p}</span>`).join(', ');return`<div class="team-card"><div class="tc-accent" style="background:${c}"></div><div class="tc-name" style="color:${c}">${name}</div><div class="tc-record"><span style="color:var(--green)">${mw}W</span> - <span style="color:var(--pink)">${ml}L</span> · ${wr}% WR</div><div class="tc-stats"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ak}</div><div class="tc-stat-label">Avg K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ad}</div><div class="tc-stat-label">Avg D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${dp}</div><div class="tc-stat-label">DMG/Min</div></div></div><div class="tc-roster">${ros}</div></div>`}).join('')}
 
 // CHAMPIONS
 let champSort={key:'games',asc:false};
@@ -688,7 +688,7 @@ function renderChampions(){const rows=getFilteredRows();const ch={};for(const r 
 function sortChamps(k){if(champSort.key===k)champSort.asc=!champSort.asc;else{champSort.key=k;champSort.asc=false}renderChampions()}
 
 // RECORDS
-function renderRecords(){const rows=getFilteredRows();const recs=[{label:'Most Kills (Single Game)',key:'Kills'},{label:'Most Deaths (Single Game)',key:'Deaths'},{label:'Most Assists (Single Game)',key:'Assists'},{label:'Highest KDA (Single Game)',key:'_kda',calc:r=>{const k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;return(k+a)/Math.max(d,1)}},{label:'Most CS (Single Game)',key:'CS'},{label:'Most Damage (Single Game)',key:'Total Damage to Champions'},{label:'Most Vision Score (Single Game)',key:'Vision Score'},{label:'Most Gold (Single Game)',key:'Gold Earned'},{label:'Most Turret Kills (Single Game)',key:'Turret Kills'},{label:'Most Wards Placed (Single Game)',key:'Wards Placed'},{label:'Fastest Win (Minutes)',key:'_fastest',calc:r=>r['Win']==='Win'?(parseFloat(r['Game Duration (min)'])||999):999,invert:true},{label:'Longest Game (Minutes)',key:'Game Duration (min)'}];let h='';recs.forEach(rec=>{let best=null,bv=rec.invert?Infinity:-Infinity,br=null;rows.forEach(r=>{let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];const v=rec.calc?rec.calc(r):(parseFloat(r[rec.key])||0);if(rec.invert?(v<bv):(v>bv)){bv=v;br=r;best=n}});if(!best||bv===Infinity||bv===-Infinity)return;const ch=br?br['Champion']:'';const dt=br?parseDate(br['Date']||''):'';const tm=br?(br['FPL Team']||''):'';const c=TC[tm]||'var(--cyan)';const dv=rec.key==='_kda'?bv.toFixed(2):rec.key==='_fastest'?bv.toFixed(1):Math.round(bv).toLocaleString();h+=`<div class="record-card"><div class="rec-cat">${rec.label}</div><div class="rec-val" style="color:${c}">${dv}</div><div class="rec-player" style="cursor:pointer" onclick="openProfile('${best.replace(/'/g,"\\'")}')">${best}</div><div class="rec-detail">${ch} · ${tm} · ${formatDate(dt)}</div></div>`});document.getElementById('recordsGrid').innerHTML=h}
+function renderRecords(){const rows=getFilteredRows();const recs=[{label:'Most Kills (Single Game)',key:'Kills'},{label:'Most Deaths (Single Game)',key:'Deaths'},{label:'Most Assists (Single Game)',key:'Assists'},{label:'Highest KDA (Single Game)',key:'_kda',calc:r=>{const k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;return(k+a)/Math.max(d,1)}},{label:'Most CS (Single Game)',key:'CS'},{label:'Most Damage (Single Game)',key:'Total Damage to Champions'},{label:'Most Vision Score (Single Game)',key:'Vision Score'},{label:'Most Gold (Single Game)',key:'Gold Earned'},{label:'Most Turret Kills (Single Game)',key:'Turret Kills'},{label:'Most Wards Placed (Single Game)',key:'Wards Placed'},{label:'Fastest Win (Minutes)',key:'_fastest',calc:r=>r['Win']==='Win'?(parseFloat(r['Game Duration (min)'])||999):999,invert:true},{label:'Longest Game (Minutes)',key:'Game Duration (min)'}];let h='';recs.forEach(rec=>{let best=null,bv=rec.invert?Infinity:-Infinity,br=null;rows.forEach(r=>{let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];const v=rec.calc?rec.calc(r):(parseFloat(r[rec.key])||0);if(rec.invert?(v<bv):(v>bv)){bv=v;br=r;best=n}});if(!best||bv===Infinity||bv===-Infinity)return;const ch=br?br['Champion']:'';const dt=br?parseDate(br['Date']||''):'';const tm=br?(br['Teams']||''):'';const c=TC[tm]||'var(--cyan)';const dv=rec.key==='_kda'?bv.toFixed(2):rec.key==='_fastest'?bv.toFixed(1):Math.round(bv).toLocaleString();h+=`<div class="record-card"><div class="rec-cat">${rec.label}</div><div class="rec-val" style="color:${c}">${dv}</div><div class="rec-player" style="cursor:pointer" onclick="openProfile('${best.replace(/'/g,"\\'")}')">${best}</div><div class="rec-detail">${ch} · ${tm} · ${formatDate(dt)}</div></div>`});document.getElementById('recordsGrid').innerHTML=h}
 
 // MVP
 function calcMVPScore(p){return+(p.kda*2+p.winRate*0.3+p.damagePerMin*0.02+p.csPerMin*3+p.visionPerMin*10+(p.killsPerGame-p.deathsPerGame)*2).toFixed(1)}
@@ -906,10 +906,21 @@ function playSuccess(){
 // PATCH EXISTING FUNCTIONS TO ADD NEW EFFECTS
 // ════════════════════════════════════════
 
-// Patch loadData to add ticker + counting animation
+// Patch loadData to add ticker + counting animation + auto-populate season dropdown
 const _origLoadData=loadData;
 loadData=async function(){
   await _origLoadData();
+  // Auto-populate season dropdown from data
+  const seasons=[...new Set(RAW.map(r=>(r['Season']||'').trim()).filter(s=>s))].sort();
+  const sel=document.getElementById('seasonSel');
+  sel.innerHTML='<option value="All">All Seasons</option>';
+  seasons.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s;o.textContent=s.replace(/^S(\d)/,'Season $1');
+    sel.appendChild(o);
+  });
+  // Select the latest season by default if available
+  if(seasons.length){sel.value=seasons[seasons.length-1];onGlobalFilter()}
   buildTicker();
   animateMetaNumbers();
 };
@@ -1094,7 +1105,7 @@ function openTradingCard(playerName){
   const top5=Object.entries(cm).sort((a,b)=>b[1]-a[1]).slice(0,5);
 
   const overlay=document.getElementById('tradingCardOverlay');
-  overlay.innerHTML=`<div class="trading-card"><div class="tc-glow" style="background:linear-gradient(90deg,${c},var(--cyan),${c})"></div><button class="tc-close" onclick="closeTradingCard()">✕</button><button class="tc-save" onclick="saveTradingCard()">📷 SAVE</button><div class="tc-top"><div class="tc-team-bg" style="background:${c}"></div><div class="tc-role-badge">${icon}</div><div class="tc-player-name" style="color:${c}">${p.player}</div><div class="tc-team-name">${p.team} · ${rl}</div><div class="tc-rating" style="color:${c}">${ps}</div></div><div class="tc-mid"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.kda}</div><div class="tc-stat-label">KDA</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':'var(--text)'}">${p.winRate}%</div><div class="tc-stat-label">Win Rate</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.games}</div><div class="tc-stat-label">Games</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.killsPerGame}</div><div class="tc-stat-label">K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.deathsPerGame}</div><div class="tc-stat-label">D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.assistsPerGame}</div><div class="tc-stat-label">A/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.csPerMin}</div><div class="tc-stat-label">CS/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="tc-stat-label">DMG/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="tc-stat-label">VIS/Min</div></div></div><div class="tc-champs">${top5.map(([ch])=>champImg(ch,'champ-icon-lg')).join('')}</div><div class="tc-bottom"><div class="tc-bottom-text">FPL SEASON 3 · FRANCHISE PREMIER LEAGUE</div></div></div>`;
+  overlay.innerHTML=`<div class="trading-card"><div class="tc-glow" style="background:linear-gradient(90deg,${c},var(--cyan),${c})"></div><button class="tc-close" onclick="closeTradingCard()">✕</button><button class="tc-save" onclick="saveTradingCard()">📷 SAVE</button><div class="tc-top"><div class="tc-team-bg" style="background:${c}"></div><div class="tc-role-badge">${icon}</div><div class="tc-player-name" style="color:${c}">${p.player}</div><div class="tc-team-name">${p.team} · ${rl}</div><div class="tc-rating" style="color:${c}">${ps}</div></div><div class="tc-mid"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.kda}</div><div class="tc-stat-label">KDA</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${p.winRate>=55?'var(--green)':p.winRate<=45?'var(--pink)':'var(--text)'}">${p.winRate}%</div><div class="tc-stat-label">Win Rate</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.games}</div><div class="tc-stat-label">Games</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.killsPerGame}</div><div class="tc-stat-label">K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.deathsPerGame}</div><div class="tc-stat-label">D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.assistsPerGame}</div><div class="tc-stat-label">A/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.csPerMin}</div><div class="tc-stat-label">CS/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${Math.round(p.damagePerMin)}</div><div class="tc-stat-label">DMG/Min</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${p.visionPerMin}</div><div class="tc-stat-label">VIS/Min</div></div></div><div class="tc-champs">${top5.map(([ch])=>champImg(ch,'champ-icon-lg')).join('')}</div><div class="tc-bottom"><div class="tc-bottom-text">${adminConfig.seasonLabel.toUpperCase()} · ${adminConfig.leagueName}</div></div></div>`;
   overlay.classList.add('active');
   fireConfetti(c);playSuccess();
 }
@@ -1113,7 +1124,7 @@ function saveTradingCard(){
   html2canvas(card,{backgroundColor:'#06060c',scale:2,useCORS:true,allowTaint:true,logging:false}).then(canvas=>{
     const link=document.createElement('a');
     const name=card.querySelector('.tc-player-name')?.textContent||'player';
-    link.download='FPL_Card_'+name.replace(/\s+/g,'_')+'.png';
+    link.download=(adminConfig.leagueName.replace(/[^a-zA-Z0-9]/g,'_'))+'_Card_'+name.replace(/\s+/g,'_')+'.png';
     link.href=canvas.toDataURL('image/png');
     link.click();
     showToast('Card saved as PNG!');
@@ -1352,7 +1363,7 @@ function runLookup(playerName){
       gold:parseFloat(r['Gold Earned'])||0,
       duration:parseFloat(r['Game Duration (min)'])||0,
       vision:parseFloat(r['Vision Score'])||0,
-      team:(r['FPL Team']||'').trim(),
+      team:(r['Teams']||'').trim(),
       role:r['Role']||''
     });
   }
@@ -1526,10 +1537,12 @@ async function loadSheetConfig(){
     const sid=adminConfig.sheetId||DEFAULT_CONFIG.sheetId;
     const rows=await new Promise((resolve,reject)=>{
       const cb='_gcfg_'+Math.random().toString(36).slice(2);
-      const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config';
+      const url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=responseHandler:'+cb+'&sheet=Config&headers=1';
       window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{
         const cols=r.table.cols.map(c=>c.label||c.id);
+        console.log('Config columns:',cols);
         const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
+        console.log('Config first 3 rows:',rows.slice(0,3));
         resolve(rows)}catch(e){reject(e)}};
       const s=document.createElement('script');s.src=url;
       s.onerror=function(){delete window[cb];reject(new Error('No Config tab'))};
@@ -1537,10 +1550,16 @@ async function loadSheetConfig(){
     });
     const cfg={};
     rows.forEach(function(r){
-      const key=r['Key']||r['key']||Object.values(r)[0]||'';
-      const val=r['Value']||r['value']||Object.values(r)[1]||'';
-      if(key.trim())cfg[key.trim()]=val.trim();
+      const keys=Object.keys(r);
+      var key='',val='';
+      if(r['Key']!==undefined){key=r['Key'];val=r['Value']||''}
+      else if(r['key']!==undefined){key=r['key'];val=r['value']||''}
+      else if(keys.length>=2){key=r[keys[0]]||'';val=r[keys[1]]||''}
+      if(key.trim()&&key.trim()!=='Key'&&key.trim()!=='key'){
+        cfg[key.trim()]=val.trim();
+      }
     });
+    console.log('Parsed config:',cfg);
     if(cfg.leagueName)adminConfig.leagueName=cfg.leagueName;
     if(cfg.subtitle)adminConfig.subtitle=cfg.subtitle;
     if(cfg.seasonLabel)adminConfig.seasonLabel=cfg.seasonLabel;
@@ -1555,8 +1574,9 @@ async function loadSheetConfig(){
     var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabLookup:'lookup'};
     for(var cfgKey in tabMap){
       if(cfg[cfgKey]!==undefined){
+        var v=String(cfg[cfgKey]).toLowerCase();
         var tab=adminConfig.tabs.find(function(t){return t.id===tabMap[cfgKey]});
-        if(tab)tab.enabled=cfg[cfgKey].toLowerCase()==='true';
+        if(tab)tab.enabled=(v==='true'||v==='yes'||v==='1');
       }
     }
     if(cfg.tabOrder){
@@ -1569,11 +1589,13 @@ async function loadSheetConfig(){
     for(var k in cfg){if(k.indexOf('teamColor_')===0){adminConfig.teamColors[k.replace('teamColor_','')]=cfg[k]}}
     sheetConfigLoaded=true;
     console.log('Sheet config loaded successfully');
+    console.log('Final config:',adminConfig.leagueName,adminConfig.colorPrimary,adminConfig.colorSecondary);
   }catch(e){
-    console.log('No Config tab found, using defaults');
+    console.log('Config tab error, using defaults:',e.message||e);
     sheetConfigLoaded=false;
   }
 }
+
 
 function saveConfig(){
   try{localStorage.setItem('fpl_dashboard_config_'+DEFAULT_CONFIG.sheetId,JSON.stringify(adminConfig))}catch(e){}
@@ -1583,27 +1605,33 @@ function saveConfig(){
 function applyConfig(){
   if(!adminConfig)loadConfig();
   const c=adminConfig;
-
+  try{
   // Sheet ID
   if(c.sheetId)window._cfgSheetId=c.sheetId;
 
   // Text content
-  document.querySelector('.hdr h1').textContent=c.leagueName;
-  document.querySelector('.hdr h1').dataset.text=c.leagueName;
-  document.querySelector('.hdr .sub').textContent=c.subtitle;
-  document.querySelector('.badge').textContent=c.seasonLabel;
+  document.title=c.leagueName+' — Stats Dashboard';
+  const h1=document.querySelector('.hdr h1');if(h1){h1.textContent=c.leagueName;h1.dataset.text=c.leagueName}
+  const sub=document.querySelector('.hdr .sub');if(sub)sub.textContent=c.subtitle;
+  const badge=document.querySelector('.badge');if(badge)badge.textContent=c.seasonLabel;
   const cred=document.querySelector('.hdr .cred');if(cred)cred.textContent=c.creditLine;
   const ftr=document.querySelector('.ftr');if(ftr)ftr.textContent=c.footerText;
 
   // Colors
   const root=document.documentElement.style;
-  root.setProperty('--cyan',c.colorPrimary);
-  root.setProperty('--cyan-dim',c.colorPrimary+'25');
-  root.setProperty('--cyan-glow',c.colorPrimary+'40');
-  root.setProperty('--pink',c.colorSecondary);
-  root.setProperty('--pink-glow',c.colorSecondary+'40');
-  root.setProperty('--purple',c.colorAccent);
-  root.setProperty('--purple-glow',c.colorAccent+'40');
+  if(c.colorPrimary){
+    root.setProperty('--cyan',c.colorPrimary);
+    root.setProperty('--cyan-dim',c.colorPrimary+'25');
+    root.setProperty('--cyan-glow',c.colorPrimary+'40');
+  }
+  if(c.colorSecondary){
+    root.setProperty('--pink',c.colorSecondary);
+    root.setProperty('--pink-glow',c.colorSecondary+'40');
+  }
+  if(c.colorAccent){
+    root.setProperty('--purple',c.colorAccent);
+    root.setProperty('--purple-glow',c.colorAccent+'40');
+  }
   if(c.colorBg&&c.colorBg!=='#06060c'){
     root.setProperty('--bg',c.colorBg);
   }
@@ -1645,6 +1673,8 @@ function applyConfig(){
     const opt=[...mgSel.options].find(o=>o.value===String(c.minGamesDefault));
     if(opt)mgSel.value=c.minGamesDefault;
   }
+  console.log('Config applied:',c.leagueName,c.colorPrimary,c.colorSecondary);
+  }catch(err){console.error('applyConfig error:',err)}
 }
 
 // Override SHEET_ID to use config
@@ -1726,8 +1756,9 @@ function renderAdminPanel(){
   h+=`</ul></div>`;
 
   // Team Colors
-  h+=`<div class="admin-section"><h3>🎨 Team Colors</h3><div class="admin-hint" style="margin-bottom:10px">Override colors for specific teams. Leave blank to use defaults.</div><div id="adminTeamColors">`;
+  h+=`<div class="admin-section"><h3>🎨 Team Colors</h3><div class="admin-hint" style="margin-bottom:10px">Change colors for each team's bars, cards, and stats. After saving, use "Copy Config for Sheet" to make changes visible to all viewers.</div><div id="adminTeamColors">`;
   const allTeams=[...new Set(PD.map(p=>p.team))].filter(t=>t&&t!=='Sub').sort();
+  if(!allTeams.length){h+=`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim)">Teams will appear here once data loads. Close admin, wait for dashboard to load, then reopen.</div>`}
   allTeams.forEach(t=>{
     const col=c.teamColors[t]||TC[t]||'#6366f1';
     h+=`<div class="admin-team-row"><input type="text" value="${t}" readonly style="color:${col};font-weight:700"><input type="color" value="${col}" data-team="${t}" onchange="updateTeamColor(this)"><button onclick="resetTeamColor('${t.replace(/'/g,"\\'")}',this)" title="Reset">↺</button></div>`;
@@ -1809,12 +1840,12 @@ function saveAdminConfig(){
   applyConfig();
   renderCurrentTab();
 
+  // Show sheet config copy prompt prominently
+  showSheetConfigInstructions();
+
   const saved=document.getElementById('adminSaved');
   saved.classList.add('show');
-  setTimeout(()=>saved.classList.remove('show'),2000);
-
-  // Show sheet config instructions
-  showSheetConfigInstructions();
+  setTimeout(()=>saved.classList.remove('show'),3000);
 }
 
 function previewAdminConfig(){
