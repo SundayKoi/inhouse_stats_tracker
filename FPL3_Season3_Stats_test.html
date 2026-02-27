@@ -231,9 +231,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* Player Profile Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;overflow-y:auto;backdrop-filter:blur(4px)}
-.modal-overlay.active{display:flex;justify-content:center;padding:40px 16px;animation:modalIn .3s ease}
+.modal-overlay.active{display:flex;justify-content:center;align-items:flex-start;padding:40px 16px;animation:modalIn .3s ease}
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
-.modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;max-height:fit-content;animation:modalSlide .3s ease}
+.modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;margin-bottom:40px;animation:modalSlide .3s ease}
 @keyframes modalSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
 .modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--dim);font-size:24px;cursor:pointer;transition:all .3s;z-index:1}
