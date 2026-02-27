@@ -231,9 +231,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* Player Profile Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;overflow-y:auto;backdrop-filter:blur(4px)}
-.modal-overlay.active{display:flex;justify-content:center;padding:40px 16px;animation:modalIn .3s ease}
+.modal-overlay.active{display:flex;justify-content:center;align-items:flex-start;padding:40px 16px;animation:modalIn .3s ease}
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
-.modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;max-height:fit-content;animation:modalSlide .3s ease}
+.modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;margin-bottom:40px;animation:modalSlide .3s ease}
 @keyframes modalSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
 .modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--dim);font-size:24px;cursor:pointer;transition:all .3s;z-index:1}
@@ -257,7 +257,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .prof-champ-wr{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700}
 .prof-champ-games{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
 .prof-trend{position:relative;height:120px;margin-top:10px}
-.prof-vs-avg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-top:10px}
+.prof-vs-avg{display:flex;flex-direction:column;gap:2px;margin-top:10px}
 .prof-vs{background:var(--bg2);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;transition:all .3s;border:1px solid transparent}
 .prof-vs:hover{border-color:var(--border)}
 .prof-vs .pvl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
@@ -473,6 +473,79 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 
 
+/* ACHIEVEMENT BADGES */
+.ach-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ach-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:600;border:1px solid;animation:badgePop .4s ease backwards}
+.ach-badge .ach-icon{font-size:13px}
+@keyframes badgePop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+
+/* CHAMPION MASTERY BORDERS */
+.champ-mastery{position:relative;display:inline-block}
+.champ-mastery img{border-radius:6px}
+.champ-mastery.mastery-bronze{box-shadow:0 0 8px #cd7f32,inset 0 0 4px #cd7f3240;border-radius:8px}
+.champ-mastery.mastery-silver{box-shadow:0 0 10px #c0c0c0,inset 0 0 4px #c0c0c040;border-radius:8px}
+.champ-mastery.mastery-gold{box-shadow:0 0 12px #ffd700,inset 0 0 6px #ffd70040;border-radius:8px;animation:goldPulse 2s ease infinite}
+.champ-mastery.mastery-diamond{box-shadow:0 0 16px #b9f2ff,0 0 30px #b9f2ff40;border-radius:8px;animation:diamondPulse 1.5s ease infinite}
+.mastery-tag{position:absolute;bottom:-4px;right:-4px;font-size:7px;font-family:'Orbitron',sans-serif;font-weight:900;padding:1px 4px;border-radius:3px;letter-spacing:1px}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 12px #ffd700,inset 0 0 6px #ffd70040}50%{box-shadow:0 0 20px #ffd700,inset 0 0 10px #ffd70060}}
+@keyframes diamondPulse{0%,100%{box-shadow:0 0 16px #b9f2ff,0 0 30px #b9f2ff40}50%{box-shadow:0 0 24px #b9f2ff,0 0 40px #b9f2ff60}}
+
+/* HEAD TO HEAD */
+.h2h-card{background:var(--bg2);border:1px solid var(--border);padding:16px;margin-top:12px}
+.h2h-header{text-align:center;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;margin-bottom:12px;color:var(--dim)}
+.h2h-vs{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:14px}
+.h2h-player{text-align:center;flex:1}
+.h2h-player .name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700}
+.h2h-player .score{font-size:28px;font-family:'Orbitron',sans-serif;font-weight:900}
+.h2h-divider{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--dim);letter-spacing:2px}
+.h2h-stats{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px}
+.h2h-stats .label{text-align:center;color:var(--dim);padding:4px 8px}
+.h2h-stats .val{padding:4px 8px;text-align:center}
+.h2h-stats .val.left{text-align:right}
+.h2h-stats .val.right{text-align:left}
+.h2h-stats .val.winner{font-weight:700}
+
+/* BROADCAST INTRO */
+.intro-overlay{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;transition:opacity .8s ease}
+.intro-overlay.done{opacity:0;pointer-events:none}
+.intro-logo{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;letter-spacing:6px;opacity:0;transform:translateY(30px);animation:introUp 1s ease .3s forwards}
+.intro-logo span{background:linear-gradient(135deg,var(--cyan),var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.intro-sub{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--dim);opacity:0;animation:introFade .6s ease 1s forwards}
+.intro-line{width:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink));margin:14px 0;animation:introLine .8s ease .6s forwards}
+.intro-stats{display:flex;gap:30px;opacity:0;animation:introFade .6s ease 1.4s forwards}
+.intro-stat{text-align:center}
+.intro-stat .num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--cyan)}
+.intro-stat .lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--dim);margin-top:2px}
+@keyframes introUp{to{opacity:1;transform:translateY(0)}}
+@keyframes introFade{to{opacity:1}}
+@keyframes introLine{to{width:200px}}
+/* PLAYER OF THE WEEK SPOTLIGHT */
+.potw{background:linear-gradient(135deg,var(--bg2),var(--bg));border:1px solid var(--border);padding:16px 20px;margin-bottom:16px;position:relative;overflow:hidden}
+.potw::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.potw-label{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;color:var(--dim);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.potw-label .star{color:var(--gold);font-size:14px;animation:starPulse 1.5s ease infinite}
+@keyframes starPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.2)}}
+.potw-main{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.potw-champ{width:48px;height:48px;border-radius:8px;border:2px solid var(--cyan)}
+.potw-info{flex:1;min-width:180px}
+.potw-name{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;cursor:pointer;transition:text-shadow .3s}
+.potw-name:hover{text-shadow:0 0 20px currentColor}
+.potw-team{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;margin-top:2px}
+.potw-stats{display:flex;gap:16px;flex-wrap:wrap}
+.potw-stat{text-align:center}
+.potw-stat-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700}
+.potw-stat-lbl{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);letter-spacing:1px;margin-top:1px}
+.potw-date{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-left:auto}
+
+/* ANIMATED VS LEAGUE AVERAGE BARS */
+.vs-bar-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ffffff06}
+.vs-bar-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;min-width:90px;text-align:right}
+.vs-bar-val{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;min-width:55px;text-align:right}
+.vs-bar-track{flex:1;height:16px;background:var(--bg);border-radius:2px;position:relative;overflow:hidden;border:1px solid #ffffff08}
+.vs-bar-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.2,.8,.3,1);width:0}
+.vs-bar-avg-mark{position:absolute;top:0;bottom:0;width:2px;background:var(--dim);opacity:.5;z-index:2}
+.vs-bar-avg-label{position:absolute;top:-12px;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);transform:translateX(-50%)}
+.vs-bar-diff{font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;min-width:50px}
 </style>
 </head>
 <body>
@@ -484,7 +557,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <div class="noise-overlay"></div>
 <div class="glitch-flicker"></div>
 <div class="hex-grid"><svg width="100%" height="100%"><defs><pattern id="hexPattern" width="56" height="49" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)"><path d="M28,0 L56,14 L56,35 L28,49 L0,35 L0,14 Z" fill="none" stroke="rgba(0,240,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#hexPattern)"/></svg></div>
-<div class="wrap">
+<div class="wrap" style="visibility:hidden" id="mainWrap">
   <header class="hdr">
     <div class="badge">Season 3 // Official Stats</div>
     <h1 data-text="FRANCHISE PREMIER LEAGUE">FRANCHISE PREMIER LEAGUE</h1>
@@ -514,6 +587,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
+  <div id="potwBanner"></div>
   <div class="tab-page active" id="pg-leaderboard" style="display:none">
     <div class="ctrls" id="ctrlsWrap">
       <div class="ctrl"><label>Stat</label><select id="statSel" onchange="renderLeaderboard()"></select></div>
@@ -565,7 +639,11 @@ function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1
 
 // DATA CONFIG
 const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});resolve(rows)}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
+
+// XSS Protection — sanitize all sheet data before rendering
+function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+
+function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows)}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
 
 const NAME_MERGES={"Imthegeoff":"JellyBeanGeoff","Reindeer Smolder":"luci","Flying Squirtle":"Flyinq squirtle"};
 const STATS=[{name:"KDA",key:"kda",fmt:"dec"},{name:"Kills/Game",key:"killsPerGame",fmt:"dec"},{name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},{name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},{name:"CS/Min",key:"csPerMin",fmt:"dec"},{name:"Gold/Min",key:"goldPerMin",fmt:"dec"},{name:"Damage/Min",key:"damagePerMin",fmt:"num"},{name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},{name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},{name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},{name:"Win Rate %",key:"winRate",fmt:"pct"},{name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},{name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},{name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},{name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},{name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},{name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},{name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},{name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},{name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},{name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},{name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},{name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},{name:"Total Kills",key:"totalKills",fmt:"int"},{name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},{name:"Total Assists",key:"totalAssists",fmt:"int"},{name:"Double Kills",key:"doubleKills",fmt:"int"},{name:"Triple Kills",key:"tripleKills",fmt:"int"},{name:"Quadra Kills",key:"quadraKills",fmt:"int"},{name:"Penta Kills",key:"pentaKills",fmt:"int"},{name:"Games Played",key:"games",fmt:"int"}];
@@ -597,7 +675,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(decodeURIComponent(pp)),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -608,7 +686,16 @@ const RADAR_STATS=[{key:'kda',label:'KDA',max:12},{key:'csPerMin',label:'CS/Min'
 const COMPARE_STATS=[{key:'kda',label:'KDA',fmt:'dec'},{key:'killsPerGame',label:'K/G',fmt:'dec'},{key:'deathsPerGame',label:'D/G',fmt:'dec'},{key:'assistsPerGame',label:'A/G',fmt:'dec'},{key:'csPerMin',label:'CS/M',fmt:'dec'},{key:'goldPerMin',label:'G/M',fmt:'dec'},{key:'damagePerMin',label:'DMG/M',fmt:'num'},{key:'visionPerMin',label:'VIS/M',fmt:'dec'},{key:'winRate',label:'WR%',fmt:'pct'},{key:'games',label:'Games',fmt:'int'}];
 function toggleCompare(n){const i=comparePlayers.indexOf(n);if(i>=0)comparePlayers.splice(i,1);else if(comparePlayers.length<3)comparePlayers.push(n);renderCompare();document.querySelectorAll('.brow').forEach(r=>{const nm=r.querySelector('.pn')?.textContent;r.classList.toggle('selected',comparePlayers.includes(nm))})}
 function clearCompare(){comparePlayers=[];renderCompare();document.querySelectorAll('.brow.selected').forEach(r=>r.classList.remove('selected'))}
-function renderCompare(){const dk=document.getElementById('cmpDock'),cd=document.getElementById('cmpCards');if(!comparePlayers.length){dk.classList.remove('active');return}dk.classList.add('active');const pls=comparePlayers.map(n=>PD.find(p=>p.player===n)).filter(Boolean);if(!pls.length){dk.classList.remove('active');return}let h='';pls.forEach(p=>{const c=TC[p.team]||'#6366f1',rl=ROLE_MAP[p.mainRole]||p.mainRole;let st='';COMPARE_STATS.forEach(s=>{const vs=pls.map(pl=>pl[s.key]);const best=s.key==='deathsPerGame'?Math.min(...vs):Math.max(...vs);const ib=pls.length>1&&p[s.key]===best;st+=`<div class="cmp-stat"><span class="cmp-label">${s.label}</span><span class="cmp-val" style="color:${ib?c:'var(--text)'}">${fmtVal(p[s.key],s.fmt)}</span></div>`});h+=`<div class="cmp-card"><div class="cmp-accent" style="background:${c}"></div><button class="cmp-remove" onclick="toggleCompare('${p.player.replace(/'/g,"\\'")}')" title="Remove">✕</button><div class="cmp-name" style="color:${c}">${p.player}</div><div class="cmp-sub">${p.team} · ${rl} · ${p.games}g</div><div class="cmp-stats">${st}</div></div>`});for(let i=pls.length;i<3;i++)h+='<div class="cmp-empty">Click a player<br>to add</div>';cd.innerHTML=h;drawRadar(pls)}
+function renderCompare(){const dk=document.getElementById('cmpDock'),cd=document.getElementById('cmpCards');if(!comparePlayers.length){dk.classList.remove('active');return}dk.classList.add('active');const pls=comparePlayers.map(n=>PD.find(p=>p.player===n)).filter(Boolean);if(!pls.length){dk.classList.remove('active');return}let h='';pls.forEach(p=>{const c=TC[p.team]||'#6366f1',rl=ROLE_MAP[p.mainRole]||p.mainRole;let st='';COMPARE_STATS.forEach(s=>{const vs=pls.map(pl=>pl[s.key]);const best=s.key==='deathsPerGame'?Math.min(...vs):Math.max(...vs);const ib=pls.length>1&&p[s.key]===best;st+=`<div class="cmp-stat"><span class="cmp-label">${s.label}</span><span class="cmp-val" style="color:${ib?c:'var(--text)'}">${fmtVal(p[s.key],s.fmt)}</span></div>`});h+=`<div class="cmp-card"><div class="cmp-accent" style="background:${c}"></div><button class="cmp-remove" onclick="toggleCompare('${p.player.replace(/'/g,"\\'")}')" title="Remove">✕</button><div class="cmp-name" style="color:${c}">${p.player}</div><div class="cmp-sub">${p.team} · ${rl} · ${p.games}g</div><div class="cmp-stats">${st}</div></div>`});for(let i=pls.length;i<3;i++)h+='<div class="cmp-empty">Click a player<br>to add</div>';cd.innerHTML=h;drawRadar(pls);
+  // H2H — show when exactly 2 players selected
+  var h2hEl=document.getElementById('cmpH2H');
+  if(!h2hEl){h2hEl=document.createElement('div');h2hEl.id='cmpH2H';dk.querySelector('.cmp-body').appendChild(h2hEl)}
+  if(pls.length===2){
+    var c1=TC[pls[0].team]||'#6366f1',c2=TC[pls[1].team]||'#6366f1';
+    h2hEl.innerHTML=renderH2H(pls[0].player,pls[1].player,c1,c2);
+    if(!h2hEl.innerHTML)h2hEl.innerHTML='<div class="h2h-card"><div class="h2h-header">NO HEAD-TO-HEAD GAMES FOUND</div></div>';
+  }else{h2hEl.innerHTML=''}
+}
 function drawRadar(pls){const cv=document.getElementById('radarCanvas'),cx=cv.getContext('2d');const W=cv.width,H=cv.height,cX=W/2,cY=H/2,R=Math.min(W,H)*.35,n=RADAR_STATS.length;cx.clearRect(0,0,W,H);for(let ring=1;ring<=4;ring++){const r=R*ring/4;cx.beginPath();for(let i=0;i<=n;i++){const a=Math.PI*2*i/n-Math.PI/2,x=cX+r*Math.cos(a),y=cY+r*Math.sin(a);i===0?cx.moveTo(x,y):cx.lineTo(x,y)}cx.strokeStyle='#1a1a3060';cx.lineWidth=1;cx.stroke()}for(let i=0;i<n;i++){const a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.moveTo(cX,cY);cx.lineTo(cX+R*Math.cos(a),cY+R*Math.sin(a));cx.strokeStyle='#1a1a3080';cx.stroke();cx.font='9px "Share Tech Mono",monospace';cx.fillStyle='#4a5568';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(RADAR_STATS[i].label,cX+(R+18)*Math.cos(a),cY+(R+18)*Math.sin(a))}pls.forEach(p=>{const c=TC[p.team]||'#6366f1';cx.beginPath();for(let i=0;i<=n;i++){const si=i%n,v=Math.min(p[RADAR_STATS[si].key]/RADAR_STATS[si].max,1),r=v*R,a=Math.PI*2*si/n-Math.PI/2;i===0?cx.moveTo(cX+r*Math.cos(a),cY+r*Math.sin(a)):cx.lineTo(cX+r*Math.cos(a),cY+r*Math.sin(a))}cx.closePath();cx.fillStyle=c+'20';cx.fill();cx.strokeStyle=c;cx.lineWidth=2;cx.stroke();for(let i=0;i<n;i++){const v=Math.min(p[RADAR_STATS[i].key]/RADAR_STATS[i].max,1),r=v*R,a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.arc(cX+r*Math.cos(a),cY+r*Math.sin(a),3,0,Math.PI*2);cx.fillStyle=c;cx.fill()}})}
 
 // TEAMS
@@ -637,7 +724,7 @@ const dp={};(p.champData||[]).forEach(x=>{if(!dp[x.date])dp[x.date]={kills:0,dea
 let h=`<div class="prof-header"><div><div class="prof-name" style="color:${c}">${p.player}</div><div class="prof-sub">${p.team} · ${rl} · ${p.games} Games · ${p.wins}W ${p.losses}L</div></div><div style="display:flex;align-items:center"><div class="prof-rating" style="color:${c}" title="Power Rating">${ps}<span style="font-size:12px;color:var(--dim)"> #${pr}</span></div><button class="prof-share" onclick="shareProfile('${p.player.replace(/'/g,"\\'")}')"><span>⚡ SHARE</span></button></div></div>`;
 h+='<div class="prof-section"><div class="prof-section-title">Core Stats</div><div class="prof-stats">';
 [{label:'KDA',val:p.kda,fmt:'dec',key:'kda'},{label:'Win Rate',val:p.winRate,fmt:'pct',key:'winRate'},{label:'K/G',val:p.killsPerGame,fmt:'dec',key:'killsPerGame'},{label:'D/G',val:p.deathsPerGame,fmt:'dec',key:'deathsPerGame',inv:true},{label:'A/G',val:p.assistsPerGame,fmt:'dec',key:'assistsPerGame'},{label:'CS/Min',val:p.csPerMin,fmt:'dec',key:'csPerMin'},{label:'Gold/Min',val:p.goldPerMin,fmt:'dec',key:'goldPerMin'},{label:'DMG/Min',val:p.damagePerMin,fmt:'num',key:'damagePerMin'},{label:'Vision/Min',val:p.visionPerMin,fmt:'dec',key:'visionPerMin'},{label:'Games',val:p.games,fmt:'int',key:'games'}].forEach(s=>{const rk=gR(s.key,s.inv);const rc=rk<=3?'var(--gold)':rk<=10?'var(--cyan)':'var(--dim)';h+=`<div class="prof-stat"><div class="prof-stat-val" style="color:${c}">${fmtVal(s.val,s.fmt)}</div><div class="prof-stat-label">${s.label}</div><div class="prof-stat-rank" style="color:${rc}">#${rk} of ${PD.length}</div></div>`});h+='</div></div>';
-h+='<div class="prof-section"><div class="prof-section-title">Vs League Average</div><div class="prof-vs-avg">';sks.forEach(k=>{const s=STATS.find(x=>x.key===k)||{name:k,fmt:'dec'};const df=p[k]-avg[k];const dc=k==='deathsPerGame'?(df<0?'var(--green)':'var(--pink)'):(df>0?'var(--green)':'var(--pink)');const ds=(df>0?'+':'')+fmtVal(df,s.fmt);h+=`<div class="prof-vs"><span class="pvl">${s.name}</span><span class="pvv">${fmtVal(p[k],s.fmt)}</span><span class="pvd" style="color:${dc}">${ds}</span></div>`});h+='</div></div>';
+h+='<div class="prof-section"><div class="prof-section-title">Vs League Average</div><div class="prof-vs-avg">';sks.forEach(function(k){var s=STATS.find(function(x){return x.key===k})||{name:k,fmt:'dec'};var pv=p[k],av=avg[k];var df=pv-av;var inv=(k==='deathsPerGame');var dc=inv?(df<0?'var(--green)':'var(--pink)'):(df>0?'var(--green)':'var(--pink)');var ds=(df>0?'+':'')+fmtVal(df,s.fmt);var mx=Math.max.apply(null,PD.map(function(x){return x[k]||0}));if(mx===0)mx=1;var pPct=(pv/mx*100).toFixed(1);var aPct=(av/mx*100).toFixed(1);var barColor=inv?(pv<=av?'var(--green)':'var(--pink)'):(pv>=av?'var(--green)':'var(--pink)');h+='<div class="vs-bar-row"><div class="vs-bar-label">'+s.name+'</div><div class="vs-bar-val" style="color:'+c+'">'+fmtVal(pv,s.fmt)+'</div><div class="vs-bar-track"><div class="vs-bar-fill" data-width="'+pPct+'" style="background:'+barColor+'"></div><div class="vs-bar-avg-mark" style="left:'+aPct+'%"><div class="vs-bar-avg-label">AVG</div></div></div><div class="vs-bar-diff" style="color:'+dc+'">'+ds+'</div></div>'});h+='</div></div>';
 if(cl.length){h+='<div class="prof-section"><div class="prof-section-title">Champion Pool</div><div class="prof-champs">';cl.forEach(x=>{const wc=x.wr>=55?'var(--green)':x.wr<=45?'var(--pink)':'var(--text)';h+=`<div class="prof-champ"><div><div class="prof-champ-name">${x.name}</div><div class="prof-champ-games">${x.games} games · ${x.kda} KDA</div></div><div class="prof-champ-wr" style="color:${wc}">${x.wr}%</div></div>`});h+='</div></div>'}
 if(td.length>1)h+='<div class="prof-section"><div class="prof-section-title">KDA Trend by Game Night</div><div class="prof-trend"><canvas id="trendCanvas" width="850" height="120"></canvas></div></div>';
 if(p.doubleKills||p.tripleKills||p.quadraKills||p.pentaKills){h+='<div class="prof-section"><div class="prof-section-title">Multi-Kills</div><div class="prof-stats">';[{l:'Doubles',v:p.doubleKills},{l:'Triples',v:p.tripleKills},{l:'Quadras',v:p.quadraKills},{l:'Pentas',v:p.pentaKills}].forEach(m=>{if(m.v)h+=`<div class="prof-stat"><div class="prof-stat-val" style="color:${c}">${m.v}</div><div class="prof-stat-label">${m.l}</div></div>`});h+='</div></div>'}
@@ -889,7 +976,7 @@ renderLeaderboard=function(){
   });
 };
 
-// Patch openProfile to add confetti for #1 + staggered stat animations + best game
+// Patch openProfile to add confetti for #1 + staggered stat animations + best game + BADGES + MASTERY + H2H
 const _origOpenProfile=openProfile;
 openProfile=function(pn){
   _origOpenProfile(pn);
@@ -910,6 +997,50 @@ openProfile=function(pn){
     const bgHTML=renderBestGameCard(p,c);
     if(bgHTML){const div=document.createElement('div');div.innerHTML=bgHTML;coreSection.after(div.firstElementChild)}
   }
+  // ACHIEVEMENT BADGES — inject after header
+  const badges=getAchievements(pn,getFilteredRows());
+  if(badges.length){
+    const header=profContent.querySelector('.prof-header')||profContent.firstElementChild;
+    if(header){
+      const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(badges);
+      header.after(bdiv.firstElementChild);
+    }
+  }
+  // CHAMPION MASTERY BORDERS — upgrade champ icons in profile
+  profContent.querySelectorAll('.champ-icon,.champ-icon-lg').forEach(img=>{
+    const champName=img.alt||img.title||'';
+    if(!champName)return;
+    const champData=(p.champData||[]).filter(x=>x.champ===champName);
+    const games=champData.length;
+    const mc=getMasteryClass(games);
+    if(mc){
+      const wrapper=document.createElement('span');
+      wrapper.className='champ-mastery '+mc;
+      wrapper.innerHTML=getMasteryTag(games);
+      img.parentNode.insertBefore(wrapper,img);
+      wrapper.insertBefore(img,wrapper.firstChild);
+    }
+  });
+  // HEAD-TO-HEAD — if comparing, show H2H with compared player
+  if(comparePlayers.length===1&&comparePlayers[0]!==pn){
+    const other=comparePlayers[0];
+    const op=PD.find(x=>x.player===other);
+    if(op){
+      const c2=TC[op.team]||'#6366f1';
+      const h2hHTML=renderH2H(pn,other,c,c2);
+      if(h2hHTML){
+        const div=document.createElement('div');div.innerHTML=h2hHTML;
+        profContent.appendChild(div.firstElementChild);
+      }
+    }
+  }
+  // Animate VS League Average bars
+  setTimeout(function(){
+    document.querySelectorAll('.vs-bar-fill').forEach(function(bar){
+      var w=bar.getAttribute('data-width');
+      if(w)bar.style.width=w+'%';
+    });
+  },100);
   // Animate stat values counting up
   document.querySelectorAll('.prof-stat-val').forEach(el=>{
     const text=el.textContent;
@@ -1470,16 +1601,16 @@ async function loadSheetConfig(){
       if(key.trim()&&key.trim()!=='Key'&&key.trim()!=='key'){cfg[key.trim()]=val.trim()}
     });
     console.log('Config from sheet:',cfg);
-    if(cfg.leagueName)adminConfig.leagueName=cfg.leagueName;
-    if(cfg.subtitle)adminConfig.subtitle=cfg.subtitle;
-    if(cfg.seasonLabel)adminConfig.seasonLabel=cfg.seasonLabel;
-    if(cfg.creditLine)adminConfig.creditLine=cfg.creditLine;
-    if(cfg.footerText)adminConfig.footerText=cfg.footerText;
-    if(cfg.colorPrimary)adminConfig.colorPrimary=cfg.colorPrimary;
-    if(cfg.colorSecondary)adminConfig.colorSecondary=cfg.colorSecondary;
-    if(cfg.colorAccent)adminConfig.colorAccent=cfg.colorAccent;
-    if(cfg.colorBg)adminConfig.colorBg=cfg.colorBg;
-    if(cfg.logoUrl!==undefined)adminConfig.logoUrl=cfg.logoUrl;
+    if(cfg.leagueName)adminConfig.leagueName=esc(cfg.leagueName);
+    if(cfg.subtitle)adminConfig.subtitle=esc(cfg.subtitle);
+    if(cfg.seasonLabel)adminConfig.seasonLabel=esc(cfg.seasonLabel);
+    if(cfg.creditLine)adminConfig.creditLine=esc(cfg.creditLine);
+    if(cfg.footerText)adminConfig.footerText=esc(cfg.footerText);
+    if(cfg.colorPrimary&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorPrimary))adminConfig.colorPrimary=cfg.colorPrimary;
+    if(cfg.colorSecondary&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorSecondary))adminConfig.colorSecondary=cfg.colorSecondary;
+    if(cfg.colorAccent&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorAccent))adminConfig.colorAccent=cfg.colorAccent;
+    if(cfg.colorBg&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorBg))adminConfig.colorBg=cfg.colorBg;
+    if(cfg.logoUrl!==undefined&&(cfg.logoUrl===''||/^https?:\/\//i.test(cfg.logoUrl)))adminConfig.logoUrl=cfg.logoUrl;
     if(cfg.minGamesDefault)adminConfig.minGamesDefault=parseInt(cfg.minGamesDefault)||5;
     var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabLookup:'lookup'};
     for(var cfgKey in tabMap){
@@ -1547,13 +1678,185 @@ function applyConfig(){
   }catch(err){console.error('applyConfig error:',err)}
 }
 
-// GO — load sheet config, apply, then load data
+// ════════════════════════════════════════
+// ACHIEVEMENT BADGES
+// ════════════════════════════════════════
+function getAchievements(player,allRows){
+  var badges=[];
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(!pRows.length)return badges;
+  var maxKills=0,has0Death=false,maxDmg=0,maxCS=0,maxVision=0,pentaTotal=0,quadraTotal=0,tripleTotal=0,fbCount=0;
+  pRows.forEach(function(r){
+    var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0;
+    var dmg=parseFloat(r['Total Damage to Champions'])||0;
+    var cs=parseFloat(r['CS'])||0;
+    var vis=parseFloat(r['Vision Score'])||0;
+    if(k>maxKills)maxKills=k;
+    if(d===0&&r['Win']==='Win')has0Death=true;
+    if(dmg>maxDmg)maxDmg=dmg;if(cs>maxCS)maxCS=cs;if(vis>maxVision)maxVision=vis;
+    pentaTotal+=(parseFloat(r['Penta Kills'])||0);
+    quadraTotal+=(parseFloat(r['Quadra Kills'])||0);
+    tripleTotal+=(parseFloat(r['Triple Kills'])||0);
+    var fb=r['First Blood']||'';if(fb==='True'||fb==='true'||fb==='1')fbCount++;
+  });
+  var p=PD.find(function(x){return x.player===player});if(!p)return badges;
+  if(pentaTotal>0)badges.push({icon:'\ud83d\udc8e',text:'PENTAKILL CLUB',color:'#b9f2ff',bg:'#b9f2ff15',tier:5});
+  if(quadraTotal>0)badges.push({icon:'\u26a1',text:'QUADRA STRIKER',color:'#fbbf24',bg:'#fbbf2415',tier:4});
+  if(tripleTotal>=3)badges.push({icon:'\ud83d\udd31',text:'TRIPLE THREAT',color:'#a855f7',bg:'#a855f715',tier:3});
+  if(maxKills>=20)badges.push({icon:'\ud83d\udd25',text:'20+ KILL GAME',color:'#ef4444',bg:'#ef444415',tier:4});
+  else if(maxKills>=15)badges.push({icon:'\ud83d\udd25',text:'15+ KILL GAME',color:'#f97316',bg:'#f9731615',tier:3});
+  if(has0Death)badges.push({icon:'\ud83d\udee1\ufe0f',text:'UNKILLABLE',color:'#22c55e',bg:'#22c55e15',tier:4});
+  if(p.kda>=5)badges.push({icon:'\ud83d\udc51',text:'KDA KING (5+)',color:'#ffd700',bg:'#ffd70015',tier:4});
+  else if(p.kda>=4)badges.push({icon:'\u2b50',text:'KDA ELITE (4+)',color:'#fbbf24',bg:'#fbbf2415',tier:3});
+  if(p.winRate>=70&&p.games>=5)badges.push({icon:'\ud83c\udfc6',text:'DOMINANT (70%+ WR)',color:'#22c55e',bg:'#22c55e15',tier:5});
+  else if(p.winRate>=60&&p.games>=5)badges.push({icon:'\ud83d\udcc8',text:'CLUTCH (60%+ WR)',color:'#34d399',bg:'#34d39915',tier:3});
+  if(maxDmg>=40000)badges.push({icon:'\ud83d\udc80',text:'DAMAGE DEMON (40K+)',color:'#ef4444',bg:'#ef444415',tier:4});
+  if(maxVision>=80)badges.push({icon:'\ud83d\udc41\ufe0f',text:'VISION KING',color:'#3b82f6',bg:'#3b82f615',tier:3});
+  if(maxCS>=300)badges.push({icon:'\ud83c\udf3e',text:'CS MACHINE (300+)',color:'#a3e635',bg:'#a3e63515',tier:3});
+  if(fbCount>=5)badges.push({icon:'\ud83e\ude78',text:'FIRST BLOOD HUNTER',color:'#dc2626',bg:'#dc262615',tier:3});
+  if(p.games>=30)badges.push({icon:'\ud83c\udf96\ufe0f',text:'VETERAN (30+ GAMES)',color:'#6366f1',bg:'#6366f115',tier:2});
+  else if(p.games>=20)badges.push({icon:'\u2694\ufe0f',text:'SEASONED (20+ GAMES)',color:'#818cf8',bg:'#818cf815',tier:2});
+  var uniqueChamps=new Set(pRows.map(function(r){return r['Champion']})).size;
+  if(uniqueChamps>=15)badges.push({icon:'\ud83c\udfad',text:'FLEX MASTER (15+ CHAMPS)',color:'#c084fc',bg:'#c084fc15',tier:3});
+  var champCounts={};(p.champData||[]).forEach(function(x){champCounts[x.champ]=(champCounts[x.champ]||0)+1});
+  var maxChampGames=Math.max.apply(null,Object.values(champCounts).concat([0]));
+  if(maxChampGames>=15)badges.push({icon:'\ud83d\udc9c',text:'ONE TRICK',color:'#e879f9',bg:'#e879f915',tier:3});
+  badges.sort(function(a,b){return b.tier-a.tier});
+  return badges;
+}
+function renderBadgesHTML(badges){
+  if(!badges.length)return'';
+  return'<div class="ach-row">'+badges.map(function(b,i){
+    return'<div class="ach-badge" style="color:'+b.color+';border-color:'+b.color+'40;background:'+b.bg+';animation-delay:'+i*0.08+'s"><span class="ach-icon">'+b.icon+'</span>'+b.text+'</div>';
+  }).join('')+'</div>';
+}
+
+// ════════════════════════════════════════
+// CHAMPION MASTERY BORDERS
+// ════════════════════════════════════════
+function getMasteryClass(games){
+  if(games>=15)return'mastery-diamond';if(games>=10)return'mastery-gold';if(games>=5)return'mastery-silver';if(games>=3)return'mastery-bronze';return'';
+}
+function getMasteryTag(games){
+  if(games>=15)return'<span class="mastery-tag" style="background:#b9f2ff;color:#000">OTP</span>';
+  if(games>=10)return'<span class="mastery-tag" style="background:#ffd700;color:#000">MAIN</span>';
+  return'';
+}
+
+// ════════════════════════════════════════
+// HEAD-TO-HEAD
+// ════════════════════════════════════════
+function findH2H(player1,player2,allRows){
+  var matchIds={};
+  allRows.forEach(function(r){var mid=r['Match ID']||'';if(!mid)return;if(!matchIds[mid])matchIds[mid]=[];matchIds[mid].push(r)});
+  var games=[];
+  for(var mid in matchIds){
+    var rows=matchIds[mid],p1r=null,p2r=null;
+    rows.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===player1)p1r=r;if(n===player2)p2r=r});
+    if(p1r&&p2r){
+      var t1=(p1r['Teams']||'').trim(),t2=(p2r['Teams']||'').trim();
+      if(t1!==t2)games.push({p1:{win:p1r['Win']==='Win',kills:parseFloat(p1r['Kills'])||0,deaths:parseFloat(p1r['Deaths'])||0,assists:parseFloat(p1r['Assists'])||0,dmg:parseFloat(p1r['Total Damage to Champions'])||0},p2:{win:p2r['Win']==='Win',kills:parseFloat(p2r['Kills'])||0,deaths:parseFloat(p2r['Deaths'])||0,assists:parseFloat(p2r['Assists'])||0,dmg:parseFloat(p2r['Total Damage to Champions'])||0}});
+    }
+  }
+  return games;
+}
+function renderH2H(player1,player2,c1,c2){
+  var rows=getFilteredRows();var games=findH2H(player1,player2,rows);
+  if(!games.length)return'';
+  var w1=0,w2=0,k1=0,k2=0,d1=0,d2=0,a1=0,a2=0,dm1=0,dm2=0;
+  games.forEach(function(g){if(g.p1.win)w1++;if(g.p2.win)w2++;k1+=g.p1.kills;k2+=g.p2.kills;d1+=g.p1.deaths;d2+=g.p2.deaths;a1+=g.p1.assists;a2+=g.p2.assists;dm1+=g.p1.dmg;dm2+=g.p2.dmg});
+  var kda1=((k1+a1)/Math.max(d1,1)).toFixed(2),kda2=((k2+a2)/Math.max(d2,1)).toFixed(2);
+  function fmtH(v){return typeof v==='number'&&v>=1000?Math.round(v/1000)+'K':v}
+  function sr(l,v1,v2,inv){var w=inv?(v1<v2?'left':'right'):(v1>v2?'left':'right');return'<div class="val left'+(w==='left'?' winner':'')+'" style="color:'+(w==='left'?c1:'var(--text)')+'">'+fmtH(v1)+'</div><div class="label">'+l+'</div><div class="val right'+(w==='right'?' winner':'')+'" style="color:'+(w==='right'?c2:'var(--text)')+'">'+fmtH(v2)+'</div>'}
+  return'<div class="h2h-card"><div class="h2h-header">\u2694 HEAD TO HEAD \xb7 '+games.length+' GAME'+(games.length>1?'S':'')+'</div><div class="h2h-vs"><div class="h2h-player"><div class="name" style="color:'+c1+'">'+player1+'</div><div class="score" style="color:'+(w1>=w2?c1:'var(--dim)')+'">'+w1+'</div></div><div class="h2h-divider">VS</div><div class="h2h-player"><div class="name" style="color:'+c2+'">'+player2+'</div><div class="score" style="color:'+(w2>=w1?c2:'var(--dim)')+'">'+w2+'</div></div></div><div class="h2h-stats">'+sr('WINS',w1,w2)+sr('KDA',kda1,kda2)+sr('KILLS',k1,k2)+sr('DEATHS',d1,d2,true)+sr('ASSISTS',a1,a2)+sr('DAMAGE',dm1,dm2)+'</div></div>';
+}
+
+// ════════════════════════════════════════
+// PLAYER OF THE WEEK SPOTLIGHT
+// ════════════════════════════════════════
+function renderPOTW(){
+  var banner=document.getElementById('potwBanner');if(!banner)return;
+  if(!RAW||!RAW.length){banner.innerHTML='';return}
+  // Find the most recent game night
+  var dates={};
+  RAW.forEach(function(r){
+    var d=r['Date']||'';if(!d)return;
+    if(!dates[d])dates[d]=[];
+    dates[d].push(r);
+  });
+  var sortedDates=Object.keys(dates).sort();
+  if(!sortedDates.length){banner.innerHTML='';return}
+  var latestDate=sortedDates[sortedDates.length-1];
+  var latestRows=dates[latestDate];
+  // Aggregate stats for that night
+  var players={};
+  latestRows.forEach(function(r){
+    var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(!n)return;
+    if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champ:''};
+    var p=players[n];
+    p.kills+=parseFloat(r['Kills'])||0;
+    p.deaths+=parseFloat(r['Deaths'])||0;
+    p.assists+=parseFloat(r['Assists'])||0;
+    p.dmg+=parseFloat(r['Total Damage to Champions'])||0;
+    p.games++;
+    if(r['Win']==='Win')p.wins++;
+    p.team=(r['Teams']||'').trim();
+    p.champ=r['Champion']||'';
+  });
+  // Score each player: KDA*2 + win%*3 + dmg_normalized
+  var best=null,bestScore=-1,bestName='';
+  for(var name in players){
+    var pl=players[name];
+    var kda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
+    var wr=pl.wins/pl.games;
+    var score=kda*2+wr*3+(pl.dmg/pl.games/1000);
+    if(score>bestScore){bestScore=score;best=pl;bestName=name}
+  }
+  if(!best||!bestName){banner.innerHTML='';return}
+  var c=TC[best.team]||'var(--cyan)';
+  var kda=((best.kills+best.assists)/Math.max(best.deaths,1)).toFixed(2);
+  var wr=Math.round(best.wins/best.games*100);
+  var avgDmg=Math.round(best.dmg/best.games).toLocaleString();
+  var dateStr=formatDate(parseDate(latestDate));
+  var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
+  var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
+  banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+best.kills+'/'+best.deaths+'/'+best.assists+'</div><div class="potw-stat-lbl">K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">DMG/GAME</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+}
+
+// ════════════════════════════════════════
+// BROADCAST INTRO
+// ════════════════════════════════════════
+function showBroadcastIntro(){
+  var ov=document.createElement('div');ov.className='intro-overlay';
+  ov.innerHTML='<div class="intro-logo"><span>&nbsp;</span></div><div class="intro-line"></div><div class="intro-sub">&nbsp;</div><div class="intro-stats"><div class="intro-stat"><div class="num" id="introPlayers">0</div><div class="lbl">PLAYERS</div></div><div class="intro-stat"><div class="num" id="introMatches">0</div><div class="lbl">MATCHES</div></div><div class="intro-stat"><div class="num" id="introChamps">0</div><div class="lbl">CHAMPIONS</div></div></div>';
+  document.body.appendChild(ov);return ov;
+}
+
+// GO — broadcast intro, load config, load data
 async function init(){
+  var intro=showBroadcastIntro();
   await loadSheetConfig();
   applyConfig();
+  document.getElementById('mainWrap').style.visibility='visible';
+  intro.querySelector('.intro-logo span').textContent=adminConfig.leagueName;
+  intro.querySelector('.intro-sub').textContent=adminConfig.subtitle;
+  intro.querySelector('.intro-line').style.background='linear-gradient(90deg,'+adminConfig.colorPrimary+','+adminConfig.colorSecondary+')';
+  var ls=intro.querySelector('.intro-logo span');ls.style.background='linear-gradient(135deg,'+adminConfig.colorPrimary+','+adminConfig.colorSecondary+','+adminConfig.colorAccent+')';ls.style.webkitBackgroundClip='text';ls.style.webkitTextFillColor='transparent';
+  // Restart animations so they play with correct content
+  intro.querySelector('.intro-logo').style.animation='none';intro.querySelector('.intro-logo').offsetHeight;intro.querySelector('.intro-logo').style.animation='';
+  intro.querySelector('.intro-sub').style.animation='none';intro.querySelector('.intro-sub').offsetHeight;intro.querySelector('.intro-sub').style.animation='';
+  intro.querySelector('.intro-line').style.animation='none';intro.querySelector('.intro-line').offsetHeight;intro.querySelector('.intro-line').style.animation='';
+  intro.querySelector('.intro-stats').style.animation='none';intro.querySelector('.intro-stats').offsetHeight;intro.querySelector('.intro-stats').style.animation='';
   await loadData();
-  buildTicker();
-  animateMetaNumbers();
+  renderPOTW();
+  var np=PD.length;
+  var nm=new Set(RAW.map(function(r){return r['Match ID']||''}).filter(function(m){return m})).size;
+  var nc=new Set(RAW.map(function(r){return r['Champion']}).filter(function(c){return c})).size;
+  animateCountUp(document.getElementById('introPlayers'),np,800,'int');
+  animateCountUp(document.getElementById('introMatches'),nm,800,'int');
+  animateCountUp(document.getElementById('introChamps'),nc,800,'int');
+  setTimeout(function(){intro.classList.add('done');setTimeout(function(){intro.remove()},900)},2800);
+  buildTicker();animateMetaNumbers();
 }
 init();
 </script>
