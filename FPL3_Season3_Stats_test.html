@@ -574,6 +574,24 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tl-game .player{min-width:100px;cursor:pointer}
 .tl-game .player:hover{text-decoration:underline}
 .tl-game .kda{min-width:70px}
+/* SCOUTING — PLAYSTYLE TAGS */
+.playstyle-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.playstyle-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.8px;border:1px solid}
+
+/* SCOUTING — CONSISTENCY & FORM */
+.scout-metrics{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.scout-metric{background:var(--bg2);border:1px solid var(--border);padding:10px 14px;text-align:center;min-width:100px;flex:1}
+.scout-metric-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700}
+.scout-metric-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px;margin-top:2px}
+.scout-metric-sub{font-family:'Share Tech Mono',monospace;font-size:9px;margin-top:4px}
+.form-bar{display:flex;gap:2px;justify-content:center;margin-top:6px}
+.form-dot{width:8px;height:8px;border-radius:2px}
+
+/* SCOUTING REPORT EXPORT */
+.scout-export-btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:6px}
+.scout-export-btn:hover{background:var(--cyan);color:var(--bg)}
+.scout-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--cyan);color:var(--bg);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 24px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;letter-spacing:1px}
+.scout-toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -638,7 +656,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
-  <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div id="timelineContent"></div></div></div>
+  <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><div class="ctrl"><label>From</label><input type="date" id="tlFrom" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><div class="ctrl"><label>To</label><input type="date" id="tlTo" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><button onclick="document.getElementById('tlFrom').value='';document.getElementById('tlTo').value='';renderTimeline()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 12px;cursor:pointer;letter-spacing:1px;margin-top:18px">CLEAR</button></div><div id="timelineContent"></div></div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">🔍 Player Lookup</div>
@@ -705,7 +723,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -1034,6 +1052,41 @@ openProfile=function(pn){
     if(header){
       const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(badges);
       header.after(bdiv.firstElementChild);
+    }
+  }
+  // PLAYSTYLE TAGS — inject after badges
+  const psTags=getPlaystyleTags(pn,getFilteredRows());
+  if(psTags.length){
+    const lastBadge=profContent.querySelector('.ach-row');
+    const insertAfter=lastBadge||profContent.querySelector('.prof-header')||profContent.firstElementChild;
+    if(insertAfter){
+      const pdiv=document.createElement('div');pdiv.innerHTML=renderPlaystyleHTML(psTags);
+      insertAfter.after(pdiv.firstElementChild);
+    }
+  }
+  // SCOUTING METRICS — consistency, form, export button — inject before Core Stats
+  const scoutRows=getFilteredRows();
+  const consistency=getConsistency(pn,scoutRows);
+  const form=getFormRating(pn,scoutRows);
+  if(consistency||form){
+    let sh='<div class="prof-section"><div class="prof-section-title">Scouting Report</div>';
+    sh+='<div class="scout-metrics">';
+    if(consistency){
+      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+consistency.color+'">'+consistency.score+'</div><div class="scout-metric-label">CONSISTENCY</div><div class="scout-metric-sub" style="color:'+consistency.color+'">'+consistency.label+'</div></div>';
+    }
+    if(form){
+      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+form.color+'">'+form.icon+'</div><div class="scout-metric-label">FORM (LAST 5)</div><div class="scout-metric-sub" style="color:'+form.color+'">'+form.label+'</div><div class="form-bar">';
+      form.dots.forEach(function(w){sh+='<div class="form-dot" style="background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+      sh+='</div><div class="scout-metric-sub" style="color:var(--dim)">'+form.recentKDA+' KDA · '+form.recentWR+'% WR</div></div>';
+    }
+    sh+='</div>';
+    sh+='<button class="scout-export-btn" onclick="event.stopPropagation();copyScoutReport(\''+pn.replace(/'/g,"\\'")+'\')">📋 COPY SCOUTING REPORT</button>';
+    sh+='</div>';
+    // Insert before first prof-section (Core Stats)
+    const firstSection=profContent.querySelector('.prof-section');
+    if(firstSection){
+      const sdiv=document.createElement('div');sdiv.innerHTML=sh;
+      firstSection.before(sdiv.firstElementChild);
     }
   }
   // CHAMPION MASTERY BORDERS — upgrade champ icons in profile
@@ -1594,6 +1647,13 @@ function renderTimeline(){
   var sortedDates=Object.keys(nights).sort();
   if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS</div>';return}
 
+  // Apply date filters
+  var fromVal=document.getElementById('tlFrom').value;
+  var toVal=document.getElementById('tlTo').value;
+  if(fromVal)sortedDates=sortedDates.filter(function(d){return d>=fromVal});
+  if(toVal)sortedDates=sortedDates.filter(function(d){return d<=toVal});
+  if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS IN RANGE</div>';return}
+
   // Track running records for "new record" detection
   var allTimeRecords={kills:0,damage:0,kda:0};
 
@@ -1709,7 +1769,8 @@ const DEFAULT_CONFIG={
     {id:'records',name:'Records',enabled:true},
     {id:'mvp',name:'MVP',enabled:true},
     {id:'power',name:'Power Rankings',enabled:true},
-    {id:'lookup',name:'\u{1f50d} Player Lookup',enabled:true},
+    {id:'timeline',name:'📅 Timeline',enabled:true},
+    {id:'lookup',name:'🔍 Player Lookup',enabled:true},
   ],
   teamColors:{},
   minGamesDefault:5,
@@ -1754,7 +1815,7 @@ async function loadSheetConfig(){
     if(cfg.colorBg&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorBg))adminConfig.colorBg=cfg.colorBg;
     if(cfg.logoUrl!==undefined&&(cfg.logoUrl===''||/^https?:\/\//i.test(cfg.logoUrl)))adminConfig.logoUrl=cfg.logoUrl;
     if(cfg.minGamesDefault)adminConfig.minGamesDefault=parseInt(cfg.minGamesDefault)||5;
-    var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabLookup:'lookup'};
+    var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabTimeline:'timeline',tabLookup:'lookup'};
     for(var cfgKey in tabMap){
       if(cfg[cfgKey]!==undefined){
         var v=String(cfg[cfgKey]).toLowerCase();
@@ -1963,6 +2024,202 @@ function renderPOTW(){
   var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
   var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
   banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+best.kills+'/'+best.deaths+'/'+best.assists+'</div><div class="potw-stat-lbl">K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">DMG/GAME</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: PLAYSTYLE TAGS
+// ════════════════════════════════════════
+function getPlaystyleTags(player,allRows){
+  var tags=[];
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(!pRows.length)return tags;
+  var p=PD.find(function(x){return x.player===player});if(!p||p.games<3)return tags;
+  var all=PD.filter(function(x){return x.games>=3});
+  if(!all.length)return tags;
+
+  // Calculate percentiles
+  function pct(key,inv){
+    var sorted=[].concat(all).sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===player});
+    var pc=idx/(sorted.length-1||1);
+    return inv?1-pc:pc;
+  }
+
+  // Kill-focused
+  if(pct('killsPerGame')>=0.8)tags.push({icon:'\u2694\uFE0F',text:'AGGRESSIVE',color:'#ef4444',bg:'#ef444412',border:'#ef444440'});
+  // Death-averse
+  if(pct('deathsPerGame',true)>=0.8)tags.push({icon:'\uD83D\uDEE1\uFE0F',text:'SAFE PLAYER',color:'#22c55e',bg:'#22c55e12',border:'#22c55e40'});
+  // Vision control
+  if(pct('visionPerMin')>=0.75)tags.push({icon:'\uD83D\uDC41\uFE0F',text:'VISION CONTROL',color:'#3b82f6',bg:'#3b82f612',border:'#3b82f640'});
+  // Farm heavy
+  if(pct('csPerMin')>=0.8)tags.push({icon:'\uD83C\uDF3E',text:'FARM HEAVY',color:'#a3e635',bg:'#a3e63512',border:'#a3e63540'});
+  // Damage dealer
+  if(pct('damagePerMin')>=0.8)tags.push({icon:'\uD83D\uDCA5',text:'DAMAGE DEALER',color:'#f97316',bg:'#f9731612',border:'#f9731640'});
+  // Team player (high assist ratio)
+  var assistRatio=p.assistsPerGame/(p.killsPerGame+p.assistsPerGame+0.01);
+  if(assistRatio>=0.65)tags.push({icon:'\uD83E\uDD1D',text:'TEAM PLAYER',color:'#8b5cf6',bg:'#8b5cf612',border:'#8b5cf640'});
+  // Carry (high kill share + damage)
+  if(pct('killsPerGame')>=0.7&&pct('damagePerMin')>=0.7)tags.push({icon:'\uD83D\uDC51',text:'CARRY THREAT',color:'#fbbf24',bg:'#fbbf2412',border:'#fbbf2440'});
+  // Clutch (high WR)
+  if(p.winRate>=65&&p.games>=5)tags.push({icon:'\uD83C\uDFAF',text:'CLUTCH FACTOR',color:'#22d3ee',bg:'#22d3ee12',border:'#22d3ee40'});
+  // Feast or famine (high KDA variance — calculated in consistency)
+  // Gold efficient
+  if(pct('goldPerMin')>=0.8)tags.push({icon:'\uD83D\uDCB0',text:'GOLD EFFICIENT',color:'#fbbf24',bg:'#fbbf2412',border:'#fbbf2440'});
+
+  return tags;
+}
+
+function renderPlaystyleHTML(tags){
+  if(!tags.length)return'';
+  return'<div class="playstyle-row">'+tags.map(function(t){
+    return'<span class="playstyle-tag" style="color:'+t.color+';background:'+t.bg+';border-color:'+t.border+'">'+t.icon+' '+t.text+'</span>';
+  }).join('')+'</div>';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: CONSISTENCY RATING
+// ════════════════════════════════════════
+function getConsistency(player,allRows){
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(pRows.length<3)return null;
+  var kdas=pRows.map(function(r){
+    var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+    return(k+a)/Math.max(d,1);
+  });
+  var mean=kdas.reduce(function(s,v){return s+v},0)/kdas.length;
+  var variance=kdas.reduce(function(s,v){return s+Math.pow(v-mean,2)},0)/kdas.length;
+  var stddev=Math.sqrt(variance);
+  var cv=stddev/Math.max(mean,0.01); // coefficient of variation
+  // Score: lower CV = more consistent. Scale 0-100
+  var score=Math.max(0,Math.min(100,Math.round((1-cv/2)*100)));
+  var label=score>=80?'ROCK SOLID':score>=60?'RELIABLE':score>=40?'VARIABLE':'FEAST OR FAMINE';
+  var color=score>=80?'#22c55e':score>=60?'#3b82f6':score>=40?'#fbbf24':'#ef4444';
+  return{score:score,label:label,color:color,cv:cv.toFixed(2),stddev:stddev.toFixed(2),mean:mean.toFixed(2)};
+}
+
+// ════════════════════════════════════════
+// SCOUTING: FORM RATING (RECENT TREND)
+// ════════════════════════════════════════
+function getFormRating(player,allRows){
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(pRows.length<5)return null;
+  // Sort by date
+  pRows.sort(function(a,b){return(a['Date']||'').localeCompare(b['Date']||'')});
+  var last5=pRows.slice(-5);
+  var prev=pRows.slice(0,-5);
+  if(!prev.length)prev=pRows.slice(0,Math.floor(pRows.length/2));
+
+  function avgKDA(rows){
+    var total=rows.reduce(function(s,r){
+      var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+      return{k:s.k+k,d:s.d+d,a:s.a+a};
+    },{k:0,d:0,a:0});
+    return(total.k+total.a)/Math.max(total.d,1);
+  }
+  function avgWR(rows){
+    var w=rows.filter(function(r){return r['Win']==='Win'}).length;
+    return w/rows.length*100;
+  }
+
+  var recentKDA=avgKDA(last5),prevKDA=avgKDA(prev);
+  var recentWR=avgWR(last5),prevWR=avgWR(prev);
+  var kdaDiff=recentKDA-prevKDA;
+  var wrDiff=recentWR-prevWR;
+
+  // Form score based on recent vs historical
+  var formScore=kdaDiff*10+wrDiff*0.5;
+  var label=formScore>=10?'ON FIRE':formScore>=3?'TRENDING UP':formScore>=-3?'STABLE':formScore>=-10?'COOLING DOWN':'COLD STREAK';
+  var icon=formScore>=10?'\uD83D\uDD25':formScore>=3?'\uD83D\uDCC8':formScore>=-3?'\u2796':formScore>=-10?'\uD83D\uDCC9':'\u2744\uFE0F';
+  var color=formScore>=10?'#ef4444':formScore>=3?'#22c55e':formScore>=-3?'var(--dim)':formScore>=-10?'#3b82f6':'#60a5fa';
+
+  // Win/loss dots for last 5
+  var dots=last5.map(function(r){return r['Win']==='Win'});
+
+  return{label:label,icon:icon,color:color,recentKDA:recentKDA.toFixed(2),prevKDA:prevKDA.toFixed(2),recentWR:Math.round(recentWR),dots:dots,kdaDiff:kdaDiff,formScore:formScore};
+}
+
+// ════════════════════════════════════════
+// SCOUTING: EXPORT REPORT
+// ════════════════════════════════════════
+function generateScoutReport(playerName){
+  var p=PD.find(function(x){return x.player===playerName});if(!p)return'';
+  var rows=getFilteredRows();
+  var c=getConsistency(playerName,rows);
+  var f=getFormRating(playerName,rows);
+  var tags=getPlaystyleTags(playerName,rows);
+  var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+
+  // Top 3 champs
+  var cm={};(p.champData||[]).forEach(function(x){if(!cm[x.champ])cm[x.champ]={g:0,w:0};cm[x.champ].g++;if(x.win)cm[x.champ].w++});
+  var top3=Object.entries(cm).sort(function(a,b){return b[1].g-a[1].g}).slice(0,3).map(function(e){
+    return e[0]+' ('+e[1].g+'g, '+Math.round(e[1].w/e[1].g*100)+'% WR)';
+  });
+
+  var lines=[];
+  lines.push('═══ SCOUTING REPORT ═══');
+  lines.push(playerName+' — '+p.team+' — '+rl);
+  lines.push('');
+  lines.push('📊 STATS ('+p.games+' games)');
+  lines.push('   KDA: '+p.kda+' | WR: '+p.winRate+'% | K/G: '+p.killsPerGame+' | D/G: '+p.deathsPerGame);
+  lines.push('   CS/Min: '+p.csPerMin+' | DMG/Min: '+Math.round(p.damagePerMin)+' | Gold/Min: '+p.goldPerMin);
+  lines.push('');
+  lines.push('🎮 TOP CHAMPIONS');
+  top3.forEach(function(ch){lines.push('   '+ch)});
+  lines.push('');
+  if(tags.length){
+    lines.push('🏷️ PLAYSTYLE');
+    lines.push('   '+tags.map(function(t){return t.text}).join(' · '));
+    lines.push('');
+  }
+  if(c){
+    lines.push('📏 CONSISTENCY: '+c.score+'/100 ('+c.label+')');
+    lines.push('   Avg KDA: '+c.mean+' | Std Dev: '+c.stddev);
+    lines.push('');
+  }
+  if(f){
+    lines.push('📈 FORM: '+f.icon+' '+f.label);
+    lines.push('   Last 5: '+f.recentKDA+' KDA, '+f.recentWR+'% WR');
+    lines.push('   Prior:  '+f.prevKDA+' KDA');
+    lines.push('   Recent: '+f.dots.map(function(w){return w?'W':'L'}).join(' '));
+    lines.push('');
+  }
+
+  // Strengths/weaknesses
+  var all=PD.filter(function(x){return x.games>=3});
+  function pctRank(key,inv){
+    var sorted=[].concat(all).sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===playerName});
+    var pc=idx/(sorted.length-1||1);
+    return inv?1-pc:pc;
+  }
+  var strengths=[],weaknesses=[];
+  var checks=[
+    {key:'kda',name:'KDA'},{key:'winRate',name:'Win Rate'},{key:'killsPerGame',name:'Kills'},
+    {key:'deathsPerGame',name:'Deaths',inv:true},{key:'csPerMin',name:'CS/Min'},
+    {key:'damagePerMin',name:'Damage'},{key:'visionPerMin',name:'Vision'},{key:'goldPerMin',name:'Gold'}
+  ];
+  checks.forEach(function(ch){
+    var pc=pctRank(ch.key,ch.inv);
+    if(pc>=0.8)strengths.push(ch.name+' (top '+Math.round((1-pc)*100)+'%)');
+    if(pc<=0.2)weaknesses.push(ch.name+' (bottom '+Math.round(pc*100)+'%)');
+  });
+  if(strengths.length){lines.push('✅ STRENGTHS: '+strengths.join(', '))}
+  if(weaknesses.length){lines.push('⚠️ WEAKNESSES: '+weaknesses.join(', '))}
+  lines.push('');
+  lines.push('═══════════════════════');
+
+  return lines.join('\n');
+}
+
+function copyScoutReport(playerName){
+  var report=generateScoutReport(playerName);
+  navigator.clipboard.writeText(report).then(function(){
+    var toast=document.getElementById('scoutToast');
+    if(!toast){toast=document.createElement('div');toast.id='scoutToast';toast.className='scout-toast';document.body.appendChild(toast)}
+    toast.textContent='📋 SCOUTING REPORT COPIED';
+    toast.classList.add('show');
+    setTimeout(function(){toast.classList.remove('show')},2000);
+  });
 }
 
 // ════════════════════════════════════════
