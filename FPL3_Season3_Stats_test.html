@@ -1741,7 +1741,8 @@ async function init(){
   intro.querySelector('.intro-line').style.background='linear-gradient(90deg,'+adminConfig.colorPrimary+','+adminConfig.colorSecondary+')';
   var ls=intro.querySelector('.intro-logo span');ls.style.background='linear-gradient(135deg,'+adminConfig.colorPrimary+','+adminConfig.colorSecondary+','+adminConfig.colorAccent+')';ls.style.webkitBackgroundClip='text';ls.style.webkitTextFillColor='transparent';
   await loadData();
-  var np=PD.length,nm=parseInt(document.getElementById('mMatches').textContent)||0;
+  var np=PD.length;
+  var nm=new Set(RAW.map(function(r){return r['Match ID']||''}).filter(function(m){return m})).size;
   var nc=new Set(RAW.map(function(r){return r['Champion']}).filter(function(c){return c})).size;
   animateCountUp(document.getElementById('introPlayers'),np,800,'int');
   animateCountUp(document.getElementById('introMatches'),nm,800,'int');
