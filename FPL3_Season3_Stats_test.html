@@ -546,6 +546,34 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .vs-bar-avg-mark{position:absolute;top:0;bottom:0;width:2px;background:var(--dim);opacity:.5;z-index:2}
 .vs-bar-avg-label{position:absolute;top:-12px;font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--dim);transform:translateX(-50%)}
 .vs-bar-diff{font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;min-width:50px}
+/* GAME NIGHT TIMELINE */
+.tl-wrap{position:relative;padding:20px 0 20px 40px}
+.tl-line{position:absolute;left:18px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--cyan),var(--pink),var(--purple))}
+.tl-node{position:relative;margin-bottom:24px;animation:statReveal .4s ease backwards}
+.tl-dot{position:absolute;left:-30px;top:8px;width:14px;height:14px;border-radius:50%;border:2px solid var(--cyan);background:var(--bg);z-index:2;transition:all .3s}
+.tl-node:hover .tl-dot{transform:scale(1.3);box-shadow:0 0 12px var(--cyan)}
+.tl-dot.big-night{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.tl-card{background:var(--bg2);border:1px solid var(--border);padding:14px 16px;transition:all .3s;cursor:pointer}
+.tl-card:hover{border-color:var(--cyan);transform:translateX(4px)}
+.tl-date{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+.tl-summary{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.5px;margin-bottom:8px}
+.tl-highlights{display:flex;flex-wrap:wrap;gap:6px}
+.tl-tag{font-family:'Share Tech Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;border:1px solid;letter-spacing:.5px}
+.tl-mvp-tag{background:#ffd70010;color:var(--gold);border-color:#ffd70030}
+.tl-record-tag{background:#00f0ff10;color:var(--cyan);border-color:#00f0ff30}
+.tl-kill-tag{background:#ef444410;color:#ef4444;border-color:#ef444430}
+.tl-penta-tag{background:#b9f2ff10;color:#b9f2ff;border-color:#b9f2ff30}
+.tl-match-tag{background:#a855f710;color:var(--purple);border-color:#a855f730}
+.tl-streak-tag{background:#22c55e10;color:var(--green);border-color:#22c55e30}
+.tl-expand{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.tl-expand.open{display:block}
+.tl-game{display:flex;align-items:center;gap:10px;padding:5px 0;font-family:'Share Tech Mono',monospace;font-size:10px;border-bottom:1px solid #ffffff04}
+.tl-game .win{color:var(--green)}
+.tl-game .loss{color:var(--pink)}
+.tl-game .champ{min-width:80px}
+.tl-game .player{min-width:100px;cursor:pointer}
+.tl-game .player:hover{text-decoration:underline}
+.tl-game .kda{min-width:70px}
 </style>
 </head>
 <body>
@@ -584,6 +612,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <button class="tab-btn" data-tab="records">Records</button>
     <button class="tab-btn" data-tab="mvp">MVP</button>
     <button class="tab-btn" data-tab="power">Power Rankings</button>
+    <button class="tab-btn" data-tab="timeline">📅 Timeline</button>
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
@@ -609,6 +638,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
+  <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div id="timelineContent"></div></div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">🔍 Player Lookup</div>
@@ -675,7 +705,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.display='block';const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -1542,8 +1572,120 @@ function renderLookup(){
 const _origRenderCurrentTab=renderCurrentTab;
 renderCurrentTab=function(){
   if(curTab==='lookup'){renderLookup();return}
+  if(curTab==='timeline'){renderTimeline();return}
   _origRenderCurrentTab();
 };
+
+// ════════════════════════════════════════
+// GAME NIGHT TIMELINE
+// ════════════════════════════════════════
+function renderTimeline(){
+  var el=document.getElementById('timelineContent');if(!el)return;
+  var rows=getFilteredRows();if(!rows.length){el.innerHTML='<div class="nodata">NO DATA</div>';return}
+
+  // Group by date
+  var nights={};
+  rows.forEach(function(r){
+    var d=(r['Date']||'').trim();if(!d)return;
+    if(!nights[d])nights[d]=[];
+    nights[d].push(r);
+  });
+
+  var sortedDates=Object.keys(nights).sort();
+  if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS</div>';return}
+
+  // Track running records for "new record" detection
+  var allTimeRecords={kills:0,damage:0,kda:0};
+
+  var h='<div class="tl-wrap"><div class="tl-line"></div>';
+
+  sortedDates.forEach(function(date,di){
+    var nightRows=nights[date];
+    var matchIds=new Set(nightRows.map(function(r){return r['Match ID']||''}).filter(function(m){return m}));
+    var matchCount=matchIds.size||Math.ceil(nightRows.length/10);
+
+    // Aggregate player stats for this night
+    var players={};
+    nightRows.forEach(function(r){
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(!n)return;
+      if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champs:[],pentas:0,bestKills:0};
+      var p=players[n];var k=parseFloat(r['Kills'])||0;
+      p.kills+=k;p.deaths+=(parseFloat(r['Deaths'])||0);p.assists+=(parseFloat(r['Assists'])||0);
+      p.dmg+=(parseFloat(r['Total Damage to Champions'])||0);p.games++;
+      if(r['Win']==='Win')p.wins++;p.team=(r['Teams']||'').trim();
+      p.champs.push(r['Champion']||'');p.pentas+=(parseFloat(r['Penta Kills'])||0);
+      if(k>p.bestKills)p.bestKills=k;
+    });
+
+    // Find MVP of the night
+    var mvpName='',mvpScore=-1,mvp=null;
+    for(var name in players){
+      var pl=players[name];
+      var kda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
+      var wr=pl.wins/pl.games;
+      var score=kda*2+wr*3+(pl.dmg/pl.games/1000);
+      if(score>mvpScore){mvpScore=score;mvpName=name;mvp=pl}
+    }
+
+    // Detect highlights
+    var tags=[];
+    var totalPlayers=Object.keys(players).length;
+
+    // MVP tag
+    if(mvpName&&mvp){
+      var mkda=((mvp.kills+mvp.assists)/Math.max(mvp.deaths,1)).toFixed(1);
+      tags.push({cls:'tl-mvp-tag',text:'⭐ MVP: '+mvpName+' ('+mkda+' KDA)'});
+    }
+
+    // Check for records broken this night
+    var nightMaxKills=0,nightMaxDmg=0,nightMaxKDA=0;
+    nightRows.forEach(function(r){
+      var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+      var dmg=parseFloat(r['Total Damage to Champions'])||0;
+      var kda=(k+a)/Math.max(d,1);
+      if(k>nightMaxKills)nightMaxKills=k;
+      if(dmg>nightMaxDmg)nightMaxDmg=dmg;
+      if(kda>nightMaxKDA)nightMaxKDA=kda;
+    });
+    if(nightMaxKills>allTimeRecords.kills){allTimeRecords.kills=nightMaxKills;tags.push({cls:'tl-record-tag',text:'🏆 NEW KILL RECORD: '+nightMaxKills})}
+    if(nightMaxDmg>allTimeRecords.damage){allTimeRecords.damage=nightMaxDmg;tags.push({cls:'tl-record-tag',text:'🏆 NEW DAMAGE RECORD: '+Math.round(nightMaxDmg).toLocaleString()})}
+
+    // High kill games
+    for(var pn in players){if(players[pn].bestKills>=15)tags.push({cls:'tl-kill-tag',text:'🔥 '+pn+': '+players[pn].bestKills+' kills'})}
+
+    // Pentakills
+    for(var pn2 in players){if(players[pn2].pentas>0)tags.push({cls:'tl-penta-tag',text:'💎 PENTAKILL: '+pn2})}
+
+    // Match count
+    tags.push({cls:'tl-match-tag',text:matchCount+' match'+(matchCount>1?'es':'')+' · '+totalPlayers+' players'});
+
+    var isBig=tags.some(function(t){return t.cls==='tl-record-tag'||t.cls==='tl-penta-tag'});
+    var dateStr=formatDate(parseDate(date));
+    var delay=Math.min(di*0.06,2);
+
+    // Build individual game rows for expand section
+    var gameRows='';
+    nightRows.forEach(function(r){
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+      var champ=r['Champion']||'';var win=r['Win']==='Win';var tm=(r['Teams']||'').trim();
+      var c=TC[tm]||'var(--dim)';
+      gameRows+='<div class="tl-game"><span class="'+(win?'win':'loss')+'">'+(win?'W':'L')+'</span><span class="champ">'+champ+'</span><span class="player" style="color:'+c+'" onclick="openProfile(\''+n.replace(/'/g,"\\'")+'\')">' +n+'</span><span class="kda">'+k+'/'+d+'/'+a+'</span><span style="color:var(--dim)">'+tm+'</span></div>';
+    });
+
+    h+='<div class="tl-node" style="animation-delay:'+delay+'s">';
+    h+='<div class="tl-dot'+(isBig?' big-night':'')+'"></div>';
+    h+='<div class="tl-card" onclick="var ex=this.querySelector(\'.tl-expand\');if(ex)ex.classList.toggle(\'open\')">';
+    h+='<div class="tl-date" style="color:'+(isBig?'var(--gold)':'var(--cyan)')+'">'+dateStr+'</div>';
+    h+='<div class="tl-summary">GAME NIGHT '+(di+1)+'</div>';
+    h+='<div class="tl-highlights">'+tags.map(function(t){return'<span class="tl-tag '+t.cls+'">'+t.text+'</span>'}).join('')+'</div>';
+    h+='<div class="tl-expand"><div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:6px">ALL GAMES THIS NIGHT</div>'+gameRows+'</div>';
+    h+='</div></div>';
+  });
+
+  h+='</div>';
+  el.innerHTML=h;
+}
 
 // ════════════════════════════════════════
 // SHEET CONFIG SYSTEM (reads from Google Sheet "Config" tab)
