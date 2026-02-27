@@ -638,7 +638,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
-  <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div id="timelineContent"></div></div></div>
+  <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><div class="ctrl"><label>From</label><input type="date" id="tlFrom" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><div class="ctrl"><label>To</label><input type="date" id="tlTo" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><button onclick="document.getElementById('tlFrom').value='';document.getElementById('tlTo').value='';renderTimeline()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 12px;cursor:pointer;letter-spacing:1px;margin-top:18px">CLEAR</button></div><div id="timelineContent"></div></div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">🔍 Player Lookup</div>
@@ -1593,6 +1593,13 @@ function renderTimeline(){
 
   var sortedDates=Object.keys(nights).sort();
   if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS</div>';return}
+
+  // Apply date filters
+  var fromVal=document.getElementById('tlFrom').value;
+  var toVal=document.getElementById('tlTo').value;
+  if(fromVal)sortedDates=sortedDates.filter(function(d){return d>=fromVal});
+  if(toVal)sortedDates=sortedDates.filter(function(d){return d<=toVal});
+  if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS IN RANGE</div>';return}
 
   // Track running records for "new record" detection
   var allTimeRecords={kills:0,damage:0,kda:0};
