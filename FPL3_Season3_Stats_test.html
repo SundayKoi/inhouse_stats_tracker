@@ -726,7 +726,7 @@ const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows.map(function(r){
+function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?(typeof cell.v==='string'?esc(cell.v):cell.v):''):''});return o});resolve(rows.map(function(r){
 if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];
 if(r['Season Phase']!==undefined&&r['Season']===undefined)r['Season']=r['Season Phase'];
 if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];
