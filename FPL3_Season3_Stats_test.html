@@ -2614,25 +2614,27 @@ function getTeamRelativeStats(player,allRows){
       if(n===player)playerRow=r;
     });
     if(!playerRow)continue;
-    var pTeam=(playerRow['Teams']||'').trim();
-    rows.forEach(function(r){if((r['Teams']||'').trim()===pTeam)teamRows.push(r)});
+    var pTeam=(playerRow['Teams']||playerRow['FPL Team']||'').trim();
+    rows.forEach(function(r){if((r['Teams']||r['FPL Team']||'').trim()===pTeam)teamRows.push(r)});
     if(teamRows.length<2)continue;
 
-    // Damage share
-    var teamDmg=teamRows.reduce(function(s,r){return s+(parseFloat(r['Total Damage to Champions'])||0)},0);
+    // Damage share - use sheet's pre-calculated column if available
+    var sheetDmgShare=parseFloat(playerRow['Damage Share %']||'');
+    if(!isNaN(sheetDmgShare))dmgShares.push(sheetDmgShare);
+    else{var teamDmg=teamRows.reduce(function(s,r){return s+(parseFloat(r['Total Damage to Champions'])||0)},0);
     var pDmg=parseFloat(playerRow['Total Damage to Champions'])||0;
-    if(teamDmg>0)dmgShares.push(pDmg/teamDmg*100);
+    if(teamDmg>0)dmgShares.push(pDmg/teamDmg*100);}
 
-    // Gold share
-    var teamGold=teamRows.reduce(function(s,r){return s+(parseFloat(r['Gold Earned'])||0)},0);
+    // Gold share - use sheet's pre-calculated column if available
+    var sheetGoldShare=parseFloat(playerRow['Gold Share %']||'');
+    if(!isNaN(sheetGoldShare))goldShares.push(sheetGoldShare);
+    else{var teamGold=teamRows.reduce(function(s,r){return s+(parseFloat(r['Gold Earned'])||0)},0);
     var pGold=parseFloat(playerRow['Gold Earned'])||0;
-    if(teamGold>0)goldShares.push(pGold/teamGold*100);
+    if(teamGold>0)goldShares.push(pGold/teamGold*100);}
 
-    // Kill participation
-    var teamKills=teamRows.reduce(function(s,r){return s+(parseFloat(r['Kills'])||0)},0);
-    var pK=parseFloat(playerRow['Kills'])||0;
-    var pA=parseFloat(playerRow['Assists'])||0;
-    if(teamKills>0)kps.push((pK+pA)/teamKills*100);
+    // Kill participation - use sheet's pre-calculated column
+    var sheetKP=parseFloat(playerRow['Kill Participation %']||playerRow['Kill Participation (challenges)']||'');
+    if(!isNaN(sheetKP))kps.push(sheetKP);
 
     // Death share
     var teamDeaths=teamRows.reduce(function(s,r){return s+(parseFloat(r['Deaths'])||0)},0);
