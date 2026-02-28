@@ -721,16 +721,12 @@ for(let i=0;i<60;i++)pts.push(new P);
 function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)}anim()})();
 
 // DATA CONFIG
-const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
+const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
 
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows.map(function(r){
-if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];
-if(r['Season Phase']!==undefined&&r['Season']===undefined)r['Season']=r['Season Phase'];
-if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];
-return r;}))}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
+function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows)}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
 
 const NAME_MERGES={"Imthegeoff":"JellyBeanGeoff","Reindeer Smolder":"luci","Flying Squirtle":"Flyinq squirtle"};
 const STATS=[{name:"KDA",key:"kda",fmt:"dec"},{name:"Kills/Game",key:"killsPerGame",fmt:"dec"},{name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},{name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},{name:"CS/Min",key:"csPerMin",fmt:"dec"},{name:"Gold/Min",key:"goldPerMin",fmt:"dec"},{name:"Damage/Min",key:"damagePerMin",fmt:"num"},{name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},{name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},{name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},{name:"Win Rate %",key:"winRate",fmt:"pct"},{name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},{name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},{name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},{name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},{name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},{name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},{name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},{name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},{name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},{name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},{name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},{name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},{name:"Total Kills",key:"totalKills",fmt:"int"},{name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},{name:"Total Assists",key:"totalAssists",fmt:"int"},{name:"Double Kills",key:"doubleKills",fmt:"int"},{name:"Triple Kills",key:"tripleKills",fmt:"int"},{name:"Quadra Kills",key:"quadraKills",fmt:"int"},{name:"Penta Kills",key:"pentaKills",fmt:"int"},{name:"Games Played",key:"games",fmt:"int"}];
@@ -1900,21 +1896,50 @@ function renderFullScout(p){
   h+='</div>';
 
   // === CARD 3: LANING PHASE ===
-  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase</div>';
+  // Lane diffs: group by Match ID, find opponent with same Role on other team, subtract
+  var _lm={};
+  rows.forEach(function(r){var mid=r['Match ID']||'';if(mid){if(!_lm[mid])_lm[mid]=[];_lm[mid].push(r)}});
+  var _ld={cs5:[],cs10:[],cs15:[],cs20:[],g5:[],g10:[],g15:[],g20:[],xp5:[],xp10:[],xp15:[],xp20:[]};
+  var _lc=0;
+  Object.keys(_lm).forEach(function(mid){
+    var mr=_lm[mid];var me=null;
+    mr.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===p.player)me=r});
+    if(!me)return;
+    var myT=String(me['Teams']||me['FPL Team']||'').trim();
+    var myR=String(me['Role']||'').trim();
+    var opp=null;
+    mr.forEach(function(r){
+      var rT=String(r['Teams']||r['FPL Team']||'').trim();
+      var rR=String(r['Role']||'').trim();
+      if(rT!==myT&&rR===myR)opp=r;
+    });
+    if(!opp)return;
+    _lc++;
+    ['5','10','15','20'].forEach(function(t){
+      _ld['cs'+t].push((parseFloat(me['CS@'+t])||0)-(parseFloat(opp['CS@'+t])||0));
+      _ld['g'+t].push((parseFloat(me['Gold@'+t])||0)-(parseFloat(opp['Gold@'+t])||0));
+      _ld['xp'+t].push((parseFloat(me['XP@'+t])||0)-(parseFloat(opp['XP@'+t])||0));
+    });
+  });
+  function _lavg(arr){return arr.length?arr.reduce(function(s,v){return s+v},0)/arr.length:0}
+  function _lcol(v){return v>0?'var(--green)':v<0?'var(--pink)':'var(--dim)'}
+  function _lfmt(v,rnd){var s=rnd?Math.round(v):v.toFixed(1);return(v>0?'+':'')+s}
+
+  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase'+(_lc?' ('+_lc+' lane matchups)':'')+'</div>';
   h+='<div class="scout-laning">';
   ['5','10','15','20'].forEach(function(t){
-    var cs=colAvg('CS@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS@'+t+'</div><div class="scout-lane-val" style="color:'+c+'">'+cs.toFixed(0)+'</div></div>';
+    var d=_lavg(_ld['cs'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d)+'</div></div>';
   });
   h+='</div><div class="scout-laning" style="margin-top:4px">';
   ['5','10','15','20'].forEach(function(t){
-    var g=colAvg('Gold@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold@'+t+'</div><div class="scout-lane-val" style="color:var(--gold)">'+Math.round(g).toLocaleString()+'</div></div>';
+    var d=_lavg(_ld['g'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d,true)+'</div></div>';
   });
   h+='</div><div class="scout-laning" style="margin-top:4px">';
   ['5','10','15','20'].forEach(function(t){
-    var xp=colAvg('XP@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP@'+t+'</div><div class="scout-lane-val" style="color:var(--purple)">'+Math.round(xp).toLocaleString()+'</div></div>';
+    var d=_lavg(_ld['xp'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d,true)+'</div></div>';
   });
   h+='</div>';
   h+=simpleRow('Lvl 6 Timing',colAvg('Level 6 Timing (min)').toFixed(1)+' min');
@@ -2328,11 +2353,7 @@ async function loadSheetConfig(){
         if(!r.table||!r.table.cols){reject(new Error('No Config table'));return}
         const cols=r.table.cols.map(function(c){return c.label||c.id});
         const rows=r.table.rows.map(function(row){var o={};row.c.forEach(function(cell,i){o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?String(cell.v):''):''});return o});
-        resolve(rows.map(function(r){
-if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];
-if(r['Season Phase']!==undefined&&r['Season']===undefined)r['Season']=r['Season Phase'];
-if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];
-return r;}))}catch(e){reject(e)}};
+        resolve(rows)}catch(e){reject(e)}};
       var s=document.createElement('script');s.src=url;
       s.onerror=function(){clearTimeout(timeout);delete window[cb];reject(new Error('Config tab not found'))};
       document.body.appendChild(s);
