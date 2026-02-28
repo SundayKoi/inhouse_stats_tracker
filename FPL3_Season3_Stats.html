@@ -574,6 +574,57 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tl-game .player{min-width:100px;cursor:pointer}
 .tl-game .player:hover{text-decoration:underline}
 .tl-game .kda{min-width:70px}
+/* SCOUTING — PLAYSTYLE TAGS */
+.playstyle-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.playstyle-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.8px;border:1px solid}
+
+/* SCOUTING — CONSISTENCY & FORM */
+.scout-metrics{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.scout-metric{background:var(--bg2);border:1px solid var(--border);padding:10px 14px;text-align:center;min-width:100px;flex:1}
+.scout-metric-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700}
+.scout-metric-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px;margin-top:2px}
+.scout-metric-sub{font-family:'Share Tech Mono',monospace;font-size:9px;margin-top:4px}
+.form-bar{display:flex;gap:2px;justify-content:center;margin-top:6px}
+.form-dot{width:8px;height:8px;border-radius:2px}
+
+/* SCOUTING TAB */
+.scout-search{display:flex;gap:12px;margin-bottom:16px;align-items:center}
+.scout-search input{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:13px;padding:10px 16px;flex:1;outline:none;letter-spacing:.5px}
+.scout-search input:focus{border-color:var(--cyan)}
+.scout-profile{display:none}
+.scout-profile.active{display:block}
+.scout-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px}
+.scout-name{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700}
+.scout-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:1px}
+.scout-actions{display:flex;gap:8px}
+.scout-btn{background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:8px 14px;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:6px}
+.scout-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.scout-btn.primary{border-color:var(--cyan);color:var(--cyan)}
+.scout-btn.primary:hover{background:var(--cyan);color:var(--bg)}
+.scout-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:16px}
+.scout-card{background:var(--bg2);border:1px solid var(--border);padding:14px;position:relative;overflow:hidden}
+.scout-card-title{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cyan);margin-bottom:10px;text-transform:uppercase}
+.scout-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #ffffff04;font-family:'Share Tech Mono',monospace;font-size:11px}
+.scout-row-label{color:var(--dim)}
+.scout-row-val{font-weight:700;min-width:64px;text-align:right}
+.scout-bar-wrap{display:flex;align-items:center;gap:8px;flex:1;margin-left:12px;margin-right:10px}
+.scout-bar-track{flex:1;height:6px;background:#ffffff08;position:relative}
+.scout-bar-fill{height:100%;transition:width .8s cubic-bezier(.2,.8,.3,1)}
+.scout-bar-pct{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);min-width:36px;text-align:right}
+.scout-laning{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.scout-lane-cell{text-align:center;padding:8px 4px;background:var(--bg);border:1px solid #ffffff04}
+.scout-lane-min{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:1px}
+.scout-lane-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-top:2px}
+.scout-radar-wrap{display:flex;justify-content:center;padding:10px 0}
+.scout-suggestions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.scout-suggest{background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 12px;cursor:pointer;transition:all .2s}
+.scout-suggest:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* SCOUTING REPORT EXPORT */
+.scout-export-btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:6px 14px;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:6px}
+.scout-export-btn:hover{background:var(--cyan);color:var(--bg)}
+.scout-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--cyan);color:var(--bg);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 24px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;letter-spacing:1px}
+.scout-toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -613,6 +664,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <button class="tab-btn" data-tab="mvp">MVP</button>
     <button class="tab-btn" data-tab="power">Power Rankings</button>
     <button class="tab-btn" data-tab="timeline">📅 Timeline</button>
+    <button class="tab-btn" data-tab="scouting">🔍 Scouting</button>
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
@@ -638,6 +690,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
+  <div class="tab-page" id="pg-scouting"><div class="card"><div class="card-t">🔍 Player Scouting Report</div><div class="card-s">Deep-dive analytics with laning, team impact, and advanced stats</div><div class="scout-search"><input type="text" id="scoutInput" placeholder="Type a player name..." oninput="onScoutSearch(this.value)"><button class="scout-btn primary" onclick="runScoutReport()">GENERATE REPORT</button></div><div class="scout-suggestions" id="scoutSuggestions"></div><div id="scoutReport" class="scout-profile"></div></div></div>
   <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><div class="ctrl"><label>From</label><input type="date" id="tlFrom" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><div class="ctrl"><label>To</label><input type="date" id="tlTo" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><button onclick="document.getElementById('tlFrom').value='';document.getElementById('tlTo').value='';renderTimeline()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 12px;cursor:pointer;letter-spacing:1px;margin-top:18px">CLEAR</button></div><div id="timelineContent"></div></div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
@@ -668,12 +721,12 @@ for(let i=0;i<60;i++)pts.push(new P);
 function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)}anim()})();
 
 // DATA CONFIG
-const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
+const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
 
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows)}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
+function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows.map(function(r){if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];return r}))}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
 
 const NAME_MERGES={"Imthegeoff":"JellyBeanGeoff","Reindeer Smolder":"luci","Flying Squirtle":"Flyinq squirtle"};
 const STATS=[{name:"KDA",key:"kda",fmt:"dec"},{name:"Kills/Game",key:"killsPerGame",fmt:"dec"},{name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},{name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},{name:"CS/Min",key:"csPerMin",fmt:"dec"},{name:"Gold/Min",key:"goldPerMin",fmt:"dec"},{name:"Damage/Min",key:"damagePerMin",fmt:"num"},{name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},{name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},{name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},{name:"Win Rate %",key:"winRate",fmt:"pct"},{name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},{name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},{name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},{name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},{name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},{name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},{name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},{name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},{name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},{name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},{name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},{name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},{name:"Total Kills",key:"totalKills",fmt:"int"},{name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},{name:"Total Assists",key:"totalAssists",fmt:"int"},{name:"Double Kills",key:"doubleKills",fmt:"int"},{name:"Triple Kills",key:"tripleKills",fmt:"int"},{name:"Quadra Kills",key:"quadraKills",fmt:"int"},{name:"Penta Kills",key:"pentaKills",fmt:"int"},{name:"Games Played",key:"games",fmt:"int"}];
@@ -705,7 +758,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','scouting','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -1034,6 +1087,51 @@ openProfile=function(pn){
     if(header){
       const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(badges);
       header.after(bdiv.firstElementChild);
+    }
+  }
+  // PLAYSTYLE TAGS — inject after badges
+  const psTags=getPlaystyleTags(pn,getFilteredRows());
+  if(psTags.length){
+    const lastBadge=profContent.querySelector('.ach-row');
+    const insertAfter=lastBadge||profContent.querySelector('.prof-header')||profContent.firstElementChild;
+    if(insertAfter){
+      const pdiv=document.createElement('div');pdiv.innerHTML=renderPlaystyleHTML(psTags);
+      insertAfter.after(pdiv.firstElementChild);
+    }
+  }
+  // SCOUTING METRICS — consistency, form, team impact, export button
+  const scoutRows=getFilteredRows();
+  const consistency=getConsistency(pn,scoutRows);
+  const form=getFormRating(pn,scoutRows);
+  const teamRel=getTeamRelativeStats(pn,scoutRows);
+  if(consistency||form||teamRel){
+    let sh='<div class="prof-section"><div class="prof-section-title">Scouting Report</div>';
+    sh+='<div class="scout-metrics">';
+    if(consistency){
+      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+consistency.color+'">'+consistency.score+'</div><div class="scout-metric-label">CONSISTENCY</div><div class="scout-metric-sub" style="color:'+consistency.color+'">'+consistency.label+'</div></div>';
+    }
+    if(form){
+      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+form.color+'">'+form.icon+'</div><div class="scout-metric-label">FORM (LAST 5)</div><div class="scout-metric-sub" style="color:'+form.color+'">'+form.label+'</div><div class="form-bar">';
+      form.dots.forEach(function(w){sh+='<div class="form-dot" style="background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+      sh+='</div><div class="scout-metric-sub" style="color:var(--dim)">'+form.recentKDA+' KDA · '+form.recentWR+'% WR</div></div>';
+    }
+    sh+='</div>';
+    sh+='<button class="scout-export-btn" onclick="event.stopPropagation();copyScoutReport(\''+pn.replace(/'/g,"\\'")+'\')">📋 COPY SCOUTING REPORT</button>';
+    sh+='</div>';
+    // Insert before first prof-section (Core Stats)
+    const firstSection=profContent.querySelector('.prof-section');
+    if(firstSection){
+      const sdiv=document.createElement('div');sdiv.innerHTML=sh;
+      firstSection.before(sdiv.firstElementChild);
+    }
+    // Team Impact section — insert after scouting report
+    if(teamRel&&teamRel.gamesAnalyzed){
+      const tiHTML=renderTeamRelativeHTML(teamRel,c);
+      const scoutSection=profContent.querySelector('.prof-section');
+      if(scoutSection&&tiHTML){
+        const tdiv=document.createElement('div');tdiv.innerHTML=tiHTML;
+        scoutSection.after(tdiv.firstElementChild);
+      }
     }
   }
   // CHAMPION MASTERY BORDERS — upgrade champ icons in profile
@@ -1573,6 +1671,7 @@ const _origRenderCurrentTab=renderCurrentTab;
 renderCurrentTab=function(){
   if(curTab==='lookup'){renderLookup();return}
   if(curTab==='timeline'){renderTimeline();return}
+  if(curTab==='scouting'){return}  // scouting is interactive, no auto-render
   _origRenderCurrentTab();
 };
 
@@ -1695,6 +1794,523 @@ function renderTimeline(){
 }
 
 // ════════════════════════════════════════
+// SCOUTING TAB — FULL DEEP DIVE
+// ════════════════════════════════════════
+var _scoutPlayer='';
+
+function onScoutSearch(val){
+  var sg=document.getElementById('scoutSuggestions');if(!sg)return;
+  if(!val||val.length<1){sg.innerHTML='';return}
+  var q=val.toLowerCase();
+  var matches=PD.filter(function(p){return p.player.toLowerCase().includes(q)}).slice(0,8);
+  sg.innerHTML=matches.map(function(p){
+    var c=TC[p.team]||'var(--cyan)';
+    return'<div class="scout-suggest" onclick="document.getElementById(\'scoutInput\').value=\''+p.player.replace(/'/g,"\\'")+'\';runScoutReport()" style="border-left:3px solid '+c+'">'+p.player+'<span style="color:var(--dim);margin-left:6px;font-size:9px">'+p.team+'</span></div>';
+  }).join('');
+}
+
+function runScoutReport(){
+  var name=document.getElementById('scoutInput').value.trim();
+  if(!name)return;
+  document.getElementById('scoutSuggestions').innerHTML='';
+  var p=PD.find(function(x){return x.player.toLowerCase()===name.toLowerCase()});
+  if(!p){document.getElementById('scoutReport').innerHTML='<div class="nodata">PLAYER NOT FOUND</div>';document.getElementById('scoutReport').classList.add('active');return}
+  _scoutPlayer=p.player;
+  renderFullScout(p);
+}
+
+function renderFullScout(p){
+  var el=document.getElementById('scoutReport');
+  var c=TC[p.team]||'#6366f1';
+  var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+  var rows=getFilteredRows();
+  var pRows=rows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===p.player});
+
+  // Helper: avg of column
+  function colAvg(col){var vals=pRows.map(function(r){return parseFloat(r[col])||0});return vals.length?vals.reduce(function(s,v){return s+v},0)/vals.length:0}
+  function colSum(col){return pRows.reduce(function(s,r){return s+(parseFloat(r[col])||0)},0)}
+  // Percentile among all players with 3+ games
+  var all=PD.filter(function(x){return x.games>=3});
+  function pctOf(key,inv){
+    var sorted=[].concat(all).sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===p.player});
+    var pc=idx/(sorted.length-1||1);
+    return inv?1-pc:pc;
+  }
+
+  // Get team-relative stats
+  var tr=getTeamRelativeStats(p.player,rows);
+  var consist=getConsistency(p.player,rows);
+  var form=getFormRating(p.player,rows);
+  var tags=getPlaystyleTags(p.player,rows);
+
+  var h='';
+
+  // === HEADER ===
+  h+='<div class="scout-header"><div><div class="scout-name" style="color:'+c+'">'+p.player+'</div>';
+  h+='<div class="scout-sub">'+p.team+' · '+rl+' · '+p.games+' Games · '+p.wins+'W '+p.losses+'L · '+p.winRate+'% WR</div>';
+  if(tags.length)h+='<div style="margin-top:6px">'+renderPlaystyleHTML(tags)+'</div>';
+  h+='</div><div class="scout-actions">';
+  h+='<button class="scout-btn primary" onclick="copyScoutReportFull(\''+p.player.replace(/'/g,"\\'")+'\')">📋 COPY REPORT</button>';
+  h+='<button class="scout-btn" onclick="exportScoutCSV(\''+p.player.replace(/'/g,"\\'")+'\')">💾 SAVE CSV</button>';
+  h+='<button class="scout-btn" onclick="shareScoutDiscord(\''+p.player.replace(/'/g,"\\'")+'\')">🎮 DISCORD EMBED</button>';
+  h+='</div></div>';
+
+  // === ROW HELPER WITH PERCENTILE BAR ===
+  function statRow(label,val,fmt,pctile,color){
+    var display=fmt==='pct'?val.toFixed(1)+'%':fmt==='int'?Math.round(val).toLocaleString():fmt==='dec1'?val.toFixed(1):fmt==='dec2'?val.toFixed(2):val;
+    var barPct=Math.round(pctile*100);
+    var barColor=barPct>=70?'var(--green)':barPct>=40?color:'var(--pink)';
+    return'<div class="scout-row"><span class="scout-row-label">'+label+'</span><div class="scout-bar-wrap"><div class="scout-bar-track"><div class="scout-bar-fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div><span class="scout-bar-pct">'+barPct+'%</span></div><span class="scout-row-val" style="color:'+barColor+'">'+display+'</span></div>';
+  }
+
+  // Simple row (no bar)
+  function simpleRow(label,val,valColor){
+    return'<div class="scout-row"><span class="scout-row-label">'+label+'</span><span class="scout-row-val" style="color:'+(valColor||'var(--text)')+'">'+val+'</span></div>';
+  }
+
+  h+='<div class="scout-grid">';
+
+  // === CARD 1: CORE PERFORMANCE ===
+  h+='<div class="scout-card"><div class="scout-card-title">Core Performance</div>';
+  h+=statRow('KDA',p.kda,'dec2',pctOf('kda'),c);
+  h+=statRow('Win Rate',p.winRate,'pct',pctOf('winRate'),c);
+  h+=statRow('Kills/Game',p.killsPerGame,'dec1',pctOf('killsPerGame'),c);
+  h+=statRow('Deaths/Game',p.deathsPerGame,'dec1',pctOf('deathsPerGame',true),c);
+  h+=statRow('Assists/Game',p.assistsPerGame,'dec1',pctOf('assistsPerGame'),c);
+  h+=simpleRow('Solo Kills/Game',colAvg('Solo Kills').toFixed(1));
+  h+=simpleRow('Kill Participation',colAvg('Kill Participation %').toFixed(1)+'%');
+  h+='</div>';
+
+  // === CARD 2: DAMAGE PROFILE ===
+  h+='<div class="scout-card"><div class="scout-card-title">Damage Profile</div>';
+  h+=statRow('DMG/Min',p.damagePerMin,'int',pctOf('damagePerMin'),c);
+  h+=simpleRow('DMG Share',colAvg('Damage Share %').toFixed(1)+'%',colAvg('Damage Share %')>=25?'var(--green)':c);
+  h+=simpleRow('DMG Per Gold',colAvg('Damage Per Gold').toFixed(2));
+  var phys=colSum('Physical Damage'),mag=colSum('Magic Damage'),tru=colSum('True Damage');
+  var total=phys+mag+tru||1;
+  h+=simpleRow('Physical',Math.round(phys/total*100)+'%','#ef4444');
+  h+=simpleRow('Magic',Math.round(mag/total*100)+'%','#3b82f6');
+  h+=simpleRow('True',Math.round(tru/total*100)+'%','#fbbf24');
+  h+=simpleRow('DMG Taken/Min',colAvg('Damage Taken/min').toFixed(0));
+  h+='</div>';
+
+  // === CARD 3: LANING PHASE ===
+  // Lane diffs: group by Match ID, find opponent with same Role on other team, subtract
+  var _lm={};
+  rows.forEach(function(r){var mid=r['Match ID']||'';if(mid){if(!_lm[mid])_lm[mid]=[];_lm[mid].push(r)}});
+  var _ld={cs5:[],cs10:[],cs15:[],cs20:[],g5:[],g10:[],g15:[],g20:[],xp5:[],xp10:[],xp15:[],xp20:[]};
+  var _lc=0;
+  Object.keys(_lm).forEach(function(mid){
+    var mr=_lm[mid];var me=null;
+    mr.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===p.player)me=r});
+    if(!me)return;
+    var myT=String(me['Teams']||me['FPL Team']||'').trim();
+    var myR=String(me['Role']||'').trim();
+    var opp=null;
+    mr.forEach(function(r){
+      var rT=String(r['Teams']||r['FPL Team']||'').trim();
+      var rR=String(r['Role']||'').trim();
+      if(rT!==myT&&rR===myR)opp=r;
+    });
+    if(!opp)return;
+    _lc++;
+    ['5','10','15','20'].forEach(function(t){
+      _ld['cs'+t].push((parseFloat(me['CS@'+t])||0)-(parseFloat(opp['CS@'+t])||0));
+      _ld['g'+t].push((parseFloat(me['Gold@'+t])||0)-(parseFloat(opp['Gold@'+t])||0));
+      _ld['xp'+t].push((parseFloat(me['XP@'+t])||0)-(parseFloat(opp['XP@'+t])||0));
+    });
+  });
+  function _lavg(arr){return arr.length?arr.reduce(function(s,v){return s+v},0)/arr.length:0}
+  function _lcol(v){return v>0?'var(--green)':v<0?'var(--pink)':'var(--dim)'}
+  function _lfmt(v,rnd){var s=rnd?Math.round(v):v.toFixed(1);return(v>0?'+':'')+s}
+
+  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase'+(_lc?' ('+_lc+' lane matchups)':'')+'</div>';
+  h+='<div class="scout-laning">';
+  ['5','10','15','20'].forEach(function(t){
+    var d=_lavg(_ld['cs'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d)+'</div></div>';
+  });
+  h+='</div><div class="scout-laning" style="margin-top:4px">';
+  ['5','10','15','20'].forEach(function(t){
+    var d=_lavg(_ld['g'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d,true)+'</div></div>';
+  });
+  h+='</div><div class="scout-laning" style="margin-top:4px">';
+  ['5','10','15','20'].forEach(function(t){
+    var d=_lavg(_ld['xp'+t]);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP Diff @'+t+'</div><div class="scout-lane-val" style="color:'+_lcol(d)+'">'+_lfmt(d,true)+'</div></div>';
+  });
+  h+='</div>';
+  h+=simpleRow('Lvl 6 Timing',colAvg('Level 6 Timing (min)').toFixed(1)+' min');
+  h+=simpleRow('CS Adv Over Opponent','+'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1));
+  h+=simpleRow('Lvl Lead Over Opponent','+'+colAvg('Max Level Lead on Lane Opponent').toFixed(1));
+  h+=simpleRow('Lane Minions First 10',colAvg('Lane Minions First 10 Min').toFixed(0));
+  h+=simpleRow('Jungle CS Before 10',colAvg('Jungle CS Before 10 Min').toFixed(0));
+  h+='</div>';
+
+  // === CARD 4: ECONOMY ===
+  h+='<div class="scout-card"><div class="scout-card-title">Economy</div>';
+  h+=statRow('Gold/Min',p.goldPerMin,'dec1',pctOf('goldPerMin'),c);
+  h+=statRow('CS/Min',p.csPerMin,'dec1',pctOf('csPerMin'),c);
+  h+=simpleRow('Gold Share',colAvg('Gold Share %').toFixed(1)+'%',colAvg('Gold Share %')>=24?'var(--gold)':c);
+  h+=simpleRow('Turret Plates',colAvg('Turret Plates Destroyed').toFixed(1)+'/g');
+  h+=simpleRow('Bounty Gold Earned',colAvg('Bounty Gold').toFixed(0)+'/g');
+  h+='</div>';
+
+  // === CARD 5: VISION & MAP CONTROL ===
+  h+='<div class="scout-card"><div class="scout-card-title">Vision & Map Control</div>';
+  h+=statRow('Vision/Min',p.visionPerMin,'dec2',pctOf('visionPerMin'),c);
+  h+=simpleRow('Wards Placed/Game',colAvg('Wards Placed').toFixed(1));
+  h+=simpleRow('Wards Killed/Game',colAvg('Wards Killed').toFixed(1));
+  h+=simpleRow('Control Wards/Game',colAvg('Control Wards Bought').toFixed(1));
+  h+=simpleRow('Vision Adv vs Opponent',colAvg('Vision Score Advantage Over Lane Opponent').toFixed(2));
+  h+=simpleRow('Wards Guarded/Game',colAvg('Wards Guarded').toFixed(1));
+  h+='</div>';
+
+  // === CARD 6: TEAM IMPACT ===
+  h+='<div class="scout-card"><div class="scout-card-title">Team Impact</div>';
+  if(tr&&tr.gamesAnalyzed){
+    if(tr.dmgShare!==null)h+=simpleRow('DMG Share (calc)',tr.dmgShare.toFixed(1)+'%',tr.dmgShare>=25?'var(--green)':c);
+    if(tr.goldShare!==null)h+=simpleRow('Gold Share (calc)',tr.goldShare.toFixed(1)+'%');
+    if(tr.killParticipation!==null)h+=simpleRow('Kill Participation (calc)',tr.killParticipation.toFixed(1)+'%',tr.killParticipation>=70?'var(--green)':c);
+    if(tr.deathShare!==null)h+=simpleRow('Death Share',tr.deathShare.toFixed(1)+'%',tr.deathShare>=30?'var(--pink)':tr.deathShare<=15?'var(--green)':c);
+  }
+  h+=simpleRow('Heal+Shield',colAvg('Effective Heal and Shield').toFixed(0)+'/g');
+  h+=simpleRow('CC Time/Game',colAvg('Time CCing Others (s)').toFixed(1)+'s');
+  h+=simpleRow('Total CC Dealt/Game',colAvg('Total CC Dealt (s)').toFixed(0)+'s');
+  h+=simpleRow('Healing on Team/Game',colAvg('Healing on Teammates').toFixed(0));
+  h+=simpleRow('Shielding on Team/Game',colAvg('Shielding on Teammates').toFixed(0));
+  h+='</div>';
+
+  // === CARD 7: OBJECTIVES ===
+  h+='<div class="scout-card"><div class="scout-card-title">Objectives</div>';
+  h+=simpleRow('Turret Kills/Game',colAvg('Turret Kills').toFixed(1));
+  h+=simpleRow('Turret Damage/Game',colAvg('Turret Damage').toFixed(0));
+  h+=simpleRow('Objective DMG/Game',colAvg('Objective Damage').toFixed(0));
+  h+=simpleRow('Turret Takedowns/Game',colAvg('Turret Takedowns').toFixed(1));
+  h+=simpleRow('Objs Stolen/Game',colAvg('Objectives Stolen').toFixed(2));
+  h+=simpleRow('First Tower Rate',((pRows.filter(function(r){return r['First Turret Killed']==='Yes'}).length/pRows.length)*100).toFixed(0)+'%');
+  h+=simpleRow('First Blood Rate',((pRows.filter(function(r){return r['First Blood Kill']==='Yes'}).length/pRows.length)*100).toFixed(0)+'%');
+  h+='</div>';
+
+  // === CARD 8: COMBAT MECHANICS ===
+  h+='<div class="scout-card"><div class="scout-card-title">Combat Mechanics</div>';
+  h+=simpleRow('Skillshots Hit/Game',colAvg('Skillshots Hit').toFixed(0));
+  h+=simpleRow('Skillshots Dodged/Game',colAvg('Skillshots Dodged').toFixed(0));
+  var hitRate=colAvg('Skillshots Hit')/(colAvg('Skillshots Hit')+colAvg('Skillshots Dodged')+0.01)*100;
+  h+=simpleRow('Largest Multi Kill',Math.max.apply(null,pRows.map(function(r){return parseFloat(r['Largest Multi Kill'])||0})));
+  h+=simpleRow('Largest Killing Spree',Math.max.apply(null,pRows.map(function(r){return parseFloat(r['Largest Killing Spree'])||0})));
+  h+=simpleRow('Longest Time Alive',Math.round(colAvg('Longest Time Alive (s)')/60)+'m avg');
+  h+=simpleRow('Time Dead/Game',Math.round(colAvg('Total Time Dead (s)'))+'s');
+  h+=simpleRow('Solo Kills Total',colSum('Solo Kills'));
+  h+='</div>';
+
+  // === CARD 9: CHAMPION POOL ===
+  var cm={};(p.champData||[]).forEach(function(x){
+    if(!cm[x.champ])cm[x.champ]={games:0,wins:0,kills:0,deaths:0,assists:0,dmg:0,cs:0,dur:0};
+    var ch=cm[x.champ];ch.games++;if(x.win)ch.wins++;ch.kills+=x.kills;ch.deaths+=x.deaths;ch.assists+=x.assists;ch.dmg+=x.damage;ch.cs+=x.cs||0;ch.dur+=x.duration||0;
+  });
+  // Also pull extra data from raw rows for this card
+  pRows.forEach(function(r){
+    var chName=r['Champion']||'';if(!chName)return;
+    if(!cm[chName])return;
+    if(!cm[chName]._soloKills)cm[chName]._soloKills=0;
+    if(!cm[chName]._gold)cm[chName]._gold=0;
+    cm[chName]._soloKills+=(parseFloat(r['Solo Kills'])||0);
+    cm[chName]._gold+=(parseFloat(r['Gold Earned'])||0);
+  });
+  var champList=Object.entries(cm).map(function(e){
+    var n=e[0],d=e[1];
+    var kda=((d.kills+d.assists)/Math.max(d.deaths,1));
+    var wr=d.wins/d.games*100;
+    var avgDmg=d.dmg/d.games;
+    var avgCS=d.dur>0?(d.cs/(d.dur)): 0;
+    return{name:n,games:d.games,wins:d.wins,wr:wr,kda:kda,kills:d.kills/d.games,deaths:d.deaths/d.games,assists:d.assists/d.games,avgDmg:avgDmg,csMin:avgCS,soloKills:(d._soloKills||0)/d.games,gold:(d._gold||0)/d.games};
+  }).sort(function(a,b){return b.games-a.games});
+
+  if(champList.length){
+    h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Champion Pool ('+champList.length+' Champions)</div>';
+    // Header row
+    h+='<div style="display:grid;grid-template-columns:32px 1fr 50px 60px 50px 60px 60px 60px 70px;gap:4px;padding:4px 0;border-bottom:1px solid var(--border);font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">';
+    h+='<div></div><div>CHAMPION</div><div style="text-align:center">GAMES</div><div style="text-align:center">WIN RATE</div><div style="text-align:center">KDA</div><div style="text-align:center">K/D/A</div><div style="text-align:center">DMG/G</div><div style="text-align:center">CS/MIN</div><div style="text-align:center">RATING</div></div>';
+    champList.forEach(function(ch){
+      var wrColor=ch.wr>=60?'var(--green)':ch.wr>=50?'var(--text)':'var(--pink)';
+      var kdaColor=ch.kda>=4?'var(--green)':ch.kda>=2.5?'var(--text)':'var(--pink)';
+      // Rating: weighted score of wr, kda, games
+      var rating=Math.min(100,Math.round(ch.wr*0.4+Math.min(ch.kda*8,40)+Math.min(ch.games*3,20)));
+      var ratingColor=rating>=75?'var(--green)':rating>=50?'var(--gold)':'var(--pink)';
+      var ratingLabel=rating>=80?'S':rating>=65?'A':rating>=50?'B':rating>=35?'C':'D';
+      var barW=Math.min(rating,100);
+      // Mastery tier label
+      var tier=ch.games>=15?'OTP':ch.games>=10?'MAIN':ch.games>=5?'COMFORT':ch.games>=3?'POCKET':'';
+      var tierColor=ch.games>=15?'#b9f2ff':ch.games>=10?'var(--gold)':ch.games>=5?'#c0c0c0':'var(--dim)';
+      h+='<div style="display:grid;grid-template-columns:32px 1fr 50px 60px 50px 60px 60px 60px 70px;gap:4px;padding:6px 0;border-bottom:1px solid #ffffff04;align-items:center;font-family:\'Share Tech Mono\',monospace;font-size:11px">';
+      h+='<div>'+champImg(ch.name,'champ-icon')+'</div>';
+      h+='<div><span style="font-weight:700">'+ch.name+'</span>'+(tier?' <span style="font-size:8px;color:'+tierColor+';letter-spacing:1px">'+tier+'</span>':'')+'</div>';
+      h+='<div style="text-align:center">'+ch.games+'</div>';
+      h+='<div style="text-align:center;color:'+wrColor+'">'+ch.wr.toFixed(0)+'%</div>';
+      h+='<div style="text-align:center;color:'+kdaColor+'">'+ch.kda.toFixed(1)+'</div>';
+      h+='<div style="text-align:center;color:var(--dim);font-size:10px">'+ch.kills.toFixed(1)+'/'+ch.deaths.toFixed(1)+'/'+ch.assists.toFixed(1)+'</div>';
+      h+='<div style="text-align:center">'+Math.round(ch.avgDmg).toLocaleString()+'</div>';
+      h+='<div style="text-align:center">'+ch.csMin.toFixed(1)+'</div>';
+      h+='<div style="text-align:center"><div style="display:flex;align-items:center;gap:4px;justify-content:center"><div style="width:30px;height:5px;background:#ffffff08;border-radius:2px;overflow:hidden"><div style="width:'+barW+'%;height:100%;background:'+ratingColor+'"></div></div><span style="color:'+ratingColor+';font-weight:700;font-size:12px">'+ratingLabel+'</span></div></div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // === CARD 10: BAN & COUNTER RECOMMENDATIONS ===
+  if(champList.length){
+    h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Draft Intelligence</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
+
+    // === BAN RECOMMENDATIONS ===
+    // Sort by: games * winrate * kda (most dangerous picks)
+    var banPriority=champList.filter(function(ch){return ch.games>=2}).map(function(ch){
+      var threat=ch.wr/100*ch.kda*Math.sqrt(ch.games);
+      return{name:ch.name,games:ch.games,wr:ch.wr,kda:ch.kda,threat:threat};
+    }).sort(function(a,b){return b.threat-a.threat});
+
+    h+='<div><div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--pink);margin-bottom:10px">🚫 RECOMMENDED BANS</div>';
+    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);margin-bottom:8px">Highest threat picks — ban these to weaken '+p.player+'</div>';
+    if(banPriority.length){
+      banPriority.slice(0,5).forEach(function(ch,i){
+        var urgency=i===0?'MUST BAN':i===1?'HIGH PRIORITY':i===2?'STRONG BAN':'CONSIDER';
+        var urgColor=i===0?'var(--pink)':i===1?'#f97316':i===2?'var(--gold)':'var(--dim)';
+        h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ffffff04">';
+        h+='<div style="width:20px;text-align:center;font-family:\'Orbitron\',sans-serif;font-size:11px;color:'+urgColor+'">'+(i+1)+'</div>';
+        h+=champImg(ch.name,'champ-icon');
+        h+='<div style="flex:1"><div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;font-weight:700">'+ch.name+'</div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim)">'+ch.games+'g · '+ch.wr.toFixed(0)+'% WR · '+ch.kda.toFixed(1)+' KDA</div></div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:'+urgColor+';text-align:right">'+urgency+'</div>';
+        h+='</div>';
+      });
+    } else {
+      h+='<div style="color:var(--dim);font-size:10px">Not enough data (need 2+ games on a champ)</div>';
+    }
+
+    // Why these bans
+    if(banPriority.length>=2){
+      h+='<div style="margin-top:10px;padding:8px;background:var(--bg);border-left:2px solid var(--pink);font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim)">';
+      var topBan=banPriority[0];
+      h+='<span style="color:var(--pink)">'+topBan.name+'</span> is their strongest pick at <span style="color:var(--green)">'+topBan.wr.toFixed(0)+'% WR</span> with <span style="color:var(--green)">'+topBan.kda.toFixed(1)+' KDA</span> over '+topBan.games+' games. ';
+      if(banPriority.length>=3){
+        h+='Banning <span style="color:var(--pink)">'+banPriority[0].name+'</span> and <span style="color:var(--pink)">'+banPriority[1].name+'</span> removes their two highest-threat comfort picks.';
+      }
+      h+='</div>';
+    }
+    h+='</div>';
+
+    // === EXPLOIT WEAKNESSES (what to pick / force them onto) ===
+    var weakChamps=champList.filter(function(ch){return ch.games>=2}).map(function(ch){
+      var weakness=(100-ch.wr)/100*(1/Math.max(ch.kda,0.5))*Math.sqrt(ch.games);
+      return{name:ch.name,games:ch.games,wr:ch.wr,kda:ch.kda,deaths:ch.deaths,weakness:weakness};
+    }).sort(function(a,b){return b.weakness-a.weakness});
+
+    // Find their bad matchup patterns: champs where they lose and die a lot
+    var lossChamps=champList.filter(function(ch){return ch.games>=2&&ch.wr<50}).sort(function(a,b){return a.wr-b.wr});
+    var highDeathChamps=champList.filter(function(ch){return ch.games>=2&&ch.deaths>=4}).sort(function(a,b){return b.deaths-a.deaths});
+
+    h+='<div><div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--green);margin-bottom:10px">✅ EXPLOIT WEAKNESSES</div>';
+    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);margin-bottom:8px">Force them onto weak picks or exploit patterns</div>';
+
+    // Champs they're bad at
+    if(lossChamps.length){
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">WORST CHAMPIONS (let these through)</div>';
+      lossChamps.slice(0,3).forEach(function(ch){
+        h+='<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #ffffff04">';
+        h+=champImg(ch.name,'champ-icon');
+        h+='<div style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:11px">'+ch.name+'</div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px"><span style="color:var(--pink)">'+ch.wr.toFixed(0)+'% WR</span> · '+ch.kda.toFixed(1)+' KDA · '+ch.games+'g</div>';
+        h+='</div>';
+      });
+    }
+
+    // Champs they've lost AGAINST the most (enemy champs that beat them)
+    var enemyChamps={};
+    var matchGroups={};
+    rows.forEach(function(r){var mid=r['Match ID']||'';if(mid){if(!matchGroups[mid])matchGroups[mid]=[];matchGroups[mid].push(r)}});
+    for(var mid in matchGroups){
+      var mRows=matchGroups[mid];
+      var pRow=null;
+      mRows.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===p.player)pRow=r});
+      if(!pRow)continue;
+      var pTeam=(pRow['Teams']||pRow['FPL Team']||'').trim();
+      var lost=pRow['Win']!=='Win';
+      mRows.forEach(function(r){
+        var rTeam=(r['Teams']||r['FPL Team']||'').trim();
+        if(rTeam===pTeam)return; // same team, skip
+        var eCh=r['Champion']||'';if(!eCh)return;
+        if(!enemyChamps[eCh])enemyChamps[eCh]={games:0,losses:0};
+        enemyChamps[eCh].games++;
+        if(lost)enemyChamps[eCh].losses++;
+      });
+    }
+    var nemesis=Object.entries(enemyChamps).filter(function(e){return e[1].games>=2&&e[1].losses>=2}).map(function(e){
+      return{name:e[0],games:e[1].games,losses:e[1].losses,lossRate:e[1].losses/e[1].games*100};
+    }).sort(function(a,b){return b.losses-a.losses||b.lossRate-a.lossRate});
+
+    if(nemesis.length){
+      h+='<div style="margin-top:10px;font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">NEMESIS CHAMPIONS (they lose to these)</div>';
+      nemesis.slice(0,5).forEach(function(ch){
+        var lrColor=ch.lossRate>=75?'var(--green)':'var(--gold)';
+        h+='<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #ffffff04">';
+        h+=champImg(ch.name,'champ-icon');
+        h+='<div style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:11px">'+ch.name+'</div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px"><span style="color:'+lrColor+'">'+ch.losses+'L</span> in '+ch.games+'g · <span style="color:'+lrColor+'">'+ch.lossRate.toFixed(0)+'% loss rate</span></div>';
+        h+='</div>';
+      });
+    }
+
+    // Exploitable patterns
+    h+='<div style="margin-top:10px;font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">EXPLOITABLE PATTERNS</div>';
+    var patterns=[];
+    // High death rate overall
+    if(p.deathsPerGame>=4)patterns.push({icon:'💀',text:'Dies '+p.deathsPerGame.toFixed(1)+' times/game — pick aggressive all-in champions',color:'var(--green)'});
+    // Low vision
+    if(colAvg('Wards Placed')<8)patterns.push({icon:'👁️',text:'Low ward count ('+colAvg('Wards Placed').toFixed(1)+'/g) — abuse vision gaps with flanks and roams',color:'var(--green)'});
+    // Weak early game (low CS@10 or Gold@10)
+    var cs10=colAvg('CS@10');
+    if(cs10>0&&cs10<60&&(p.mainRole==='MIDDLE'||p.mainRole==='BOTTOM'||p.mainRole==='TOP'))patterns.push({icon:'🏰',text:'Avg '+cs10.toFixed(0)+' CS@10 — punish weak laning with early aggression',color:'var(--green)'});
+    // Small champ pool
+    var comfortPicks=champList.filter(function(ch){return ch.games>=3}).length;
+    if(comfortPicks<=2)patterns.push({icon:'🎭',text:'Only '+comfortPicks+' comfort pick'+(comfortPicks>1?'s':'')+' — easy to ban out',color:'var(--green)'});
+    // Feast or famine (high variance)
+    if(consist&&consist.score<40)patterns.push({icon:'🎲',text:'Inconsistent performer ('+consist.score+'/100) — coinflip player, may tilt if set behind early',color:'var(--green)'});
+    // Low KP
+    if(colAvg('Kill Participation %')<55)patterns.push({icon:'🏝️',text:'Low kill participation ('+colAvg('Kill Participation %').toFixed(0)+'%) — isolated from team, target in side lanes',color:'var(--green)'});
+    // Damage type skew
+    var phys=colSum('Physical Damage'),mag=colSum('Magic Damage'),totalDmg=phys+mag||1;
+    if(mag/totalDmg>0.85)patterns.push({icon:'🛡️',text:Math.round(mag/totalDmg*100)+'% magic damage — stack MR to neutralize',color:'var(--green)'});
+    if(phys/totalDmg>0.85)patterns.push({icon:'🛡️',text:Math.round(phys/totalDmg*100)+'% physical damage — stack armor to neutralize',color:'var(--green)'});
+
+    if(patterns.length){
+      patterns.forEach(function(pt){
+        h+='<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #ffffff04;font-family:\'Share Tech Mono\',monospace;font-size:10px">';
+        h+='<span>'+pt.icon+'</span><span style="color:'+pt.color+'">'+pt.text+'</span></div>';
+      });
+    } else {
+      h+='<div style="color:var(--dim);font-size:10px">No major exploitable weaknesses detected — well-rounded player</div>';
+    }
+
+    h+='</div>';
+    h+='</div></div>'; // close grid + card
+  }
+
+  // === CARD 11: SCOUTING ASSESSMENT ===
+  h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Assessment</div>';
+  h+='<div class="scout-metrics">';
+  if(consist){
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+consist.color+'">'+consist.score+'</div><div class="scout-metric-label">CONSISTENCY</div><div class="scout-metric-sub" style="color:'+consist.color+'">'+consist.label+'</div></div>';
+  }
+  if(form){
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+form.color+'">'+form.icon+'</div><div class="scout-metric-label">FORM</div><div class="scout-metric-sub" style="color:'+form.color+'">'+form.label+'</div><div class="form-bar">';
+    form.dots.forEach(function(w){h+='<div class="form-dot" style="background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+    h+='</div></div>';
+  }
+  // Strengths/Weaknesses
+  var strengths=[],weaknesses=[];
+  [{key:'kda',name:'KDA'},{key:'winRate',name:'Win Rate'},{key:'killsPerGame',name:'Kills'},{key:'deathsPerGame',name:'Deaths',inv:true},{key:'csPerMin',name:'CS/Min'},{key:'damagePerMin',name:'Damage'},{key:'visionPerMin',name:'Vision'},{key:'goldPerMin',name:'Gold'}].forEach(function(ch){
+    var pc=pctOf(ch.key,ch.inv);
+    if(pc>=0.8)strengths.push(ch.name);
+    if(pc<=0.2)weaknesses.push(ch.name);
+  });
+  h+='<div class="scout-metric" style="flex:2"><div class="scout-metric-label" style="margin-bottom:6px">STRENGTHS</div>';
+  h+=strengths.length?strengths.map(function(s){return'<span class="playstyle-tag" style="color:var(--green);background:#22c55e12;border-color:#22c55e40">✅ '+s+'</span>'}).join(' '):'<span style="color:var(--dim);font-size:10px">None above 80th percentile</span>';
+  h+='<div class="scout-metric-label" style="margin-top:8px;margin-bottom:6px">WEAKNESSES</div>';
+  h+=weaknesses.length?weaknesses.map(function(s){return'<span class="playstyle-tag" style="color:var(--pink);background:#ef444412;border-color:#ef444440">⚠️ '+s+'</span>'}).join(' '):'<span style="color:var(--dim);font-size:10px">None below 20th percentile</span>';
+  h+='</div></div></div>';
+
+  h+='</div>'; // close scout-grid
+
+  h+='<div style="text-align:center;padding:20px 0 10px;font-family:\'Orbitron\',sans-serif;font-size:10px;letter-spacing:3px;color:var(--pink);opacity:.7">⚠️ IF YOU ARE JUST ASS AT THE GAME AND LOSE WITH THIS HELP I AM NOT RESPONSIBLE ⚠️</div>';
+
+  el.innerHTML=h;
+  el.classList.add('active');
+}
+
+// === EXPORT: FULL CLIPBOARD REPORT ===
+function copyScoutReportFull(playerName){
+  var report=generateScoutReport(playerName);
+  // Enhance with laning data
+  var rows=getFilteredRows();
+  var pRows=rows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===playerName});
+  function colAvg(col){var v=pRows.map(function(r){return parseFloat(r[col])||0});return v.length?v.reduce(function(s,x){return s+x},0)/v.length:0}
+  var laning='\n🏰 LANING PHASE\n';
+  laning+='   CS@10: '+colAvg('CS@10').toFixed(0)+' | CS@15: '+colAvg('CS@15').toFixed(0)+'\n';
+  laning+='   Gold@10: '+Math.round(colAvg('Gold@10'))+' | Gold@15: '+Math.round(colAvg('Gold@15'))+'\n';
+  laning+='   Lvl 6 Timing: '+colAvg('Level 6 Timing (min)').toFixed(1)+'min\n';
+  laning+='   CS Adv: +'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1)+' | Lvl Lead: +'+colAvg('Max Level Lead on Lane Opponent').toFixed(1)+'\n';
+  laning+='   Solo Kills/Game: '+colAvg('Solo Kills').toFixed(1)+'\n';
+  report=report.replace('═══════════════════════',laning+'═══════════════════════');
+  navigator.clipboard.writeText(report).then(function(){showScoutToast('📋 FULL SCOUTING REPORT COPIED')});
+}
+
+// === EXPORT: CSV ===
+function exportScoutCSV(playerName){
+  var rows=getFilteredRows();
+  var pRows=rows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===playerName});
+  if(!pRows.length)return;
+  var headers=Object.keys(pRows[0]);
+  var csv=headers.join(',')+'\n';
+  pRows.forEach(function(r){
+    csv+=headers.map(function(h){var v=String(r[h]||'').replace(/,/g,';').replace(/"/g,'""');return'"'+v+'"'}).join(',')+'\n';
+  });
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=playerName.replace(/[^a-zA-Z0-9]/g,'_')+'_scouting.csv';a.click();
+  URL.revokeObjectURL(url);
+  showScoutToast('💾 CSV DOWNLOADED: '+playerName);
+}
+
+// === EXPORT: DISCORD WEBHOOK EMBED ===
+function shareScoutDiscord(playerName){
+  var p=PD.find(function(x){return x.player===playerName});if(!p)return;
+  var c=TC[p.team]||'#6366f1';
+  var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+  var rows=getFilteredRows();
+  var pRows=rows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===playerName});
+  function colAvg(col){var v=pRows.map(function(r){return parseFloat(r[col])||0});return v.length?v.reduce(function(s,x){return s+x},0)/v.length:0}
+  var tags=getPlaystyleTags(playerName,rows);
+  var consist=getConsistency(playerName,rows);
+  var form=getFormRating(playerName,rows);
+  var tr=getTeamRelativeStats(playerName,rows);
+
+  // Build Discord embed JSON
+  var embed={
+    embeds:[{
+      color:parseInt(c.replace('#',''),16),
+      author:{name:'🔍 SCOUTING REPORT'},
+      title:playerName+' — '+p.team,
+      description:'**'+rl+'** · '+p.games+' Games · '+p.winRate+'% WR'+(tags.length?'\n'+tags.map(function(t){return t.icon+' '+t.text}).join(' · '):''),
+      fields:[
+        {name:'📊 Core Stats',value:'**KDA:** '+p.kda+' | **K/D/A:** '+p.killsPerGame+'/'+p.deathsPerGame+'/'+p.assistsPerGame+'\n**Solo Kills/G:** '+colAvg('Solo Kills').toFixed(1)+' | **KP:** '+colAvg('Kill Participation %').toFixed(1)+'%',inline:false},
+        {name:'💥 Damage',value:'**DMG/Min:** '+Math.round(p.damagePerMin)+'\n**DMG Share:** '+colAvg('Damage Share %').toFixed(1)+'%\n**DMG/Gold:** '+colAvg('Damage Per Gold').toFixed(2),inline:true},
+        {name:'💰 Economy',value:'**Gold/Min:** '+p.goldPerMin+'\n**CS/Min:** '+p.csPerMin+'\n**Gold Share:** '+colAvg('Gold Share %').toFixed(1)+'%',inline:true},
+        {name:'👁 Vision',value:'**Vis/Min:** '+p.visionPerMin+'\n**Wards/G:** '+colAvg('Wards Placed').toFixed(1)+'\n**CW/G:** '+colAvg('Control Wards Bought').toFixed(1),inline:true},
+        {name:'🏰 Laning',value:'**CS@10:** '+colAvg('CS@10').toFixed(0)+' | **CS@15:** '+colAvg('CS@15').toFixed(0)+'\n**Gold@10:** '+Math.round(colAvg('Gold@10'))+' | **Gold@15:** '+Math.round(colAvg('Gold@15'))+'\n**Lvl 6:** '+colAvg('Level 6 Timing (min)').toFixed(1)+'min | **CS Adv:** +'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1),inline:false},
+      ],
+      thumbnail:{url:'https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/'+((p.champData&&p.champData.length?p.champData.sort(function(a,b){return(b.win?1:0)-(a.win?1:0)})[0].champ:'Aatrox').replace(/[^a-zA-Z]/g,''))+'.png'}
+    }]
+  };
+
+  if(consist)embed.embeds[0].fields.push({name:'📏 Consistency',value:consist.score+'/100 ('+consist.label+')',inline:true});
+  if(form)embed.embeds[0].fields.push({name:'📈 Form',value:form.icon+' '+form.label+'\nLast 5: '+form.dots.map(function(w){return w?'**W**':'L'}).join(' '),inline:true});
+
+  // Copy as JSON for pasting into webhook tester or bot
+  var jsonStr=JSON.stringify(embed,null,2);
+  navigator.clipboard.writeText(jsonStr).then(function(){showScoutToast('🎮 DISCORD EMBED JSON COPIED — Paste into webhook or bot')});
+}
+
+function showScoutToast(msg){
+  var toast=document.getElementById('scoutToast');
+  if(!toast){toast=document.createElement('div');toast.id='scoutToast';toast.className='scout-toast';document.body.appendChild(toast)}
+  toast.textContent=msg;toast.classList.add('show');
+  setTimeout(function(){toast.classList.remove('show')},2500);
+}
+
+// ════════════════════════════════════════
 // SHEET CONFIG SYSTEM (reads from Google Sheet "Config" tab)
 // ════════════════════════════════════════
 
@@ -1717,6 +2333,7 @@ const DEFAULT_CONFIG={
     {id:'mvp',name:'MVP',enabled:true},
     {id:'power',name:'Power Rankings',enabled:true},
     {id:'timeline',name:'📅 Timeline',enabled:true},
+    {id:'scouting',name:'🔍 Scouting',enabled:true},
     {id:'lookup',name:'🔍 Player Lookup',enabled:true},
   ],
   teamColors:{},
@@ -1762,7 +2379,7 @@ async function loadSheetConfig(){
     if(cfg.colorBg&&/^#[0-9a-fA-F]{3,8}$/.test(cfg.colorBg))adminConfig.colorBg=cfg.colorBg;
     if(cfg.logoUrl!==undefined&&(cfg.logoUrl===''||/^https?:\/\//i.test(cfg.logoUrl)))adminConfig.logoUrl=cfg.logoUrl;
     if(cfg.minGamesDefault)adminConfig.minGamesDefault=parseInt(cfg.minGamesDefault)||5;
-    var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabTimeline:'timeline',tabLookup:'lookup'};
+    var tabMap={tabLeaderboard:'leaderboard',tabTeams:'teams',tabChampions:'champions',tabRecords:'records',tabMvp:'mvp',tabPower:'power',tabTimeline:'timeline',tabScouting:'scouting',tabLookup:'lookup'};
     for(var cfgKey in tabMap){
       if(cfg[cfgKey]!==undefined){
         var v=String(cfg[cfgKey]).toLowerCase();
@@ -1971,6 +2588,328 @@ function renderPOTW(){
   var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
   var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
   banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+best.kills+'/'+best.deaths+'/'+best.assists+'</div><div class="potw-stat-lbl">K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">DMG/GAME</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: TEAM-RELATIVE STATS
+// ════════════════════════════════════════
+function getTeamRelativeStats(player,allRows){
+  // Group rows by Match ID
+  var matches={};
+  allRows.forEach(function(r){
+    var mid=r['Match ID']||'';if(!mid)return;
+    if(!matches[mid])matches[mid]=[];
+    matches[mid].push(r);
+  });
+
+  var dmgShares=[],goldShares=[],kps=[],deathShares=[];
+  var laningCS=[],laningGold=[]; // for future laning columns
+
+  for(var mid in matches){
+    var rows=matches[mid];
+    var playerRow=null;
+    var teamRows=[];
+    rows.forEach(function(r){
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      if(n===player)playerRow=r;
+    });
+    if(!playerRow)continue;
+    var pTeam=(playerRow['Teams']||playerRow['FPL Team']||'').trim();
+    rows.forEach(function(r){if((r['Teams']||r['FPL Team']||'').trim()===pTeam)teamRows.push(r)});
+    if(teamRows.length<2)continue;
+
+    // Damage share - use sheet's pre-calculated column if available
+    var sheetDmgShare=parseFloat(playerRow['Damage Share %']||'');
+    if(!isNaN(sheetDmgShare))dmgShares.push(sheetDmgShare);
+    else{var teamDmg=teamRows.reduce(function(s,r){return s+(parseFloat(r['Total Damage to Champions'])||0)},0);
+    var pDmg=parseFloat(playerRow['Total Damage to Champions'])||0;
+    if(teamDmg>0)dmgShares.push(pDmg/teamDmg*100);}
+
+    // Gold share - use sheet's pre-calculated column if available
+    var sheetGoldShare=parseFloat(playerRow['Gold Share %']||'');
+    if(!isNaN(sheetGoldShare))goldShares.push(sheetGoldShare);
+    else{var teamGold=teamRows.reduce(function(s,r){return s+(parseFloat(r['Gold Earned'])||0)},0);
+    var pGold=parseFloat(playerRow['Gold Earned'])||0;
+    if(teamGold>0)goldShares.push(pGold/teamGold*100);}
+
+    // Kill participation - use sheet's pre-calculated column
+    var sheetKP=parseFloat(playerRow['Kill Participation %']||playerRow['Kill Participation (challenges)']||'');
+    if(!isNaN(sheetKP))kps.push(sheetKP);
+
+    // Death share
+    var teamDeaths=teamRows.reduce(function(s,r){return s+(parseFloat(r['Deaths'])||0)},0);
+    var pD=parseFloat(playerRow['Deaths'])||0;
+    if(teamDeaths>0)deathShares.push(pD/teamDeaths*100);
+
+    // Future: laning stats if columns exist
+    if(playerRow['CS Diff at 10']!==undefined&&playerRow['CS Diff at 10']!==''){
+      laningCS.push(parseFloat(playerRow['CS Diff at 10'])||0);
+    }
+    if(playerRow['Gold Diff at 10']!==undefined&&playerRow['Gold Diff at 10']!==''){
+      laningGold.push(parseFloat(playerRow['Gold Diff at 10'])||0);
+    }
+  }
+
+  function avg(arr){return arr.length?arr.reduce(function(s,v){return s+v},0)/arr.length:null}
+
+  return{
+    dmgShare:avg(dmgShares),
+    goldShare:avg(goldShares),
+    killParticipation:avg(kps),
+    deathShare:avg(deathShares),
+    csDiffAt10:avg(laningCS),
+    goldDiffAt10:avg(laningGold),
+    gamesAnalyzed:dmgShares.length
+  };
+}
+
+function renderTeamRelativeHTML(stats,color){
+  if(!stats||!stats.gamesAnalyzed)return'';
+  var h='<div class="prof-section"><div class="prof-section-title">Team Impact (' +stats.gamesAnalyzed+' games analyzed)</div>';
+  h+='<div class="scout-metrics">';
+
+  // Damage %
+  if(stats.dmgShare!==null){
+    var dc=stats.dmgShare>=25?'var(--green)':stats.dmgShare<=15?'var(--pink)':color;
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+dc+'">'+stats.dmgShare.toFixed(1)+'%</div><div class="scout-metric-label">DMG SHARE</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.dmgShare>=25?'High carry load':stats.dmgShare>=20?'Expected share':'Low damage output')+'</div></div>';
+  }
+  // Gold %
+  if(stats.goldShare!==null){
+    var gc=stats.goldShare>=24?'var(--gold)':color;
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+gc+'">'+stats.goldShare.toFixed(1)+'%</div><div class="scout-metric-label">GOLD SHARE</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.goldShare>=24?'Resource heavy':stats.goldShare>=18?'Balanced':'Low econ')+'</div></div>';
+  }
+  // Kill Participation
+  if(stats.killParticipation!==null){
+    var kc=stats.killParticipation>=70?'var(--green)':stats.killParticipation<=50?'var(--pink)':color;
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+kc+'">'+stats.killParticipation.toFixed(1)+'%</div><div class="scout-metric-label">KILL PARTICIPATION</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.killParticipation>=70?'Highly involved':stats.killParticipation>=55?'Average':'Often absent from fights')+'</div></div>';
+  }
+  // Death Share
+  if(stats.deathShare!==null){
+    var dsc=stats.deathShare<=15?'var(--green)':stats.deathShare>=30?'var(--pink)':color;
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+dsc+'">'+stats.deathShare.toFixed(1)+'%</div><div class="scout-metric-label">DEATH SHARE</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.deathShare<=15?'Rarely caught out':stats.deathShare<=25?'Average deaths':'Frequent liability')+'</div></div>';
+  }
+
+  h+='</div>';
+
+  // Laning stats if available
+  if(stats.csDiffAt10!==null||stats.goldDiffAt10!==null){
+    h+='<div class="scout-metrics" style="margin-top:8px">';
+    if(stats.csDiffAt10!==null){
+      var cc=stats.csDiffAt10>=5?'var(--green)':stats.csDiffAt10<=-5?'var(--pink)':color;
+      h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+cc+'">'+(stats.csDiffAt10>=0?'+':'')+stats.csDiffAt10.toFixed(1)+'</div><div class="scout-metric-label">CS DIFF @ 10</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.csDiffAt10>=5?'Lane dominant':stats.csDiffAt10<=-5?'Loses lane CS':'Even laner')+'</div></div>';
+    }
+    if(stats.goldDiffAt10!==null){
+      var glc=stats.goldDiffAt10>=300?'var(--green)':stats.goldDiffAt10<=-300?'var(--pink)':color;
+      h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+glc+'">'+(stats.goldDiffAt10>=0?'+':'')+Math.round(stats.goldDiffAt10)+'</div><div class="scout-metric-label">GOLD DIFF @ 10</div><div class="scout-metric-sub" style="color:var(--dim)">'+(stats.goldDiffAt10>=300?'Wins lane':stats.goldDiffAt10<=-300?'Behind early':'Even early')+'</div></div>';
+    }
+    h+='</div>';
+  }
+
+  h+='</div>';
+  return h;
+}
+function getPlaystyleTags(player,allRows){
+  var tags=[];
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(!pRows.length)return tags;
+  var p=PD.find(function(x){return x.player===player});if(!p||p.games<3)return tags;
+  var all=PD.filter(function(x){return x.games>=3});
+  if(!all.length)return tags;
+
+  // Calculate percentiles
+  function pct(key,inv){
+    var sorted=[].concat(all).sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===player});
+    var pc=idx/(sorted.length-1||1);
+    return inv?1-pc:pc;
+  }
+
+  // Kill-focused
+  if(pct('killsPerGame')>=0.8)tags.push({icon:'\u2694\uFE0F',text:'AGGRESSIVE',color:'#ef4444',bg:'#ef444412',border:'#ef444440'});
+  // Death-averse
+  if(pct('deathsPerGame',true)>=0.8)tags.push({icon:'\uD83D\uDEE1\uFE0F',text:'SAFE PLAYER',color:'#22c55e',bg:'#22c55e12',border:'#22c55e40'});
+  // Vision control
+  if(pct('visionPerMin')>=0.75)tags.push({icon:'\uD83D\uDC41\uFE0F',text:'VISION CONTROL',color:'#3b82f6',bg:'#3b82f612',border:'#3b82f640'});
+  // Farm heavy
+  if(pct('csPerMin')>=0.8)tags.push({icon:'\uD83C\uDF3E',text:'FARM HEAVY',color:'#a3e635',bg:'#a3e63512',border:'#a3e63540'});
+  // Damage dealer
+  if(pct('damagePerMin')>=0.8)tags.push({icon:'\uD83D\uDCA5',text:'DAMAGE DEALER',color:'#f97316',bg:'#f9731612',border:'#f9731640'});
+  // Team player (high assist ratio)
+  var assistRatio=p.assistsPerGame/(p.killsPerGame+p.assistsPerGame+0.01);
+  if(assistRatio>=0.65)tags.push({icon:'\uD83E\uDD1D',text:'TEAM PLAYER',color:'#8b5cf6',bg:'#8b5cf612',border:'#8b5cf640'});
+  // Carry (high kill share + damage)
+  if(pct('killsPerGame')>=0.7&&pct('damagePerMin')>=0.7)tags.push({icon:'\uD83D\uDC51',text:'CARRY THREAT',color:'#fbbf24',bg:'#fbbf2412',border:'#fbbf2440'});
+  // Clutch (high WR)
+  if(p.winRate>=65&&p.games>=5)tags.push({icon:'\uD83C\uDFAF',text:'CLUTCH FACTOR',color:'#22d3ee',bg:'#22d3ee12',border:'#22d3ee40'});
+  // Feast or famine (high KDA variance — calculated in consistency)
+  // Gold efficient
+  if(pct('goldPerMin')>=0.8)tags.push({icon:'\uD83D\uDCB0',text:'GOLD EFFICIENT',color:'#fbbf24',bg:'#fbbf2412',border:'#fbbf2440'});
+
+  return tags;
+}
+
+function renderPlaystyleHTML(tags){
+  if(!tags.length)return'';
+  return'<div class="playstyle-row">'+tags.map(function(t){
+    return'<span class="playstyle-tag" style="color:'+t.color+';background:'+t.bg+';border-color:'+t.border+'">'+t.icon+' '+t.text+'</span>';
+  }).join('')+'</div>';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: CONSISTENCY RATING
+// ════════════════════════════════════════
+function getConsistency(player,allRows){
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(pRows.length<3)return null;
+  var kdas=pRows.map(function(r){
+    var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+    return(k+a)/Math.max(d,1);
+  });
+  var mean=kdas.reduce(function(s,v){return s+v},0)/kdas.length;
+  var variance=kdas.reduce(function(s,v){return s+Math.pow(v-mean,2)},0)/kdas.length;
+  var stddev=Math.sqrt(variance);
+  var cv=stddev/Math.max(mean,0.01); // coefficient of variation
+  // Score: lower CV = more consistent. Scale 0-100
+  var score=Math.max(0,Math.min(100,Math.round((1-cv/2)*100)));
+  var label=score>=80?'ROCK SOLID':score>=60?'RELIABLE':score>=40?'VARIABLE':'FEAST OR FAMINE';
+  var color=score>=80?'#22c55e':score>=60?'#3b82f6':score>=40?'#fbbf24':'#ef4444';
+  return{score:score,label:label,color:color,cv:cv.toFixed(2),stddev:stddev.toFixed(2),mean:mean.toFixed(2)};
+}
+
+// ════════════════════════════════════════
+// SCOUTING: FORM RATING (RECENT TREND)
+// ════════════════════════════════════════
+function getFormRating(player,allRows){
+  var pRows=allRows.filter(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];return n===player});
+  if(pRows.length<5)return null;
+  // Sort by date
+  pRows.sort(function(a,b){return(a['Date']||'').localeCompare(b['Date']||'')});
+  var last5=pRows.slice(-5);
+  var prev=pRows.slice(0,-5);
+  if(!prev.length)prev=pRows.slice(0,Math.floor(pRows.length/2));
+
+  function avgKDA(rows){
+    var total=rows.reduce(function(s,r){
+      var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
+      return{k:s.k+k,d:s.d+d,a:s.a+a};
+    },{k:0,d:0,a:0});
+    return(total.k+total.a)/Math.max(total.d,1);
+  }
+  function avgWR(rows){
+    var w=rows.filter(function(r){return r['Win']==='Win'}).length;
+    return w/rows.length*100;
+  }
+
+  var recentKDA=avgKDA(last5),prevKDA=avgKDA(prev);
+  var recentWR=avgWR(last5),prevWR=avgWR(prev);
+  var kdaDiff=recentKDA-prevKDA;
+  var wrDiff=recentWR-prevWR;
+
+  // Form score based on recent vs historical
+  var formScore=kdaDiff*10+wrDiff*0.5;
+  var label=formScore>=10?'ON FIRE':formScore>=3?'TRENDING UP':formScore>=-3?'STABLE':formScore>=-10?'COOLING DOWN':'COLD STREAK';
+  var icon=formScore>=10?'\uD83D\uDD25':formScore>=3?'\uD83D\uDCC8':formScore>=-3?'\u2796':formScore>=-10?'\uD83D\uDCC9':'\u2744\uFE0F';
+  var color=formScore>=10?'#ef4444':formScore>=3?'#22c55e':formScore>=-3?'var(--dim)':formScore>=-10?'#3b82f6':'#60a5fa';
+
+  // Win/loss dots for last 5
+  var dots=last5.map(function(r){return r['Win']==='Win'});
+
+  return{label:label,icon:icon,color:color,recentKDA:recentKDA.toFixed(2),prevKDA:prevKDA.toFixed(2),recentWR:Math.round(recentWR),dots:dots,kdaDiff:kdaDiff,formScore:formScore};
+}
+
+// ════════════════════════════════════════
+// SCOUTING: EXPORT REPORT
+// ════════════════════════════════════════
+function generateScoutReport(playerName){
+  var p=PD.find(function(x){return x.player===playerName});if(!p)return'';
+  var rows=getFilteredRows();
+  var c=getConsistency(playerName,rows);
+  var f=getFormRating(playerName,rows);
+  var tags=getPlaystyleTags(playerName,rows);
+  var tr=getTeamRelativeStats(playerName,rows);
+  var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+
+  // Top 3 champs
+  var cm={};(p.champData||[]).forEach(function(x){if(!cm[x.champ])cm[x.champ]={g:0,w:0};cm[x.champ].g++;if(x.win)cm[x.champ].w++});
+  var top3=Object.entries(cm).sort(function(a,b){return b[1].g-a[1].g}).slice(0,3).map(function(e){
+    return e[0]+' ('+e[1].g+'g, '+Math.round(e[1].w/e[1].g*100)+'% WR)';
+  });
+
+  var lines=[];
+  lines.push('═══ SCOUTING REPORT ═══');
+  lines.push(playerName+' — '+p.team+' — '+rl);
+  lines.push('');
+  lines.push('📊 STATS ('+p.games+' games)');
+  lines.push('   KDA: '+p.kda+' | WR: '+p.winRate+'% | K/G: '+p.killsPerGame+' | D/G: '+p.deathsPerGame);
+  lines.push('   CS/Min: '+p.csPerMin+' | DMG/Min: '+Math.round(p.damagePerMin)+' | Gold/Min: '+p.goldPerMin);
+  lines.push('');
+  if(tr&&tr.gamesAnalyzed){
+    lines.push('📈 TEAM IMPACT ('+tr.gamesAnalyzed+' games)');
+    if(tr.dmgShare!==null)lines.push('   DMG Share: '+tr.dmgShare.toFixed(1)+'%'+(tr.dmgShare>=25?' (high carry load)':tr.dmgShare<=15?' (low output)':''));
+    if(tr.goldShare!==null)lines.push('   Gold Share: '+tr.goldShare.toFixed(1)+'%'+(tr.goldShare>=24?' (resource heavy)':tr.goldShare<=16?' (low econ)':''));
+    if(tr.killParticipation!==null)lines.push('   Kill Participation: '+tr.killParticipation.toFixed(1)+'%'+(tr.killParticipation>=70?' (highly involved)':tr.killParticipation<=50?' (often absent)':''));
+    if(tr.deathShare!==null)lines.push('   Death Share: '+tr.deathShare.toFixed(1)+'%'+(tr.deathShare>=30?' ⚠ frequent liability':tr.deathShare<=15?' ✅ rarely caught out':''));
+    if(tr.csDiffAt10!==null)lines.push('   CS Diff @10: '+(tr.csDiffAt10>=0?'+':'')+tr.csDiffAt10.toFixed(1));
+    if(tr.goldDiffAt10!==null)lines.push('   Gold Diff @10: '+(tr.goldDiffAt10>=0?'+':'')+Math.round(tr.goldDiffAt10));
+    lines.push('');
+  }
+  lines.push('🎮 TOP CHAMPIONS');
+  top3.forEach(function(ch){lines.push('   '+ch)});
+  lines.push('');
+  if(tags.length){
+    lines.push('🏷️ PLAYSTYLE');
+    lines.push('   '+tags.map(function(t){return t.text}).join(' · '));
+    lines.push('');
+  }
+  if(c){
+    lines.push('📏 CONSISTENCY: '+c.score+'/100 ('+c.label+')');
+    lines.push('   Avg KDA: '+c.mean+' | Std Dev: '+c.stddev);
+    lines.push('');
+  }
+  if(f){
+    lines.push('🔥 FORM: '+f.icon+' '+f.label);
+    lines.push('   Last 5: '+f.recentKDA+' KDA, '+f.recentWR+'% WR');
+    lines.push('   Prior:  '+f.prevKDA+' KDA');
+    lines.push('   Recent: '+f.dots.map(function(w){return w?'W':'L'}).join(' '));
+    lines.push('');
+  }
+
+  // Strengths/weaknesses
+  var all=PD.filter(function(x){return x.games>=3});
+  function pctRank(key,inv){
+    var sorted=[].concat(all).sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===playerName});
+    var pc=idx/(sorted.length-1||1);
+    return inv?1-pc:pc;
+  }
+  var strengths=[],weaknesses=[];
+  var checks=[
+    {key:'kda',name:'KDA'},{key:'winRate',name:'Win Rate'},{key:'killsPerGame',name:'Kills'},
+    {key:'deathsPerGame',name:'Deaths',inv:true},{key:'csPerMin',name:'CS/Min'},
+    {key:'damagePerMin',name:'Damage'},{key:'visionPerMin',name:'Vision'},{key:'goldPerMin',name:'Gold'}
+  ];
+  checks.forEach(function(ch){
+    var pc=pctRank(ch.key,ch.inv);
+    if(pc>=0.8)strengths.push(ch.name+' (top '+Math.round((1-pc)*100)+'%)');
+    if(pc<=0.2)weaknesses.push(ch.name+' (bottom '+Math.round(pc*100)+'%)');
+  });
+  if(strengths.length){lines.push('✅ STRENGTHS: '+strengths.join(', '))}
+  if(weaknesses.length){lines.push('⚠️ WEAKNESSES: '+weaknesses.join(', '))}
+  lines.push('');
+  lines.push('═══════════════════════');
+
+  return lines.join('\n');
+}
+
+function copyScoutReport(playerName){
+  var report=generateScoutReport(playerName);
+  navigator.clipboard.writeText(report).then(function(){
+    var toast=document.getElementById('scoutToast');
+    if(!toast){toast=document.createElement('div');toast.id='scoutToast';toast.className='scout-toast';document.body.appendChild(toast)}
+    toast.textContent='📋 SCOUTING REPORT COPIED';
+    toast.classList.add('show');
+    setTimeout(function(){toast.classList.remove('show')},2000);
+  });
 }
 
 // ════════════════════════════════════════
