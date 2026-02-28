@@ -1013,7 +1013,7 @@ const _origLoadData=loadData;
 loadData=async function(){
   await _origLoadData();
   // Auto-populate season dropdown from data
-  const seasons=[...new Set(RAW.map(r=>(r['Season']||'').trim()).filter(s=>s))].sort();
+  const seasons=[...new Set(RAW.map(r=>(r['Season Phase']||'').trim()).filter(s=>s))].sort();
   const sel=document.getElementById('seasonSel');
   sel.innerHTML='<option value="All">All Seasons</option>';
   seasons.forEach(s=>{
