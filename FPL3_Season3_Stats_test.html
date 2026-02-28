@@ -721,7 +721,7 @@ for(let i=0;i<60;i++)pts.push(new P);
 function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)}anim()})();
 
 // DATA CONFIG
-const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
+const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
 
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
@@ -1900,26 +1900,78 @@ function renderFullScout(p){
   h+='</div>';
 
   // === CARD 3: LANING PHASE ===
-  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase</div>';
+  // Calculate lane differentials by finding opponent in same role per match
+  var matchGroups={};
+  rows.forEach(function(r){var mid=r['Match ID']||'';if(mid){if(!matchGroups[mid])matchGroups[mid]=[];matchGroups[mid].push(r)}});
+  var diffs={cs5:[],cs10:[],cs15:[],cs20:[],g5:[],g10:[],g15:[],g20:[],xp5:[],xp10:[],xp15:[],xp20:[]};
+  var diffCount=0;
+  for(var mid in matchGroups){
+    var mRows=matchGroups[mid];
+    var pRow=null;
+    mRows.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===p.player)pRow=r});
+    if(!pRow)continue;
+    var pTeam=(pRow['Teams']||pRow['FPL Team']||'').trim();
+    var pRole=(pRow['Role']||'').trim();
+    // Find opponent in same role on other team
+    var opp=null;
+    mRows.forEach(function(r){
+      var rTeam=(r['Teams']||r['FPL Team']||'').trim();
+      var rRole=(r['Role']||'').trim();
+      if(rTeam!==pTeam&&rRole===pRole)opp=r;
+    });
+    if(!opp)continue;
+    diffCount++;
+    ['5','10','15','20'].forEach(function(t){
+      var pcs=parseFloat(pRow['CS@'+t])||0,ocs=parseFloat(opp['CS@'+t])||0;
+      var pg=parseFloat(pRow['Gold@'+t])||0,og=parseFloat(opp['Gold@'+t])||0;
+      var px=parseFloat(pRow['XP@'+t])||0,ox=parseFloat(opp['XP@'+t])||0;
+      diffs['cs'+t].push(pcs-ocs);
+      diffs['g'+t].push(pg-og);
+      diffs['xp'+t].push(px-ox);
+    });
+  }
+  function diffAvg(arr){return arr.length?arr.reduce(function(s,v){return s+v},0)/arr.length:0}
+  function diffColor(v){return v>0?'var(--green)':v<0?'var(--pink)':'var(--dim)'}
+  function diffFmt(v,round){var s=round?Math.round(v):v.toFixed(1);return(v>0?'+':'')+s}
+
+  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase'+(diffCount?' ('+diffCount+' lane matchups)':'')+'</div>';
+
+  // Raw values row
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">AVG VALUES</div>';
   h+='<div class="scout-laning">';
   ['5','10','15','20'].forEach(function(t){
-    var cs=colAvg('CS@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS@'+t+'</div><div class="scout-lane-val" style="color:'+c+'">'+cs.toFixed(0)+'</div></div>';
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS@'+t+'</div><div class="scout-lane-val" style="color:'+c+'">'+colAvg('CS@'+t).toFixed(0)+'</div></div>';
   });
   h+='</div><div class="scout-laning" style="margin-top:4px">';
   ['5','10','15','20'].forEach(function(t){
-    var g=colAvg('Gold@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold@'+t+'</div><div class="scout-lane-val" style="color:var(--gold)">'+Math.round(g).toLocaleString()+'</div></div>';
-  });
-  h+='</div><div class="scout-laning" style="margin-top:4px">';
-  ['5','10','15','20'].forEach(function(t){
-    var xp=colAvg('XP@'+t);
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP@'+t+'</div><div class="scout-lane-val" style="color:var(--purple)">'+Math.round(xp).toLocaleString()+'</div></div>';
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold@'+t+'</div><div class="scout-lane-val" style="color:var(--gold)">'+Math.round(colAvg('Gold@'+t)).toLocaleString()+'</div></div>';
   });
   h+='</div>';
+
+  // Differential row (vs lane opponent)
+  if(diffCount){
+    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);margin:10px 0 4px">VS LANE OPPONENT (DIFF)</div>';
+    h+='<div class="scout-laning">';
+    ['5','10','15','20'].forEach(function(t){
+      var d=diffAvg(diffs['cs'+t]);
+      h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d)+'</div></div>';
+    });
+    h+='</div><div class="scout-laning" style="margin-top:4px">';
+    ['5','10','15','20'].forEach(function(t){
+      var d=diffAvg(diffs['g'+t]);
+      h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d,true)+'</div></div>';
+    });
+    h+='</div><div class="scout-laning" style="margin-top:4px">';
+    ['5','10','15','20'].forEach(function(t){
+      var d=diffAvg(diffs['xp'+t]);
+      h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d,true)+'</div></div>';
+    });
+    h+='</div>';
+  }
+
   h+=simpleRow('Lvl 6 Timing',colAvg('Level 6 Timing (min)').toFixed(1)+' min');
-  h+=simpleRow('CS Adv Over Opponent','+'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1));
-  h+=simpleRow('Lvl Lead Over Opponent','+'+colAvg('Max Level Lead on Lane Opponent').toFixed(1));
+  h+=simpleRow('Max CS Adv Over Opponent','+'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1));
+  h+=simpleRow('Max Lvl Lead Over Opponent','+'+colAvg('Max Level Lead on Lane Opponent').toFixed(1));
   h+=simpleRow('Lane Minions First 10',colAvg('Lane Minions First 10 Min').toFixed(0));
   h+=simpleRow('Jungle CS Before 10',colAvg('Jungle CS Before 10 Min').toFixed(0));
   h+='</div>';
