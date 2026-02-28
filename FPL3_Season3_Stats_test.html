@@ -721,12 +721,12 @@ for(let i=0;i<60;i++)pts.push(new P);
 function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)}anim()})();
 
 // DATA CONFIG
-const SHEET_ID='1QBei0BJqnxJLu68sxNoW8sJCR3SElQA0g_ESQMecHlU';
+const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
 
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?(typeof cell.v==='string'?esc(cell.v):cell.v):''):''});return o});resolve(rows.map(function(r){
+function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows.map(function(r){
 if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];
 if(r['Season Phase']!==undefined&&r['Season']===undefined)r['Season']=r['Season Phase'];
 if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];
@@ -762,7 +762,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{var mr;try{mr=await loadSheetJSONP('Raw Stats')}catch(e){mr=await loadSheetJSONP('Sheet1')}RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','scouting','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','scouting','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -1900,78 +1900,26 @@ function renderFullScout(p){
   h+='</div>';
 
   // === CARD 3: LANING PHASE ===
-  // Calculate lane differentials by finding opponent in same role per match
-  var matchGroups={};
-  rows.forEach(function(r){var mid=r['Match ID']||'';if(mid){if(!matchGroups[mid])matchGroups[mid]=[];matchGroups[mid].push(r)}});
-  var diffs={cs5:[],cs10:[],cs15:[],cs20:[],g5:[],g10:[],g15:[],g20:[],xp5:[],xp10:[],xp15:[],xp20:[]};
-  var diffCount=0;
-  for(var mid in matchGroups){
-    var mRows=matchGroups[mid];
-    var pRow=null;
-    mRows.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===p.player)pRow=r});
-    if(!pRow)continue;
-    var pTeam=(pRow['Teams']||pRow['FPL Team']||'').trim();
-    var pRole=(pRow['Role']||'').trim();
-    // Find opponent in same role on other team
-    var opp=null;
-    mRows.forEach(function(r){
-      var rTeam=(r['Teams']||r['FPL Team']||'').trim();
-      var rRole=(r['Role']||'').trim();
-      if(rTeam!==pTeam&&rRole===pRole)opp=r;
-    });
-    if(!opp)continue;
-    diffCount++;
-    ['5','10','15','20'].forEach(function(t){
-      var pcs=parseFloat(pRow['CS@'+t])||0,ocs=parseFloat(opp['CS@'+t])||0;
-      var pg=parseFloat(pRow['Gold@'+t])||0,og=parseFloat(opp['Gold@'+t])||0;
-      var px=parseFloat(pRow['XP@'+t])||0,ox=parseFloat(opp['XP@'+t])||0;
-      diffs['cs'+t].push(pcs-ocs);
-      diffs['g'+t].push(pg-og);
-      diffs['xp'+t].push(px-ox);
-    });
-  }
-  function diffAvg(arr){return arr.length?arr.reduce(function(s,v){return s+v},0)/arr.length:0}
-  function diffColor(v){return v>0?'var(--green)':v<0?'var(--pink)':'var(--dim)'}
-  function diffFmt(v,round){var s=round?Math.round(v):v.toFixed(1);return(v>0?'+':'')+s}
-
-  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase'+(diffCount?' ('+diffCount+' lane matchups)':'')+'</div>';
-
-  // Raw values row
-  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">AVG VALUES</div>';
+  h+='<div class="scout-card"><div class="scout-card-title">Laning Phase</div>';
   h+='<div class="scout-laning">';
   ['5','10','15','20'].forEach(function(t){
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS@'+t+'</div><div class="scout-lane-val" style="color:'+c+'">'+colAvg('CS@'+t).toFixed(0)+'</div></div>';
+    var cs=colAvg('CS@'+t);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS@'+t+'</div><div class="scout-lane-val" style="color:'+c+'">'+cs.toFixed(0)+'</div></div>';
   });
   h+='</div><div class="scout-laning" style="margin-top:4px">';
   ['5','10','15','20'].forEach(function(t){
-    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold@'+t+'</div><div class="scout-lane-val" style="color:var(--gold)">'+Math.round(colAvg('Gold@'+t)).toLocaleString()+'</div></div>';
+    var g=colAvg('Gold@'+t);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold@'+t+'</div><div class="scout-lane-val" style="color:var(--gold)">'+Math.round(g).toLocaleString()+'</div></div>';
+  });
+  h+='</div><div class="scout-laning" style="margin-top:4px">';
+  ['5','10','15','20'].forEach(function(t){
+    var xp=colAvg('XP@'+t);
+    h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP@'+t+'</div><div class="scout-lane-val" style="color:var(--purple)">'+Math.round(xp).toLocaleString()+'</div></div>';
   });
   h+='</div>';
-
-  // Differential row (vs lane opponent)
-  if(diffCount){
-    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);margin:10px 0 4px">VS LANE OPPONENT (DIFF)</div>';
-    h+='<div class="scout-laning">';
-    ['5','10','15','20'].forEach(function(t){
-      var d=diffAvg(diffs['cs'+t]);
-      h+='<div class="scout-lane-cell"><div class="scout-lane-min">CS Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d)+'</div></div>';
-    });
-    h+='</div><div class="scout-laning" style="margin-top:4px">';
-    ['5','10','15','20'].forEach(function(t){
-      var d=diffAvg(diffs['g'+t]);
-      h+='<div class="scout-lane-cell"><div class="scout-lane-min">Gold Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d,true)+'</div></div>';
-    });
-    h+='</div><div class="scout-laning" style="margin-top:4px">';
-    ['5','10','15','20'].forEach(function(t){
-      var d=diffAvg(diffs['xp'+t]);
-      h+='<div class="scout-lane-cell"><div class="scout-lane-min">XP Diff @'+t+'</div><div class="scout-lane-val" style="color:'+diffColor(d)+'">'+diffFmt(d,true)+'</div></div>';
-    });
-    h+='</div>';
-  }
-
   h+=simpleRow('Lvl 6 Timing',colAvg('Level 6 Timing (min)').toFixed(1)+' min');
-  h+=simpleRow('Max CS Adv Over Opponent','+'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1));
-  h+=simpleRow('Max Lvl Lead Over Opponent','+'+colAvg('Max Level Lead on Lane Opponent').toFixed(1));
+  h+=simpleRow('CS Adv Over Opponent','+'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1));
+  h+=simpleRow('Lvl Lead Over Opponent','+'+colAvg('Max Level Lead on Lane Opponent').toFixed(1));
   h+=simpleRow('Lane Minions First 10',colAvg('Lane Minions First 10 Min').toFixed(0));
   h+=simpleRow('Jungle CS Before 10',colAvg('Jungle CS Before 10 Min').toFixed(0));
   h+='</div>';
