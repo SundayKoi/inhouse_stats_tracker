@@ -34,7 +34,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .wrap{max-width:1100px;margin:0 auto;padding:16px;position:relative;z-index:1}
 
 /* Header */
-.hdr{text-align:center;padding:40px 0 28px;position:relative}
+.hdr{text-align:center;padding:40px 16px 28px;position:relative;overflow:hidden}
 .hdr::after{content:'';position:absolute;bottom:0;left:5%;right:5%;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),var(--cyan),transparent)}
 .hdr::before{content:'';position:absolute;bottom:-1px;left:5%;right:5%;height:3px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),var(--cyan),transparent);filter:blur(4px);opacity:.5}
 
@@ -117,6 +117,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .brow:hover{background:linear-gradient(90deg,#ffffff08,transparent);box-shadow:inset 2px 0 0 var(--cyan)}
 .brow.selected{background:linear-gradient(90deg,#00f0ff0a,transparent);box-shadow:inset 3px 0 0 var(--cyan)}
 @media(max-width:600px){.brow{grid-template-columns:24px 140px 1fr 55px;gap:4px}}
+@media(max-width:768px){.hdr h1{letter-spacing:1px;word-break:break-word}.hdr .badge{font-size:9px;letter-spacing:1px;padding:3px 10px}.hdr .sub{letter-spacing:1px;font-size:10px}.meta-bar{flex-wrap:wrap;justify-content:center;gap:8px 16px;font-size:10px}.tip-btn{font-size:10px;padding:5px 12px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
 .brow .rk.r1{color:var(--gold);text-shadow:0 0 12px #ffd70050;animation:goldPulse 2s ease-in-out infinite}
 .brow .rk.r2{color:var(--silver);text-shadow:0 0 8px #c0c0c030}
@@ -179,7 +180,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .team-card .tc-roster span:hover{color:var(--cyan);text-shadow:0 0 6px var(--cyan-dim)}
 
 /* Champions */
-.champ-table{width:100%;border-collapse:collapse}
+.champ-table{width:100%;border-collapse:collapse;font-size:12px}
+.champ-table-wrap{overflow-x:auto}
 .champ-table th{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);padding:8px 6px;text-align:left;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s;user-select:none;white-space:nowrap}
 .champ-table th:hover{color:var(--text);text-shadow:0 0 6px var(--cyan-dim)}
 .champ-table th.sorted{color:var(--pink);text-shadow:0 0 6px var(--pink-glow)}
@@ -913,6 +915,11 @@ function renderChampions(){
   h+='</div></div>';
 
   // ═══ PICK TABLE ═══
+  // ═══ SIDE-BY-SIDE TABLES ═══
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">';
+
+  // Left: Pick Statistics
+  h+='<div>';
   h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--cyan);margin-bottom:10px">PICK STATISTICS</div>';
   const cols=[{key:'name',label:'Champion'},{key:'games',label:'Games'},{key:'wr',label:'Win Rate'},{key:'kda',label:'KDA'},{key:'avgKills',label:'K/G'},{key:'avgDeaths',label:'D/G'},{key:'avgAssists',label:'A/G'},{key:'pickRate',label:'Pick %'},{key:'players',label:'Players'}];
   h+='<table class="champ-table"><thead><tr>';
@@ -924,10 +931,12 @@ function renderChampions(){
     h+='<tr><td class="champ-name">'+d.name+'</td><td>'+d.games+'<span class="champ-bar"><span class="champ-bar-fill" style="width:'+bw+'%;background:var(--cyan)"></span></span></td><td style="color:'+wc+'">'+d.wr+'%</td><td>'+d.kda+'</td><td>'+d.avgKills+'</td><td>'+d.avgDeaths+'</td><td>'+d.avgAssists+'</td><td>'+d.pickRate+'%</td><td>'+d.players+'</td></tr>';
   });
   h+='</tbody></table>';
+  h+='</div>';
 
-  // ═══ BAN TABLE ═══
+  // Right: Ban Statistics
+  h+='<div>';
   if(hasBans){
-    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--pink);margin:24px 0 10px">BAN STATISTICS</div>';
+    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--pink);margin-bottom:10px">BAN STATISTICS</div>';
     h+='<table class="champ-table"><thead><tr><th>Champion</th><th>Times Banned</th><th>Ban Rate</th><th>Also Picked?</th><th>Pick WR</th></tr></thead><tbody>';
     banData.forEach(function(b){
       var picked=ch[b.name];
@@ -937,7 +946,13 @@ function renderChampions(){
       h+='<tr><td class="champ-name">'+b.name+'</td><td>'+b.count+'</td><td>'+b.banRate+'%</td><td>'+pickedStr+'</td><td style="color:'+wc2+'">'+wrStr+'</td></tr>';
     });
     h+='</tbody></table>';
+  }else{
+    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--dim);margin-bottom:10px">BAN STATISTICS</div>';
+    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--dim);padding:40px 0;text-align:center;background:var(--bg2);border:1px solid var(--border)">No ban data yet<br><span style="font-size:10px;opacity:.6">Add Ban 1–5 columns to your sheet</span></div>';
   }
+  h+='</div>';
+
+  h+='</div>'; // close grid
 
   document.getElementById('champContent').innerHTML=h;
 }
