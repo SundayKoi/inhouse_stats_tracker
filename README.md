@@ -89,7 +89,7 @@ crontab -e
 ```
 
 ## Legal
-
+""
 
 
 This project uses the Riot Games API in compliance with [Riot's developer policies](https://developer.riotgames.com/policies/general). Riot Games does not endorse or sponsor this project.
