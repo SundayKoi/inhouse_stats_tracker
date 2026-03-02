@@ -7,7 +7,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Stats Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#06060c;--bg2:#0c0c16;--bg3:#12121e;--border:#1a1a30;--cyan:#00f0ff;--cyan-dim:#00f0ff25;--cyan-glow:#00f0ff40;--pink:#ff2d7b;--pink-glow:#ff2d7b40;--purple:#a855f7;--purple-glow:#a855f740;--green:#22c55e;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;--text:#e2e8f0;--dim:#4a5568}
@@ -18,12 +19,12 @@ body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;mi
 #particleCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
 /* Grid overlay */
-body::before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#00f0ff04 1px,transparent 1px),linear-gradient(0deg,#00f0ff04 1px,transparent 1px);background-size:60px 60px;z-index:0;animation:gridPulse 8s ease-in-out infinite}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#00f0ff04 1px,transparent 1px),linear-gradient(0deg,#00f0ff04 1px,transparent 1px);background-size:60px 60px;z-index:0}
 @keyframes gridPulse{0%,100%{opacity:.2}50%{opacity:.5}}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#00000008 2px,#00000008 4px);pointer-events:none;z-index:100}
 
 /* Ambient glow orbs */
-.ambient-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.07;pointer-events:none;z-index:0}
+.ambient-orb{display:none}
 .ambient-orb.o1{width:400px;height:400px;background:var(--cyan);top:-100px;left:-100px;animation:orbFloat1 12s ease-in-out infinite}
 .ambient-orb.o2{width:350px;height:350px;background:var(--pink);bottom:-80px;right:-80px;animation:orbFloat2 15s ease-in-out infinite}
 .ambient-orb.o3{width:300px;height:300px;background:var(--purple);top:50%;left:50%;animation:orbFloat3 18s ease-in-out infinite}
@@ -40,21 +41,21 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* Glitch badge */
 .badge{display:inline-block;padding:4px 18px;border:1px solid var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--cyan);background:var(--cyan-dim);position:relative;overflow:hidden}
-.badge::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,240,255,.15),transparent);animation:badgeSweep 3s ease-in-out infinite}
+.badge::before{display:none}
 @keyframes badgeSweep{0%{left:-100%}100%{left:200%}}
-.badge::after{content:'';position:absolute;inset:0;box-shadow:0 0 12px var(--cyan-glow),inset 0 0 12px var(--cyan-dim);animation:badgeGlow 3s ease-in-out infinite}
+.badge::after{content:'';position:absolute;inset:0;box-shadow:0 0 8px var(--cyan-glow),inset 0 0 8px var(--cyan-dim)}
 @keyframes badgeGlow{0%,100%{opacity:.4}50%{opacity:1}}
 
 /* Glitch title */
-.hdr h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:3px;margin:12px 0 6px;background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--pink) 70%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;animation:titleShimmer 4s ease-in-out infinite}
+.hdr h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:3px;margin:12px 0 6px;background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--pink) 70%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;}
 @keyframes titleShimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
 .hdr h1::before,.hdr h1::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;overflow:hidden;background:linear-gradient(135deg,#fff,var(--cyan),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hdr h1::before{animation:glitch1 4s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
-.hdr h1::after{animation:glitch2 4s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+.hdr h1::before{display:none}
+.hdr h1::after{display:none}
 @keyframes glitch1{0%,92%,100%{transform:translate(0)}93%{transform:translate(-3px,-1px)}96%{transform:translate(2px,1px)}}
 @keyframes glitch2{0%,92%,100%{transform:translate(0)}94%{transform:translate(3px,1px)}97%{transform:translate(-2px,-1px)}}
 .hdr .sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:3px;position:relative}
-.hdr .sub::before{content:'> ';color:var(--cyan);animation:cursorBlink 1s step-end infinite}
+.hdr .sub::before{content:'> ';color:var(--cyan)}
 @keyframes cursorBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
 .hdr .cred{font-size:11px;color:var(--dim);margin-top:6px;opacity:.4}
 .tip-btn{display:inline-block;margin-top:10px;padding:6px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--cyan);border:1px solid rgba(0,255,255,.2);background:rgba(0,255,255,.05);text-decoration:none;transition:all .3s ease;opacity:.6}
@@ -73,8 +74,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tab-btn:hover::before{width:80%}
 .tab-btn.active{color:var(--cyan);border-color:var(--border);border-bottom-color:var(--bg);background:var(--bg);text-shadow:0 0 10px var(--cyan-glow)}
 .tab-btn.active::before{width:100%;background:var(--cyan);box-shadow:0 0 10px var(--cyan-glow)}
-.tab-page{display:none}
-.tab-page.active{display:block;animation:pageIn .4s ease}
+.tab-page{display:none;content-visibility:auto;contain-intrinsic-size:auto 500px}
+.tab-page.active{display:block;animation:pageIn .4s ease;will-change:auto}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* Global Filters */
@@ -104,11 +105,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .rc:hover .rb{border-color:var(--dim);transform:translateY(-1px)}
 
 /* Cards with animated edge */
-.card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;backdrop-filter:blur(8px);position:relative;overflow:hidden;transition:border-color .3s}
+.card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color .3s}
 .card:hover{border-color:#1a1a40}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 @keyframes cardEdge{0%{background-position:0% 0%}100%{background-position:200% 0%}}
-.card::after{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));filter:blur(8px);opacity:.25;animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));filter:blur(8px);opacity:.25}
 .card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
 
@@ -119,7 +120,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @media(max-width:600px){.brow{grid-template-columns:24px 140px 1fr 55px;gap:4px}}
 @media(max-width:768px){.hdr h1{letter-spacing:1px;word-break:break-word}.hdr .badge{font-size:9px;letter-spacing:1px;padding:3px 10px}.hdr .sub{letter-spacing:1px;font-size:10px}.meta-bar{flex-wrap:wrap;justify-content:center;gap:8px 16px;font-size:10px}.tip-btn{font-size:10px;padding:5px 12px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
-.brow .rk.r1{color:var(--gold);text-shadow:0 0 12px #ffd70050;animation:goldPulse 2s ease-in-out infinite}
+.brow .rk.r1{color:var(--gold);text-shadow:0 0 12px #ffd70050}
 .brow .rk.r2{color:var(--silver);text-shadow:0 0 8px #c0c0c030}
 .brow .rk.r3{color:var(--bronze);text-shadow:0 0 8px #cd7f3230}
 @keyframes goldPulse{0%,100%{text-shadow:0 0 12px #ffd70050}50%{text-shadow:0 0 20px #ffd70080}}
@@ -140,7 +141,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .cmp-dock{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;display:none}
 .cmp-dock.active{display:block;animation:dockIn .4s ease}
 @keyframes dockIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-.cmp-dock::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.cmp-dock::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple))}
 .cmp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cmp-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
 .cmp-clear{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--pink);cursor:pointer;letter-spacing:1px;padding:4px 10px;border:1px solid var(--pink);background:transparent;transition:all .3s}
@@ -165,7 +166,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .cmp-hint{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);text-align:center;margin-bottom:12px;letter-spacing:1px}
 
 /* Teams */
-.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;contain:layout style}
 .team-card{background:var(--bg2);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;cursor:default;transition:all .3s}
 .team-card:hover{border-color:var(--dim);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .team-card .tc-accent{position:absolute;top:0;left:0;right:0;height:3px}
@@ -205,10 +206,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* MVP */
 .mvp-section{margin-bottom:24px}
 .mvp-crown{text-align:center;padding:36px 20px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);position:relative;overflow:hidden;margin-bottom:16px}
-.mvp-crown::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--cyan),var(--gold));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.mvp-crown::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--cyan),var(--gold))}
 .mvp-crown::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,#ffd70008 0%,transparent 70%)}
 .mvp-crown .mvp-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:5px;text-transform:uppercase;text-shadow:0 0 10px #ffd70040}
-.mvp-crown .mvp-name{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:var(--gold);margin:10px 0 4px;text-shadow:0 0 30px #ffd70030;animation:mvpGlow 3s ease-in-out infinite}
+.mvp-crown .mvp-name{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:var(--gold);margin:10px 0 4px;text-shadow:0 0 30px #ffd70030;}
 @keyframes mvpGlow{0%,100%{text-shadow:0 0 30px #ffd70020}50%{text-shadow:0 0 50px #ffd70050,0 0 80px #ffd70020}}
 .mvp-crown .mvp-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
 .mvp-crown .mvp-score{font-family:'Orbitron',sans-serif;font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:14px 0}
@@ -239,7 +240,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;margin-bottom:40px;animation:modalSlide .3s ease}
 @keyframes modalSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--dim);font-size:24px;cursor:pointer;transition:all .3s;z-index:1}
 .modal-close:hover{color:var(--pink);text-shadow:0 0 10px var(--pink-glow);transform:rotate(90deg)}
 .prof-header{display:flex;gap:20px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
@@ -313,7 +314,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .noise-overlay{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:128px 128px}
 
 /* ─── GLITCH FLICKER ─── */
-.glitch-flicker{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:0;background:linear-gradient(0deg,transparent 40%,rgba(0,240,255,.03) 40.5%,transparent 41%);animation:glitchFlick 8s step-end infinite}
+.glitch-flicker{display:none}
 @keyframes glitchFlick{0%,96%,100%{opacity:0}96.5%{opacity:1;transform:translateY(-5px)}97%{opacity:1;transform:translateY(3px)}97.5%{opacity:0}}
 
 /* ─── ESPN-STYLE STAT TICKER ─── */
@@ -344,11 +345,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .record-card:hover .holo-sheen{opacity:1}
 
 /* ─── GLASSMORPHISM ON TEAM CARDS ─── */
-.team-card:hover{background:rgba(12,12,22,.7);backdrop-filter:blur(12px);border-color:rgba(0,240,255,.15)}
+.team-card:hover{background:rgba(12,12,22,.9);border-color:rgba(0,240,255,.15)}
 
 /* ─── #1 ROW PULSE ─── */
 .brow-hero{position:relative}
-.brow-hero::before{content:'';position:absolute;inset:-2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;animation:heroPulse 3s ease-in-out infinite;pointer-events:none;z-index:-1}
+.brow-hero::before{content:'';position:absolute;inset:-2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;pointer-events:none;z-index:-1}
 @keyframes heroPulse{0%,100%{opacity:0}50%{opacity:.08}}
 
 /* ─── COUNTING ANIMATION ─── */
@@ -403,7 +404,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* ─── PLAYER HOVER PREVIEW ─── */
 .player-preview{position:fixed;z-index:300;background:var(--bg);border:1px solid var(--border);padding:14px;min-width:240px;max-width:300px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .player-preview.visible{opacity:1}
-.player-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.player-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .player-preview .pp-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .player-preview .pp-champs{display:flex;gap:3px;margin-bottom:8px}
 .player-preview .pp-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700}
@@ -751,8 +752,9 @@ function formatDate(d){if(!d)return'';const M=['Jan','Feb','Mar','Apr','May','Ju
 function fmtVal(v,f){if(v===null||v===undefined)return'-';if(f==='pct')return v.toFixed(1)+'%';if(f==='num'||f==='int')return Math.round(v).toLocaleString('en-US');if(f==='dec')return v.toFixed(2);return v.toString()}
 
 // GLOBAL FILTER
-function getFilteredRows(){let r=RAW;const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);return r}
-function onGlobalFilter(){const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
+var _filterCache={key:'',rows:null};
+function getFilteredRows(){const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;const ck=ph+'|'+se+'|'+RAW.length;if(_filterCache.key===ck&&_filterCache.rows)return _filterCache.rows;let r=RAW;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);_filterCache={key:ck,rows:r};return r}
+function onGlobalFilter(){_filterCache={key:'',rows:null};const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
 
 // AGGREGATE
 function aggregate(matchRows,rosterMap){
@@ -1015,7 +1017,7 @@ function renderChampions(){
   h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
   topPicked.forEach(function(d){
     h+='<div style="display:flex;align-items:center;gap:6px;background:rgba(0,240,255,.05);border:1px solid rgba(0,240,255,.12);padding:6px 10px;flex:1 1 140px;min-width:130px">';
-    h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px" onerror="this.style.display=\'none\'">';
+    h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px" loading="lazy" onerror="this.style.display=\'none\'">';
     h+='<div><div style="font-size:12px;font-weight:700">'+d.name+'</div>';
     h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+d.games+'g · <span style="color:'+(d.wr>=50?'var(--green)':'var(--pink)')+'">'+d.wr+'%</span> · '+d.kda+' KDA</div>';
     h+='</div></div>';
@@ -1029,7 +1031,7 @@ function renderChampions(){
     h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
     banData.slice(0,8).forEach(function(d){
       h+='<div style="display:flex;align-items:center;gap:6px;background:rgba(255,45,123,.05);border:1px solid rgba(255,45,123,.12);padding:6px 10px;flex:1 1 140px;min-width:130px">';
-      h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px;filter:grayscale(40%)" onerror="this.style.display=\'none\'">';
+      h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px;filter:grayscale(40%)" loading="lazy" onerror="this.style.display=\'none\'">';
       h+='<div><div style="font-size:12px;font-weight:700">'+d.name+'</div>';
       var alsoPlayed=ch[d.name];
       var sub=d.count+'× banned · '+d.banRate+'%';
