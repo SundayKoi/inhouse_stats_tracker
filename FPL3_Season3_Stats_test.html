@@ -792,7 +792,7 @@ function fmtVal(v,f){if(v===null||v===undefined)return'-';if(f==='pct')return v.
 // GLOBAL FILTER
 var _filterCache={key:'',rows:null};
 function getFilteredRows(){const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;const ck=ph+'|'+se+'|'+RAW.length;if(_filterCache.key===ck&&_filterCache.rows)return _filterCache.rows;let r=RAW;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);_filterCache={key:ck,rows:r};return r}
-function onGlobalFilter(){_filterCache={key:'',rows:null};const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
+function onGlobalFilter(){_filterCache={key:'',rows:null};if(typeof _scoutCache!=='undefined')_scoutCache={key:'',data:{}};const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
 
 // AGGREGATE
 function aggregate(matchRows,rosterMap){
@@ -1573,121 +1573,72 @@ openProfile=function(pn){
   _origOpenProfile(pn);
   const p=PD.find(x=>x.player===pn);if(!p)return;
   const c=TC[p.team]||'#6366f1';
-  // Check if #1 in any major stat
   const isElite=PD.filter(x=>x.games>=5).sort((a,b)=>b.kda-a.kda)[0]?.player===pn;
   if(isElite){fireConfetti(c);playSuccess()}
-  // Stagger stat animations
   document.querySelectorAll('.prof-stat').forEach((el,i)=>{
     el.classList.add('prof-stat-anim');
     el.style.animationDelay=(i*0.05)+'s';
   });
-  // Add best game card
   const profContent=document.getElementById('profileContent');
   const coreSection=profContent.querySelector('.prof-section');
   if(coreSection){
     const bgHTML=renderBestGameCard(p,c);
     if(bgHTML){const div=document.createElement('div');div.innerHTML=bgHTML;coreSection.after(div.firstElementChild)}
   }
-  // ACHIEVEMENT BADGES — inject after header
-  const badges=getAchievements(pn,getFilteredRows());
-  if(badges.length){
-    const header=profContent.querySelector('.prof-header')||profContent.firstElementChild;
-    if(header){
-      const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(badges);
-      header.after(bdiv.firstElementChild);
+  // DEFER heavy scouting so modal opens instantly
+  const _defer=typeof requestIdleCallback!=='undefined'?requestIdleCallback:function(fn){setTimeout(fn,16)};
+  _defer(function(){
+    const rows=getFilteredRows();
+    const scout=getCachedScouting(pn,rows);
+    if(scout.badges&&scout.badges.length){
+      const header=profContent.querySelector('.prof-header')||profContent.firstElementChild;
+      if(header){const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(scout.badges);header.after(bdiv.firstElementChild)}
     }
-  }
-  // PLAYSTYLE TAGS — inject after badges
-  const psTags=getPlaystyleTags(pn,getFilteredRows());
-  if(psTags.length){
-    const lastBadge=profContent.querySelector('.ach-row');
-    const insertAfter=lastBadge||profContent.querySelector('.prof-header')||profContent.firstElementChild;
-    if(insertAfter){
-      const pdiv=document.createElement('div');pdiv.innerHTML=renderPlaystyleHTML(psTags);
-      insertAfter.after(pdiv.firstElementChild);
+    if(scout.tags&&scout.tags.length){
+      const lastBadge=profContent.querySelector('.ach-row');
+      const insertAfter=lastBadge||profContent.querySelector('.prof-header')||profContent.firstElementChild;
+      if(insertAfter){const pdiv=document.createElement('div');pdiv.innerHTML=renderPlaystyleHTML(scout.tags);insertAfter.after(pdiv.firstElementChild)}
     }
-  }
-  // SCOUTING METRICS — consistency, form, team impact, export button
-  const scoutRows=getFilteredRows();
-  const consistency=getConsistency(pn,scoutRows);
-  const form=getFormRating(pn,scoutRows);
-  const teamRel=getTeamRelativeStats(pn,scoutRows);
-  if(consistency||form||teamRel){
-    let sh='<div class="prof-section"><div class="prof-section-title">Scouting Report</div>';
-    sh+='<div class="scout-metrics">';
-    if(consistency){
-      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+consistency.color+'">'+consistency.score+'</div><div class="scout-metric-label">CONSISTENCY</div><div class="scout-metric-sub" style="color:'+consistency.color+'">'+consistency.label+'</div></div>';
-    }
-    if(form){
-      sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+form.color+'">'+form.icon+'</div><div class="scout-metric-label">FORM (LAST 5)</div><div class="scout-metric-sub" style="color:'+form.color+'">'+form.label+'</div><div class="form-bar">';
-      form.dots.forEach(function(w){sh+='<div class="form-dot" style="background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
-      sh+='</div><div class="scout-metric-sub" style="color:var(--dim)">'+form.recentKDA+' KDA · '+form.recentWR+'% WR</div></div>';
-    }
-    sh+='</div>';
-    sh+='<button class="scout-export-btn" onclick="event.stopPropagation();copyScoutReport(\''+pn.replace(/'/g,"\\'")+'\')">📋 COPY SCOUTING REPORT</button>';
-    sh+='</div>';
-    // Insert before first prof-section (Core Stats)
-    const firstSection=profContent.querySelector('.prof-section');
-    if(firstSection){
-      const sdiv=document.createElement('div');sdiv.innerHTML=sh;
-      firstSection.before(sdiv.firstElementChild);
-    }
-    // Team Impact section — insert after scouting report
-    if(teamRel&&teamRel.gamesAnalyzed){
-      const tiHTML=renderTeamRelativeHTML(teamRel,c);
-      const scoutSection=profContent.querySelector('.prof-section');
-      if(scoutSection&&tiHTML){
-        const tdiv=document.createElement('div');tdiv.innerHTML=tiHTML;
-        scoutSection.after(tdiv.firstElementChild);
+    if(scout.consistency||scout.form||scout.teamRel){
+      let sh='<div class="prof-section"><div class="prof-section-title">Scouting Report</div>';
+      sh+='<div class="scout-metrics">';
+      if(scout.consistency){
+        sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+scout.consistency.color+'">'+scout.consistency.score+'</div><div class="scout-metric-label">CONSISTENCY</div><div class="scout-metric-sub" style="color:'+scout.consistency.color+'">'+scout.consistency.label+'</div></div>';
+      }
+      if(scout.form){
+        sh+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+scout.form.color+'">'+scout.form.icon+'</div><div class="scout-metric-label">FORM (LAST 5)</div><div class="scout-metric-sub" style="color:'+scout.form.color+'">'+scout.form.label+'</div><div class="form-bar">';
+        scout.form.dots.forEach(function(w){sh+='<div class="form-dot" style="background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+        sh+='</div><div class="scout-metric-sub" style="color:var(--dim)">'+scout.form.recentKDA+' KDA \xb7 '+scout.form.recentWR+'% WR</div></div>';
+      }
+      sh+='</div>';
+      sh+='<button class="scout-export-btn" onclick="event.stopPropagation();copyScoutReport(\''+pn.replace(/'/g,"\\'")+'\')">\ud83d\udccb COPY SCOUTING REPORT</button>';
+      sh+='</div>';
+      const firstSection=profContent.querySelector('.prof-section');
+      if(firstSection){const sdiv=document.createElement('div');sdiv.innerHTML=sh;firstSection.before(sdiv.firstElementChild)}
+      if(scout.teamRel&&scout.teamRel.gamesAnalyzed){
+        const tiHTML=renderTeamRelativeHTML(scout.teamRel,c);
+        const scoutSection=profContent.querySelector('.prof-section');
+        if(scoutSection&&tiHTML){const tdiv=document.createElement('div');tdiv.innerHTML=tiHTML;scoutSection.after(tdiv.firstElementChild)}
       }
     }
-  }
-  // CHAMPION MASTERY BORDERS — upgrade champ icons in profile
-  profContent.querySelectorAll('.champ-icon,.champ-icon-lg').forEach(img=>{
-    const champName=img.alt||img.title||'';
-    if(!champName)return;
-    const champData=(p.champData||[]).filter(x=>x.champ===champName);
-    const games=champData.length;
-    const mc=getMasteryClass(games);
-    if(mc){
-      const wrapper=document.createElement('span');
-      wrapper.className='champ-mastery '+mc;
-      wrapper.innerHTML=getMasteryTag(games);
-      img.parentNode.insertBefore(wrapper,img);
-      wrapper.insertBefore(img,wrapper.firstChild);
-    }
-  });
-  // HEAD-TO-HEAD — if comparing, show H2H with compared player
-  if(comparePlayers.length===1&&comparePlayers[0]!==pn){
-    const other=comparePlayers[0];
-    const op=PD.find(x=>x.player===other);
-    if(op){
-      const c2=TC[op.team]||'#6366f1';
-      const h2hHTML=renderH2H(pn,other,c,c2);
-      if(h2hHTML){
-        const div=document.createElement('div');div.innerHTML=h2hHTML;
-        profContent.appendChild(div.firstElementChild);
-      }
-    }
-  }
-  // Animate VS League Average bars
-  setTimeout(function(){
-    document.querySelectorAll('.vs-bar-fill').forEach(function(bar){
-      var w=bar.getAttribute('data-width');
-      if(w)bar.style.width=w+'%';
+    profContent.querySelectorAll('.champ-icon,.champ-icon-lg').forEach(img=>{
+      const champName=img.alt||img.title||'';if(!champName)return;
+      const champData=(p.champData||[]).filter(x=>x.champ===champName);
+      const games=champData.length;const mc=getMasteryClass(games);
+      if(mc){const wrapper=document.createElement('span');wrapper.className='champ-mastery '+mc;wrapper.innerHTML=getMasteryTag(games);img.parentNode.insertBefore(wrapper,img);wrapper.insertBefore(img,wrapper.firstChild)}
     });
-  },100);
-  // Animate stat values counting up
-  document.querySelectorAll('.prof-stat-val').forEach(el=>{
-    const text=el.textContent;
-    const num=parseFloat(text.replace(/[,%]/g,''));
-    if(!isNaN(num)&&num>0){
-      const fmt=text.includes('%')?'pct':text.includes('.')?'dec':'int';
-      el.textContent='0';
-      animateCountUp(el,num,600,fmt);
+    if(comparePlayers.length===1&&comparePlayers[0]!==pn){
+      const other=comparePlayers[0];const op=PD.find(x=>x.player===other);
+      if(op){const c2=TC[op.team]||'#6366f1';const h2hHTML=renderH2H(pn,other,c,c2);if(h2hHTML){const div=document.createElement('div');div.innerHTML=h2hHTML;profContent.appendChild(div.firstElementChild)}}
     }
+    setTimeout(function(){
+      document.querySelectorAll('.vs-bar-fill').forEach(function(bar){
+        var w=bar.getAttribute('data-width');if(w)bar.style.width=w+'%';
+      });
+    },50);
   });
-};
+}
+;
 
 // Patch onGlobalFilter to rebuild ticker
 const _origOnGlobalFilter=onGlobalFilter;
@@ -3202,6 +3153,25 @@ function renderPOTW(){
   var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
   var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
   banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">AVG KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgK+'/'+avgD+'/'+avgA+'</div><div class="potw-stat-lbl">AVG K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">AVG DMG</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+}
+
+// SCOUTING CACHE
+var _scoutCache={key:"",data:{}};
+function getScoutCacheKey(){return(document.getElementById("phaseSel").value||"")+"|"+(document.getElementById("seasonSel").value||"")+"|"+RAW.length}
+function clearScoutCache(){_scoutCache={key:"",data:{}}}
+function getCachedScouting(player,rows){
+  var ck=getScoutCacheKey();
+  if(_scoutCache.key!==ck){_scoutCache={key:ck,data:{}};}
+  if(_scoutCache.data[player])return _scoutCache.data[player];
+  var result={
+    teamRel:getTeamRelativeStats(player,rows),
+    consistency:getConsistency(player,rows),
+    form:getFormRating(player,rows),
+    tags:getPlaystyleTags(player,rows),
+    badges:getAchievements(player,rows)
+  };
+  _scoutCache.data[player]=result;
+  return result;
 }
 
 // ════════════════════════════════════════
