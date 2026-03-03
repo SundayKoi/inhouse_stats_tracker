@@ -7,7 +7,8 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Stats Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#06060c;--bg2:#0c0c16;--bg3:#12121e;--border:#1a1a30;--cyan:#00f0ff;--cyan-dim:#00f0ff25;--cyan-glow:#00f0ff40;--pink:#ff2d7b;--pink-glow:#ff2d7b40;--purple:#a855f7;--purple-glow:#a855f740;--green:#22c55e;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;--text:#e2e8f0;--dim:#4a5568}
@@ -18,12 +19,12 @@ body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;mi
 #particleCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
 /* Grid overlay */
-body::before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#00f0ff04 1px,transparent 1px),linear-gradient(0deg,#00f0ff04 1px,transparent 1px);background-size:60px 60px;z-index:0;animation:gridPulse 8s ease-in-out infinite}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(90deg,#00f0ff04 1px,transparent 1px),linear-gradient(0deg,#00f0ff04 1px,transparent 1px);background-size:60px 60px;z-index:0}
 @keyframes gridPulse{0%,100%{opacity:.2}50%{opacity:.5}}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,#00000008 2px,#00000008 4px);pointer-events:none;z-index:100}
 
 /* Ambient glow orbs */
-.ambient-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.07;pointer-events:none;z-index:0}
+.ambient-orb{display:none}
 .ambient-orb.o1{width:400px;height:400px;background:var(--cyan);top:-100px;left:-100px;animation:orbFloat1 12s ease-in-out infinite}
 .ambient-orb.o2{width:350px;height:350px;background:var(--pink);bottom:-80px;right:-80px;animation:orbFloat2 15s ease-in-out infinite}
 .ambient-orb.o3{width:300px;height:300px;background:var(--purple);top:50%;left:50%;animation:orbFloat3 18s ease-in-out infinite}
@@ -40,21 +41,21 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 /* Glitch badge */
 .badge{display:inline-block;padding:4px 18px;border:1px solid var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--cyan);background:var(--cyan-dim);position:relative;overflow:hidden}
-.badge::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,240,255,.15),transparent);animation:badgeSweep 3s ease-in-out infinite}
+.badge::before{display:none}
 @keyframes badgeSweep{0%{left:-100%}100%{left:200%}}
-.badge::after{content:'';position:absolute;inset:0;box-shadow:0 0 12px var(--cyan-glow),inset 0 0 12px var(--cyan-dim);animation:badgeGlow 3s ease-in-out infinite}
+.badge::after{content:'';position:absolute;inset:0;box-shadow:0 0 8px var(--cyan-glow),inset 0 0 8px var(--cyan-dim)}
 @keyframes badgeGlow{0%,100%{opacity:.4}50%{opacity:1}}
 
 /* Glitch title */
-.hdr h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:3px;margin:12px 0 6px;background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--pink) 70%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;animation:titleShimmer 4s ease-in-out infinite}
+.hdr h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:3px;margin:12px 0 6px;background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--pink) 70%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;}
 @keyframes titleShimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
 .hdr h1::before,.hdr h1::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;overflow:hidden;background:linear-gradient(135deg,#fff,var(--cyan),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hdr h1::before{animation:glitch1 4s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
-.hdr h1::after{animation:glitch2 4s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+.hdr h1::before{display:none}
+.hdr h1::after{display:none}
 @keyframes glitch1{0%,92%,100%{transform:translate(0)}93%{transform:translate(-3px,-1px)}96%{transform:translate(2px,1px)}}
 @keyframes glitch2{0%,92%,100%{transform:translate(0)}94%{transform:translate(3px,1px)}97%{transform:translate(-2px,-1px)}}
 .hdr .sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:3px;position:relative}
-.hdr .sub::before{content:'> ';color:var(--cyan);animation:cursorBlink 1s step-end infinite}
+.hdr .sub::before{content:'> ';color:var(--cyan)}
 @keyframes cursorBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
 .hdr .cred{font-size:11px;color:var(--dim);margin-top:6px;opacity:.4}
 .tip-btn{display:inline-block;margin-top:10px;padding:6px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--cyan);border:1px solid rgba(0,255,255,.2);background:rgba(0,255,255,.05);text-decoration:none;transition:all .3s ease;opacity:.6}
@@ -73,8 +74,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tab-btn:hover::before{width:80%}
 .tab-btn.active{color:var(--cyan);border-color:var(--border);border-bottom-color:var(--bg);background:var(--bg);text-shadow:0 0 10px var(--cyan-glow)}
 .tab-btn.active::before{width:100%;background:var(--cyan);box-shadow:0 0 10px var(--cyan-glow)}
-.tab-page{display:none}
-.tab-page.active{display:block;animation:pageIn .4s ease}
+.tab-page{display:none;content-visibility:auto;contain-intrinsic-size:auto 500px}
+.tab-page.active{display:block;animation:pageIn .4s ease;will-change:auto}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* Global Filters */
@@ -104,11 +105,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .rc:hover .rb{border-color:var(--dim);transform:translateY(-1px)}
 
 /* Cards with animated edge */
-.card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;backdrop-filter:blur(8px);position:relative;overflow:hidden;transition:border-color .3s}
+.card{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color .3s}
 .card:hover{border-color:#1a1a40}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 @keyframes cardEdge{0%{background-position:0% 0%}100%{background-position:200% 0%}}
-.card::after{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));filter:blur(8px);opacity:.25;animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));filter:blur(8px);opacity:.25}
 .card-t{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
 .card-s{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:20px}
 
@@ -119,7 +120,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @media(max-width:600px){.brow{grid-template-columns:24px 140px 1fr 55px;gap:4px}}
 @media(max-width:768px){.hdr h1{letter-spacing:1px;word-break:break-word}.hdr .badge{font-size:9px;letter-spacing:1px;padding:3px 10px}.hdr .sub{letter-spacing:1px;font-size:10px}.meta-bar{flex-wrap:wrap;justify-content:center;gap:8px 16px;font-size:10px}.tip-btn{font-size:10px;padding:5px 12px}}
 .brow .rk{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--dim);text-align:center}
-.brow .rk.r1{color:var(--gold);text-shadow:0 0 12px #ffd70050;animation:goldPulse 2s ease-in-out infinite}
+.brow .rk.r1{color:var(--gold);text-shadow:0 0 12px #ffd70050}
 .brow .rk.r2{color:var(--silver);text-shadow:0 0 8px #c0c0c030}
 .brow .rk.r3{color:var(--bronze);text-shadow:0 0 8px #cd7f3230}
 @keyframes goldPulse{0%,100%{text-shadow:0 0 12px #ffd70050}50%{text-shadow:0 0 20px #ffd70080}}
@@ -140,7 +141,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .cmp-dock{background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;display:none}
 .cmp-dock.active{display:block;animation:dockIn .4s ease}
 @keyframes dockIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-.cmp-dock::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.cmp-dock::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan),var(--purple))}
 .cmp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cmp-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
 .cmp-clear{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--pink);cursor:pointer;letter-spacing:1px;padding:4px 10px;border:1px solid var(--pink);background:transparent;transition:all .3s}
@@ -165,7 +166,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .cmp-hint{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim);text-align:center;margin-bottom:12px;letter-spacing:1px}
 
 /* Teams */
-.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;contain:layout style}
 .team-card{background:var(--bg2);border:1px solid var(--border);padding:16px;position:relative;overflow:hidden;cursor:default;transition:all .3s}
 .team-card:hover{border-color:var(--dim);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .team-card .tc-accent{position:absolute;top:0;left:0;right:0;height:3px}
@@ -205,10 +206,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* MVP */
 .mvp-section{margin-bottom:24px}
 .mvp-crown{text-align:center;padding:36px 20px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);position:relative;overflow:hidden;margin-bottom:16px}
-.mvp-crown::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--cyan),var(--gold));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.mvp-crown::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--cyan),var(--gold))}
 .mvp-crown::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,#ffd70008 0%,transparent 70%)}
 .mvp-crown .mvp-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:5px;text-transform:uppercase;text-shadow:0 0 10px #ffd70040}
-.mvp-crown .mvp-name{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:var(--gold);margin:10px 0 4px;text-shadow:0 0 30px #ffd70030;animation:mvpGlow 3s ease-in-out infinite}
+.mvp-crown .mvp-name{font-family:'Orbitron',sans-serif;font-size:clamp(22px,4vw,38px);font-weight:900;color:var(--gold);margin:10px 0 4px;text-shadow:0 0 30px #ffd70030;}
 @keyframes mvpGlow{0%,100%{text-shadow:0 0 30px #ffd70020}50%{text-shadow:0 0 50px #ffd70050,0 0 80px #ffd70020}}
 .mvp-crown .mvp-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
 .mvp-crown .mvp-score{font-family:'Orbitron',sans-serif;font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:14px 0}
@@ -239,7 +240,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 @keyframes modalIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--bg);border:1px solid var(--border);max-width:900px;width:100%;padding:24px;position:relative;margin-bottom:40px;animation:modalSlide .3s ease}
 @keyframes modalSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--dim);font-size:24px;cursor:pointer;transition:all .3s;z-index:1}
 .modal-close:hover{color:var(--pink);text-shadow:0 0 10px var(--pink-glow);transform:rotate(90deg)}
 .prof-header{display:flex;gap:20px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
@@ -313,7 +314,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .noise-overlay{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:128px 128px}
 
 /* ─── GLITCH FLICKER ─── */
-.glitch-flicker{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:0;background:linear-gradient(0deg,transparent 40%,rgba(0,240,255,.03) 40.5%,transparent 41%);animation:glitchFlick 8s step-end infinite}
+.glitch-flicker{display:none}
 @keyframes glitchFlick{0%,96%,100%{opacity:0}96.5%{opacity:1;transform:translateY(-5px)}97%{opacity:1;transform:translateY(3px)}97.5%{opacity:0}}
 
 /* ─── ESPN-STYLE STAT TICKER ─── */
@@ -344,11 +345,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .record-card:hover .holo-sheen{opacity:1}
 
 /* ─── GLASSMORPHISM ON TEAM CARDS ─── */
-.team-card:hover{background:rgba(12,12,22,.7);backdrop-filter:blur(12px);border-color:rgba(0,240,255,.15)}
+.team-card:hover{background:rgba(12,12,22,.9);border-color:rgba(0,240,255,.15)}
 
 /* ─── #1 ROW PULSE ─── */
 .brow-hero{position:relative}
-.brow-hero::before{content:'';position:absolute;inset:-2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;animation:heroPulse 3s ease-in-out infinite;pointer-events:none;z-index:-1}
+.brow-hero::before{content:'';position:absolute;inset:-2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;pointer-events:none;z-index:-1}
 @keyframes heroPulse{0%,100%{opacity:0}50%{opacity:.08}}
 
 /* ─── COUNTING ANIMATION ─── */
@@ -403,7 +404,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 /* ─── PLAYER HOVER PREVIEW ─── */
 .player-preview{position:fixed;z-index:300;background:var(--bg);border:1px solid var(--border);padding:14px;min-width:240px;max-width:300px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .player-preview.visible{opacity:1}
-.player-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple));animation:cardEdge 3s linear infinite;background-size:200% 100%}
+.player-preview::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--purple))}
 .player-preview .pp-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .player-preview .pp-champs{display:flex;gap:3px;margin-bottom:8px}
 .player-preview .pp-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700}
@@ -568,6 +569,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .tl-kill-tag{background:#ef444410;color:#ef4444;border-color:#ef444430}
 .tl-penta-tag{background:#b9f2ff10;color:#b9f2ff;border-color:#b9f2ff30}
 .tl-match-tag{background:#a855f710;color:var(--purple);border-color:#a855f730}
+.tl-close-tag{background:#ff8c0010;color:#ff8c00;border-color:#ff8c0030}
 .tl-streak-tag{background:#22c55e10;color:var(--green);border-color:#22c55e30}
 .tl-expand{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
 .tl-expand.open{display:block}
@@ -653,7 +655,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="meta-item"><span id="mTeams">12</span> Teams</div>
       <div class="meta-item"><span id="mNights">—</span> Game Nights</div>
       <div class="meta-item" id="mDates">Loading…</div>
-      <div class="meta-item">Updated: <span class="live-dot"></span><span id="mUpdated">—</span></div>
+      <div class="meta-item">Updated: <span class="live-dot"></span><span id="mUpdated">—</span> <button onclick="sessionStorage.clear();location.reload()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;cursor:pointer;letter-spacing:1px;margin-left:6px;vertical-align:middle" title="Clear cache and reload fresh data">↻ REFRESH</button></div>
     </div>
   </header>
   <div class="stat-ticker" id="statTicker" style="display:none"><div class="ticker-track" id="tickerTrack"></div></div>
@@ -731,7 +733,25 @@ const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
-function loadSheetJSONP(sheet){return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});resolve(rows.map(function(r){if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];return r}))}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
+function loadSheetJSONP(sheet){
+  // Check sessionStorage cache first
+  var cacheKey='_fpl_cache_'+sheet;
+  var cacheTimeKey='_fpl_ctime_'+sheet;
+  try{
+    var cached=sessionStorage.getItem(cacheKey);
+    var ctime=sessionStorage.getItem(cacheTimeKey);
+    if(cached&&ctime){
+      var age=(Date.now()-parseInt(ctime))/1000;
+      if(age<600){// 10 min cache
+        console.log('Cache hit for '+sheet+' ('+Math.round(age)+'s old)');
+        return Promise.resolve(JSON.parse(cached));
+      }
+    }
+  }catch(e){}
+  return new Promise((resolve,reject)=>{const cb='_gviz_cb_'+Math.random().toString(36).slice(2);const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${cb}&sheet=${encodeURIComponent(sheet)}`;window[cb]=function(r){delete window[cb];document.body.removeChild(s);try{const cols=r.table.cols.map(c=>c.label||c.id);const rows=r.table.rows.map(r=>{const o={};r.c.forEach((cell,i)=>{o[cols[i]]=cell?(cell.v!==null&&cell.v!==undefined?esc(String(cell.v)):''):''});return o});var result=rows.map(function(r){if(r['FPL Team']!==undefined&&r['Teams']===undefined)r['Teams']=r['FPL Team'];if(r['First Blood Kill']!==undefined&&r['First Blood']===undefined)r['First Blood']=r['First Blood Kill'];return r});
+  // Cache to sessionStorage
+  try{sessionStorage.setItem(cacheKey,JSON.stringify(result));sessionStorage.setItem(cacheTimeKey,String(Date.now()));console.log('Cached '+sheet+' ('+result.length+' rows)')}catch(e){console.warn('Cache write failed:',e)}
+  resolve(result)}catch(e){reject(e)}};const s=document.createElement('script');s.src=url;s.onerror=()=>{delete window[cb];reject(new Error('Failed'))};document.body.appendChild(s)})}
 
 const NAME_MERGES={"Imthegeoff":"JellyBeanGeoff","Reindeer Smolder":"luci","Flying Squirtle":"Flyinq squirtle"};
 const STATS=[{name:"KDA",key:"kda",fmt:"dec"},{name:"Kills/Game",key:"killsPerGame",fmt:"dec"},{name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},{name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},{name:"CS/Min",key:"csPerMin",fmt:"dec"},{name:"Gold/Min",key:"goldPerMin",fmt:"dec"},{name:"Damage/Min",key:"damagePerMin",fmt:"num"},{name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},{name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},{name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},{name:"Win Rate %",key:"winRate",fmt:"pct"},{name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},{name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},{name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},{name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},{name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},{name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},{name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},{name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},{name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},{name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},{name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},{name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},{name:"Total Kills",key:"totalKills",fmt:"int"},{name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},{name:"Total Assists",key:"totalAssists",fmt:"int"},{name:"Double Kills",key:"doubleKills",fmt:"int"},{name:"Triple Kills",key:"tripleKills",fmt:"int"},{name:"Quadra Kills",key:"quadraKills",fmt:"int"},{name:"Penta Kills",key:"pentaKills",fmt:"int"},{name:"Games Played",key:"games",fmt:"int"}];
@@ -750,8 +770,9 @@ function formatDate(d){if(!d)return'';const M=['Jan','Feb','Mar','Apr','May','Ju
 function fmtVal(v,f){if(v===null||v===undefined)return'-';if(f==='pct')return v.toFixed(1)+'%';if(f==='num'||f==='int')return Math.round(v).toLocaleString('en-US');if(f==='dec')return v.toFixed(2);return v.toString()}
 
 // GLOBAL FILTER
-function getFilteredRows(){let r=RAW;const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);return r}
-function onGlobalFilter(){const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
+var _filterCache={key:'',rows:null};
+function getFilteredRows(){const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;const ck=ph+'|'+se+'|'+RAW.length;if(_filterCache.key===ck&&_filterCache.rows)return _filterCache.rows;let r=RAW;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);_filterCache={key:ck,rows:r};return r}
+function onGlobalFilter(){_filterCache={key:'',rows:null};const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
 
 // AGGREGATE
 function aggregate(matchRows,rosterMap){
@@ -787,7 +808,136 @@ function renderCompare(){const dk=document.getElementById('cmpDock'),cd=document
 function drawRadar(pls){const cv=document.getElementById('radarCanvas'),cx=cv.getContext('2d');const W=cv.width,H=cv.height,cX=W/2,cY=H/2,R=Math.min(W,H)*.35,n=RADAR_STATS.length;cx.clearRect(0,0,W,H);for(let ring=1;ring<=4;ring++){const r=R*ring/4;cx.beginPath();for(let i=0;i<=n;i++){const a=Math.PI*2*i/n-Math.PI/2,x=cX+r*Math.cos(a),y=cY+r*Math.sin(a);i===0?cx.moveTo(x,y):cx.lineTo(x,y)}cx.strokeStyle='#1a1a3060';cx.lineWidth=1;cx.stroke()}for(let i=0;i<n;i++){const a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.moveTo(cX,cY);cx.lineTo(cX+R*Math.cos(a),cY+R*Math.sin(a));cx.strokeStyle='#1a1a3080';cx.stroke();cx.font='9px "Share Tech Mono",monospace';cx.fillStyle='#4a5568';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(RADAR_STATS[i].label,cX+(R+18)*Math.cos(a),cY+(R+18)*Math.sin(a))}pls.forEach(p=>{const c=TC[p.team]||'#6366f1';cx.beginPath();for(let i=0;i<=n;i++){const si=i%n,v=Math.min(p[RADAR_STATS[si].key]/RADAR_STATS[si].max,1),r=v*R,a=Math.PI*2*si/n-Math.PI/2;i===0?cx.moveTo(cX+r*Math.cos(a),cY+r*Math.sin(a)):cx.lineTo(cX+r*Math.cos(a),cY+r*Math.sin(a))}cx.closePath();cx.fillStyle=c+'20';cx.fill();cx.strokeStyle=c;cx.lineWidth=2;cx.stroke();for(let i=0;i<n;i++){const v=Math.min(p[RADAR_STATS[i].key]/RADAR_STATS[i].max,1),r=v*R,a=Math.PI*2*i/n-Math.PI/2;cx.beginPath();cx.arc(cX+r*Math.cos(a),cY+r*Math.sin(a),3,0,Math.PI*2);cx.fillStyle=c;cx.fill()}})}
 
 // TEAMS
-function renderTeams(){const rows=getFilteredRows();const tms={};for(const r of rows){const tm=(r['Teams']||'').trim();if(!tm)continue;if(!tms[tm])tms[tm]={wins:0,losses:0,kills:0,deaths:0,assists:0,damage:0,duration:0,games:0,players:new Set()};const t=tms[tm];t.games++;t.wins+=(r['Win']==='Win'?1:0);t.losses+=(r['Win']==='Loss'?1:0);t.kills+=(parseFloat(r['Kills'])||0);t.deaths+=(parseFloat(r['Deaths'])||0);t.assists+=(parseFloat(r['Assists'])||0);t.damage+=(parseFloat(r['Total Damage to Champions'])||0);t.duration+=(parseFloat(r['Game Duration (min)'])||0);let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];t.players.add(n)}const sorted=Object.entries(tms).filter(([t])=>t!=='Sub'&&t).sort((a,b)=>{const wa=a[1].wins/(a[1].wins+a[1].losses)||0,wb=b[1].wins/(b[1].wins+b[1].losses)||0;return wb-wa});document.getElementById('teamGrid').innerHTML=sorted.map(([name,t])=>{const c=TC[name]||'#6366f1';const mw=Math.round(t.wins/5),ml=Math.round(t.losses/5);const wr=((mw/(mw+ml))*100||0).toFixed(1);const ak=(t.kills/t.games).toFixed(1);const ad=(t.deaths/t.games).toFixed(1);const dp=(t.damage/t.duration).toFixed(0);const ros=[...t.players].map(p=>`<span onclick="openProfile('${p.replace(/'/g,"\\'")}')">${p}</span>`).join(', ');return`<div class="team-card"><div class="tc-accent" style="background:${c}"></div><div class="tc-name" style="color:${c}">${name}</div><div class="tc-record"><span style="color:var(--green)">${mw}W</span> - <span style="color:var(--pink)">${ml}L</span> · ${wr}% WR</div><div class="tc-stats"><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ak}</div><div class="tc-stat-label">Avg K/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${ad}</div><div class="tc-stat-label">Avg D/G</div></div><div class="tc-stat"><div class="tc-stat-val" style="color:${c}">${dp}</div><div class="tc-stat-label">DMG/Min</div></div></div><div class="tc-roster">${ros}</div></div>`}).join('')}
+function renderTeams(){
+  const rows=getFilteredRows();
+  const tms={};
+
+  for(const r of rows){
+    const tm=(r['Teams']||'').trim();
+    if(!tm)continue;
+    if(!tms[tm])tms[tm]={wins:0,losses:0,kills:0,deaths:0,assists:0,damage:0,duration:0,games:0,
+      players:new Set(),fb:0,dragons:0,barons:0,heralds:0,towers:0,grubs:0,
+      vision:0,gold:0,recentResults:[],matchDates:{}};
+    const t=tms[tm];
+    t.games++;
+    const isWin=r['Win']==='Win';
+    t.wins+=(isWin?1:0);
+    t.losses+=(isWin?0:1);
+    t.kills+=(parseFloat(r['Kills'])||0);
+    t.deaths+=(parseFloat(r['Deaths'])||0);
+    t.assists+=(parseFloat(r['Assists'])||0);
+    t.damage+=(parseFloat(r['Total Damage to Champions'])||0);
+    t.duration+=(parseFloat(r['Game Duration (min)'])||0);
+    t.vision+=(parseFloat(r['Vision Score'])||0);
+    t.gold+=(parseFloat(r['Gold Earned'])||0);
+
+    // First blood (team level - count once per match via match grouping)
+    var mid=r['Match ID']||'';
+    if(mid&&!t.matchDates[mid]){
+      t.matchDates[mid]={win:isWin,date:r['Date']||''};
+      if((r['Team First Blood']||'').toLowerCase()==='yes')t.fb++;
+      t.dragons+=(parseFloat(r['Team Dragons'])||0);
+      t.barons+=(parseFloat(r['Team Barons'])||0);
+      t.heralds+=(parseFloat(r['Team Heralds'])||0);
+      t.towers+=(parseFloat(r['Team Towers'])||0);
+      t.grubs+=(parseFloat(r['Team Grubs'])||0);
+    }
+
+    let n=r['Summoner Name']||'';
+    if(NAME_MERGES[n])n=NAME_MERGES[n];
+    t.players.add(n);
+  }
+
+  // Build recent form from match results (last 5 matches sorted by date)
+  Object.values(tms).forEach(function(t){
+    var matches=Object.entries(t.matchDates).sort(function(a,b){
+      return(b[1].date||'').localeCompare(a[1].date||'');
+    });
+    t.recentResults=matches.slice(0,5).map(function(m){return m[1].win?'W':'L'});
+    t.totalMatches=Object.keys(t.matchDates).length;
+  });
+
+  const sorted=Object.entries(tms).filter(([t])=>t!=='Sub'&&t).sort((a,b)=>{
+    const wa=a[1].wins/(a[1].wins+a[1].losses)||0,wb=b[1].wins/(b[1].wins+b[1].losses)||0;
+    return wb-wa;
+  });
+
+  document.getElementById('teamGrid').innerHTML=sorted.map(([name,t],idx)=>{
+    const c=TC[name]||'#6366f1';
+    const mw=Math.round(t.wins/5),ml=Math.round(t.losses/5);
+    const wr=((mw/(mw+ml))*100||0).toFixed(1);
+    const nm=t.totalMatches||1;
+    const ak=(t.kills/t.games).toFixed(1);
+    const ad=(t.deaths/t.games).toFixed(1);
+    const aa=(t.assists/t.games).toFixed(1);
+    const dp=(t.damage/t.duration).toFixed(0);
+    const gpm=(t.gold/t.duration).toFixed(0);
+    const vsg=(t.vision/t.games).toFixed(1);
+    const fbr=((t.fb/nm)*100).toFixed(0);
+    const drg=(t.dragons/nm).toFixed(1);
+    const brn=(t.barons/nm).toFixed(1);
+    const twr=(t.towers/nm).toFixed(1);
+    const grb=(t.grubs/nm).toFixed(1);
+    const avgDur=(t.duration/t.games).toFixed(1);
+    const kda=((t.kills+t.assists)/Math.max(t.deaths,1)).toFixed(2);
+
+    // Recent form dots
+    var formHtml='';
+    t.recentResults.forEach(function(r){
+      var fc=r==='W'?'var(--green)':'var(--pink)';
+      formHtml+='<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+fc+';margin:0 2px" title="'+r+'"></span>';
+    });
+    if(!t.recentResults.length)formHtml='<span style="color:var(--dim);font-size:10px">—</span>';
+
+    // Roster with role info from PD
+    var ros=[...t.players].map(function(p){
+      var pd=PD.find(function(x){return x.player===p});
+      var role=pd?ROLE_MAP[pd.mainRole]||'':'';
+      var roleTag=role?'<span style="font-size:8px;color:var(--dim);margin-left:2px">'+role+'</span>':'';
+      return '<span onclick="openProfile(\''+p.replace(/'/g,"\\\'")+'\')">'+p+roleTag+'</span>';
+    }).join(', ');
+
+    // Rank badge
+    var rankBadge='';
+    if(idx===0)rankBadge='<div style="position:absolute;top:12px;right:14px;font-family:\'Orbitron\',sans-serif;font-size:20px;font-weight:900;color:var(--gold);opacity:.5;text-shadow:0 0 8px rgba(255,215,0,.3)">1ST</div>';
+    else if(idx===1)rankBadge='<div style="position:absolute;top:12px;right:14px;font-family:\'Orbitron\',sans-serif;font-size:16px;font-weight:700;color:#aaa;opacity:.4">2ND</div>';
+    else if(idx===2)rankBadge='<div style="position:absolute;top:12px;right:14px;font-family:\'Orbitron\',sans-serif;font-size:16px;font-weight:700;color:#cd7f32;opacity:.4">3RD</div>';
+
+    return '<div class="team-card">'+
+      '<div class="tc-accent" style="background:'+c+'"></div>'+
+      rankBadge+
+      '<div class="tc-name" style="color:'+c+'">'+name+'</div>'+
+      '<div class="tc-record"><span style="color:var(--green)">'+mw+'W</span> - <span style="color:var(--pink)">'+ml+'L</span> · '+wr+'% WR · <span style="color:var(--dim);font-size:10px">'+nm+' matches · '+avgDur+'m avg</span></div>'+
+
+      '<div style="margin:8px 0 10px;display:flex;align-items:center;gap:6px">'+
+        '<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">FORM</span>'+formHtml+
+      '</div>'+
+
+      '<div class="tc-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:8px">'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+ak+'</div><div class="tc-stat-label">K/G</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+ad+'</div><div class="tc-stat-label">D/G</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+aa+'</div><div class="tc-stat-label">A/G</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+kda+'</div><div class="tc-stat-label">KDA</div></div>'+
+      '</div>'+
+
+      '<div class="tc-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:8px">'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+dp+'</div><div class="tc-stat-label">DMG/Min</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+gpm+'</div><div class="tc-stat-label">Gold/Min</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+c+'">'+vsg+'</div><div class="tc-stat-label">Vision/G</div></div>'+
+        '<div class="tc-stat"><div class="tc-stat-val" style="color:'+(parseInt(fbr)>=50?'var(--green)':'var(--dim)')+'">'+fbr+'%</div><div class="tc-stat-label">FB Rate</div></div>'+
+      '</div>'+
+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px;padding:6px;background:rgba(0,0,0,.15);border-radius:4px">'+
+        '<div style="text-align:center"><div style="font-family:\'Orbitron\',sans-serif;font-size:13px;color:'+c+'">'+drg+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:7px;color:var(--dim);letter-spacing:1px">DRG/G</div></div>'+
+        '<div style="text-align:center"><div style="font-family:\'Orbitron\',sans-serif;font-size:13px;color:'+c+'">'+brn+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:7px;color:var(--dim);letter-spacing:1px">BRN/G</div></div>'+
+        '<div style="text-align:center"><div style="font-family:\'Orbitron\',sans-serif;font-size:13px;color:'+c+'">'+twr+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:7px;color:var(--dim);letter-spacing:1px">TWR/G</div></div>'+
+        '<div style="text-align:center"><div style="font-family:\'Orbitron\',sans-serif;font-size:13px;color:'+c+'">'+grb+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:7px;color:var(--dim);letter-spacing:1px">GRB/G</div></div>'+
+      '</div>'+
+
+      '<div class="tc-roster">'+ros+'</div>'+
+    '</div>';
+  }).join('');
+}
 
 // CHAMPIONS
 let champSort={key:'games',asc:false};
@@ -885,7 +1035,7 @@ function renderChampions(){
   h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
   topPicked.forEach(function(d){
     h+='<div style="display:flex;align-items:center;gap:6px;background:rgba(0,240,255,.05);border:1px solid rgba(0,240,255,.12);padding:6px 10px;flex:1 1 140px;min-width:130px">';
-    h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px" onerror="this.style.display=\'none\'">';
+    h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px" loading="lazy" onerror="this.style.display=\'none\'">';
     h+='<div><div style="font-size:12px;font-weight:700">'+d.name+'</div>';
     h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+d.games+'g · <span style="color:'+(d.wr>=50?'var(--green)':'var(--pink)')+'">'+d.wr+'%</span> · '+d.kda+' KDA</div>';
     h+='</div></div>';
@@ -899,7 +1049,7 @@ function renderChampions(){
     h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
     banData.slice(0,8).forEach(function(d){
       h+='<div style="display:flex;align-items:center;gap:6px;background:rgba(255,45,123,.05);border:1px solid rgba(255,45,123,.12);padding:6px 10px;flex:1 1 140px;min-width:130px">';
-      h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px;filter:grayscale(40%)" onerror="this.style.display=\'none\'">';
+      h+='<img src="'+getChampImgUrl(d.name)+'" style="width:30px;height:30px;border-radius:4px;filter:grayscale(40%)" loading="lazy" onerror="this.style.display=\'none\'">';
       h+='<div><div style="font-size:12px;font-weight:700">'+d.name+'</div>';
       var alsoPlayed=ch[d.name];
       var sub=d.count+'× banned · '+d.banRate+'%';
@@ -914,13 +1064,17 @@ function renderChampions(){
   }
   h+='</div></div>';
 
-  // ═══ PICK TABLE ═══
-  // ═══ SIDE-BY-SIDE TABLES ═══
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">';
+  // ═══ TABLE WITH TOGGLE ═══
+  h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">';
+  h+='<select id="champViewSel" onchange="toggleChampView()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 12px;font-family:\'Orbitron\',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer">';
+  h+='<option value="picks" style="color:var(--cyan)">⚔ Pick Statistics</option>';
+  if(hasBans)h+='<option value="bans" style="color:var(--pink)">🚫 Ban Statistics</option>';
+  h+='</select>';
+  h+='<span id="champViewCount" style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+data.length+' champions picked</span>';
+  h+='</div>';
 
-  // Left: Pick Statistics
-  h+='<div>';
-  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--cyan);margin-bottom:10px">PICK STATISTICS</div>';
+  // Pick table (shown by default)
+  h+='<div id="champPickTable">';
   const cols=[{key:'name',label:'Champion'},{key:'games',label:'Games'},{key:'wr',label:'Win Rate'},{key:'kda',label:'KDA'},{key:'avgKills',label:'K/G'},{key:'avgDeaths',label:'D/G'},{key:'avgAssists',label:'A/G'},{key:'pickRate',label:'Pick %'},{key:'players',label:'Players'}];
   h+='<table class="champ-table"><thead><tr>';
   cols.forEach(c=>{const s=champSort.key===c.key?'sorted':'';h+='<th class="'+s+'" onclick="sortChamps(\''+c.key+'\')">'+c.label+(s?(champSort.asc?' ▲':' ▼'):'')+'</th>'});
@@ -930,31 +1084,33 @@ function renderChampions(){
     const wc=d.wr>=55?'var(--green)':d.wr<=45?'var(--pink)':'var(--text)';
     h+='<tr><td class="champ-name">'+d.name+'</td><td>'+d.games+'<span class="champ-bar"><span class="champ-bar-fill" style="width:'+bw+'%;background:var(--cyan)"></span></span></td><td style="color:'+wc+'">'+d.wr+'%</td><td>'+d.kda+'</td><td>'+d.avgKills+'</td><td>'+d.avgDeaths+'</td><td>'+d.avgAssists+'</td><td>'+d.pickRate+'%</td><td>'+d.players+'</td></tr>';
   });
-  h+='</tbody></table>';
-  h+='</div>';
+  h+='</tbody></table></div>';
 
-  // Right: Ban Statistics
-  h+='<div>';
+  // Ban table (hidden by default)
   if(hasBans){
-    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--pink);margin-bottom:10px">BAN STATISTICS</div>';
+    var bmg=Math.max(...banData.map(function(b){return b.count}));
+    h+='<div id="champBanTable" style="display:none">';
     h+='<table class="champ-table"><thead><tr><th>Champion</th><th>Times Banned</th><th>Ban Rate</th><th>Also Picked?</th><th>Pick WR</th></tr></thead><tbody>';
     banData.forEach(function(b){
       var picked=ch[b.name];
       var pickedStr=picked?picked.games+'g':'Never';
       var wrStr=picked?(+(picked.wins/picked.games*100).toFixed(1))+'%':'—';
       var wc2=picked?(picked.wins/picked.games>=.55?'var(--green)':picked.wins/picked.games<=.45?'var(--pink)':'var(--text)'):'var(--dim)';
-      h+='<tr><td class="champ-name">'+b.name+'</td><td>'+b.count+'</td><td>'+b.banRate+'%</td><td>'+pickedStr+'</td><td style="color:'+wc2+'">'+wrStr+'</td></tr>';
+      var bbw=(b.count/bmg*100).toFixed(0);
+      h+='<tr><td class="champ-name">'+b.name+'</td><td>'+b.count+'<span class="champ-bar"><span class="champ-bar-fill" style="width:'+bbw+'%;background:var(--pink)"></span></span></td><td>'+b.banRate+'%</td><td>'+pickedStr+'</td><td style="color:'+wc2+'">'+wrStr+'</td></tr>';
     });
-    h+='</tbody></table>';
-  }else{
-    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;letter-spacing:2px;color:var(--dim);margin-bottom:10px">BAN STATISTICS</div>';
-    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--dim);padding:40px 0;text-align:center;background:var(--bg2);border:1px solid var(--border)">No ban data yet<br><span style="font-size:10px;opacity:.6">Add Ban 1–5 columns to your sheet</span></div>';
+    h+='</tbody></table></div>';
   }
-  h+='</div>';
-
-  h+='</div>'; // close grid
 
   document.getElementById('champContent').innerHTML=h;
+}
+function toggleChampView(){
+  var v=document.getElementById('champViewSel').value;
+  var pt=document.getElementById('champPickTable');
+  var bt=document.getElementById('champBanTable');
+  var ct=document.getElementById('champViewCount');
+  if(v==='bans'&&bt){pt.style.display='none';bt.style.display='';if(ct)ct.textContent=bt.querySelectorAll('tbody tr').length+' champions banned'}
+  else{pt.style.display='';if(bt)bt.style.display='none';if(ct)ct.textContent=pt.querySelectorAll('tbody tr').length+' champions picked'}
 }
 function sortChamps(k){if(champSort.key===k)champSort.asc=!champSort.asc;else{champSort.key=k;champSort.asc=false}renderChampions()}
 
@@ -963,7 +1119,170 @@ function renderRecords(){const rows=getFilteredRows();const recs=[{label:'Most K
 
 // MVP
 function calcMVPScore(p){return+(p.kda*2+p.winRate*0.3+p.damagePerMin*0.02+p.csPerMin*3+p.visionPerMin*10+(p.killsPerGame-p.deathsPerGame)*2).toFixed(1)}
-function renderMVP(){const mg=5;const el=PD.filter(p=>p.games>=mg);if(!el.length){document.getElementById('mvpContent').innerHTML='<div class="nodata">Not enough data</div>';return}el.forEach(p=>p.mvpScore=calcMVPScore(p));el.sort((a,b)=>b.mvpScore-a.mvpScore);const mvp=el[0];const c=TC[mvp.team]||'#6366f1';const rows=getFilteredRows();const bd={};for(const r of rows){const d=parseDate(r['Date']||'');if(!bd[d])bd[d]=[];bd[d].push(r)}const wm=[];for(const[date,gr]of Object.entries(bd)){const ag=aggregate(gr,ROSTER);if(!ag.players.length)continue;ag.players.forEach(p=>p.mvpScore=calcMVPScore(p));ag.players.sort((a,b)=>b.mvpScore-a.mvpScore);const t=ag.players[0];wm.push({date,player:t.player,team:t.team,score:t.mvpScore,kda:t.kda,wr:t.winRate,games:t.games})}wm.sort((a,b)=>a.date.localeCompare(b.date));let h=`<div class="mvp-crown"><div class="mvp-label">★ Season MVP ★</div><div class="mvp-name" style="color:${c};cursor:pointer" onclick="openProfile('${mvp.player.replace(/'/g,"\\'")}')">${mvp.player}</div><div class="mvp-sub">${mvp.team} · ${ROLE_MAP[mvp.mainRole]||mvp.mainRole} · ${mvp.games} Games · ${mvp.winRate}% WR</div><div class="mvp-score">${mvp.mvpScore}</div><div class="mvp-sub">MVP RATING</div></div>`;h+='<div class="card"><div class="card-t">Top 5 Overall</div><div class="card-s">Minimum '+mg+' games played</div>';el.slice(0,5).forEach((p,i)=>{const pc=TC[p.team]||'#6366f1';const md=['🥇','🥈','🥉','4.','5.'];h+=`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff06"><span style="font-size:20px;width:30px;text-align:center">${md[i]}</span><span style="font-weight:700;min-width:140px;cursor:pointer;color:${pc}" onclick="openProfile('${p.player.replace(/'/g,"\\'")}')">${p.player}</span><span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--dim)">${p.team} · ${p.games}g · ${p.winRate}%WR · ${p.kda} KDA</span><span style="margin-left:auto;font-family:'Orbitron',sans-serif;font-weight:700;color:${pc}">${p.mvpScore}</span></div>`});h+='</div>';if(wm.length){h+='<div class="card"><div class="card-t">Game Night MVPs</div><div class="card-s">Best performer each night</div><div class="mvp-weekly">';wm.forEach(w=>{const wc=TC[w.team]||'#6366f1';h+=`<div class="mvp-week-card"><div class="mwc-date">${formatDate(w.date)}</div><div class="mwc-name" style="color:${wc}">${w.player}</div><div class="mwc-score" style="color:${wc}">${w.score}</div><div class="mwc-line">${w.kda} KDA · ${w.games}g</div></div>`});h+='</div></div>'}document.getElementById('mvpContent').innerHTML=h}
+function renderMVP(){
+  const mg=5;
+  const el=PD.filter(p=>p.games>=mg);
+  if(!el.length){document.getElementById('mvpContent').innerHTML='<div class="nodata">Not enough data</div>';return}
+  el.forEach(p=>p.mvpScore=calcMVPScore(p));
+  el.sort((a,b)=>b.mvpScore-a.mvpScore);
+  const mvp=el[0];
+  const runnerUp=el[1]||null;
+  const c=TC[mvp.team]||'#6366f1';
+
+  // Game night MVPs
+  const rows=getFilteredRows();
+  const bd={};
+  for(const r of rows){const d=parseDate(r['Date']||'');if(!bd[d])bd[d]=[];bd[d].push(r)}
+  const wm=[];
+  const nightMvpCounts={};
+  for(const[date,gr] of Object.entries(bd)){
+    const ag=aggregate(gr,ROSTER);
+    if(!ag.players.length)continue;
+    ag.players.forEach(p=>p.mvpScore=calcMVPScore(p));
+    ag.players.sort((a,b)=>b.mvpScore-a.mvpScore);
+    const t=ag.players[0];
+    wm.push({date,player:t.player,team:t.team,score:t.mvpScore,kda:t.kda,wr:t.winRate,games:t.games});
+    nightMvpCounts[t.player]=(nightMvpCounts[t.player]||0)+1;
+  }
+  wm.sort((a,b)=>a.date.localeCompare(b.date));
+
+  // Role MVPs
+  var roles=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+  var roleMvps=[];
+  roles.forEach(function(role){
+    var rp=el.filter(function(p){return p.mainRole===role});
+    if(rp.length)roleMvps.push({role:role,player:rp[0]});
+  });
+
+  // MVP score breakdown components
+  function scoreBreakdown(p){
+    return {
+      kda: +(p.kda*2).toFixed(1),
+      wr: +(p.winRate*0.3).toFixed(1),
+      dmg: +(p.damagePerMin*0.02).toFixed(1),
+      cs: +(p.csPerMin*3).toFixed(1),
+      vis: +(p.visionPerMin*10).toFixed(1),
+      kd: +((p.killsPerGame-p.deathsPerGame)*2).toFixed(1)
+    };
+  }
+  var mvpBD=scoreBreakdown(mvp);
+  var bdMax=Math.max(mvpBD.kda,mvpBD.wr,mvpBD.dmg,mvpBD.cs,mvpBD.vis,Math.abs(mvpBD.kd));
+
+  let h='';
+
+  // === MVP CROWN ===
+  h+='<div class="mvp-crown">';
+  h+='<div class="mvp-label">★ Season MVP ★</div>';
+  h+='<div class="mvp-name" style="color:'+c+';cursor:pointer" onclick="openProfile(\''+mvp.player.replace(/'/g,"\\'")+'\')">'+mvp.player+'</div>';
+  h+='<div class="mvp-sub">'+mvp.team+' · '+(ROLE_MAP[mvp.mainRole]||mvp.mainRole)+' · '+mvp.games+' Games · '+mvp.winRate+'% WR</div>';
+  h+='<div class="mvp-score">'+mvp.mvpScore+'</div>';
+  h+='<div class="mvp-sub">MVP RATING</div>';
+  // Night MVP count
+  var mvpNights=nightMvpCounts[mvp.player]||0;
+  if(mvpNights)h+='<div style="margin-top:8px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--gold)">★ Game Night MVP '+mvpNights+' time'+(mvpNights>1?'s':'')+'</div>';
+  h+='</div>';
+
+  // === MVP vs RUNNER-UP COMPARISON ===
+  if(runnerUp){
+    var rc=TC[runnerUp.team]||'#6366f1';
+    var ruBD=scoreBreakdown(runnerUp);
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">';
+
+    // MVP stat breakdown
+    h+='<div class="card" style="margin-bottom:0">';
+    h+='<div class="card-t" style="color:'+c+'">'+mvp.player+' · Score Breakdown</div>';
+    h+='<div class="card-s">What makes them #1</div>';
+    var bdItems=[{label:'KDA Weight',val:mvpBD.kda},{label:'Win Rate',val:mvpBD.wr},{label:'Damage',val:mvpBD.dmg},{label:'CS/min',val:mvpBD.cs},{label:'Vision',val:mvpBD.vis},{label:'K-D Diff',val:mvpBD.kd}];
+    bdItems.forEach(function(item){
+      var pct=Math.abs(item.val)/bdMax*100;
+      var barColor=item.val>=0?c:'var(--pink)';
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 0">';
+      h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);width:80px;letter-spacing:1px">'+item.label+'</span>';
+      h+='<div style="flex:1;background:rgba(255,255,255,.03);height:14px;position:relative;overflow:hidden">';
+      h+='<div style="height:100%;width:'+pct.toFixed(0)+'%;background:'+barColor+';opacity:.6;transition:width .5s"></div>';
+      h+='</div>';
+      h+='<span style="font-family:\'Orbitron\',sans-serif;font-size:11px;font-weight:700;width:40px;text-align:right;color:'+(item.val>=0?c:'var(--pink)')+'">'+item.val+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+
+    // Comparison card
+    h+='<div class="card" style="margin-bottom:0">';
+    h+='<div class="card-t">MVP vs Runner-Up</div>';
+    h+='<div class="card-s" style="color:'+c+'">'+mvp.player+' <span style="color:var(--dim)">vs</span> <span style="color:'+rc+'">'+runnerUp.player+'</span></div>';
+    var cmpStats=[
+      {label:'MVP Score',v1:mvp.mvpScore,v2:runnerUp.mvpScore},
+      {label:'KDA',v1:mvp.kda,v2:runnerUp.kda},
+      {label:'Win Rate',v1:mvp.winRate+'%',v2:runnerUp.winRate+'%',n1:mvp.winRate,n2:runnerUp.winRate},
+      {label:'DMG/min',v1:mvp.damagePerMin,v2:runnerUp.damagePerMin},
+      {label:'CS/min',v1:mvp.csPerMin,v2:runnerUp.csPerMin},
+      {label:'Vision/min',v1:mvp.visionPerMin,v2:runnerUp.visionPerMin},
+      {label:'Games',v1:mvp.games,v2:runnerUp.games}
+    ];
+    cmpStats.forEach(function(s){
+      var n1=s.n1!==undefined?s.n1:parseFloat(s.v1);
+      var n2=s.n2!==undefined?s.n2:parseFloat(s.v2);
+      var c1=n1>=n2?c:'var(--dim)';
+      var c2=n2>=n1?rc:'var(--dim)';
+      h+='<div style="display:flex;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)">';
+      h+='<span style="font-family:\'Orbitron\',sans-serif;font-size:12px;font-weight:700;width:70px;text-align:right;color:'+c1+'">'+s.v1+'</span>';
+      h+='<span style="flex:1;text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">'+s.label+'</span>';
+      h+='<span style="font-family:\'Orbitron\',sans-serif;font-size:12px;font-weight:700;width:70px;color:'+c2+'">'+s.v2+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+
+    h+='</div>';
+  }
+
+  // === ROLE MVPS ===
+  if(roleMvps.length){
+    h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px">';
+    roleMvps.forEach(function(rm){
+      var rp=rm.player;
+      var rpc=TC[rp.team]||'#6366f1';
+      var roleEmoji={TOP:'🗡',JUNGLE:'🌿',MIDDLE:'🔮',BOTTOM:'🏹',UTILITY:'🛡'}[rm.role]||'⭐';
+      h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:14px;text-align:center;position:relative;overflow:hidden">';
+      h+='<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+rpc+'"></div>';
+      h+='<div style="font-size:22px;margin-bottom:4px">'+roleEmoji+'</div>';
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:2px;color:var(--dim);margin-bottom:6px">'+(ROLE_MAP[rm.role]||rm.role)+' MVP</div>';
+      h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:12px;font-weight:700;color:'+rpc+';cursor:pointer;margin-bottom:2px" onclick="openProfile(\''+rp.player.replace(/'/g,"\\'")+'\')">'+rp.player+'</div>';
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+rp.kda+' KDA · '+rp.winRate+'%</div>';
+      h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:16px;font-weight:900;color:'+rpc+';opacity:.7;margin-top:4px">'+rp.mvpScore+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // === TOP 5 OVERALL ===
+  h+='<div class="card"><div class="card-t">Top 10 Overall</div><div class="card-s">Minimum '+mg+' games played</div>';
+  el.slice(0,10).forEach(function(p,i){
+    var pc=TC[p.team]||'#6366f1';
+    var md=['🥇','🥈','🥉'];
+    var medal=i<3?md[i]:(i+1)+'.';
+    var nights=nightMvpCounts[p.player]||0;
+    var nightStr=nights?' · <span style="color:var(--gold)">★'+nights+'</span>':'';
+    h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff06">';
+    h+='<span style="font-size:'+(i<3?'20px':'13px')+';width:30px;text-align:center;'+(i>=3?'color:var(--dim);font-family:Share Tech Mono,monospace':'')+'">'+medal+'</span>';
+    h+='<span style="font-weight:700;min-width:140px;cursor:pointer;color:'+pc+'" onclick="openProfile(\''+p.player.replace(/'/g,"\\'")+'\')">'+p.player+'</span>';
+    h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+p.team+' · '+p.games+'g · '+p.winRate+'%WR · '+p.kda+' KDA'+nightStr+'</span>';
+    h+='<span style="margin-left:auto;font-family:\'Orbitron\',sans-serif;font-weight:700;color:'+pc+'">'+p.mvpScore+'</span>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // === GAME NIGHT MVPs ===
+  if(wm.length){
+    h+='<div class="card"><div class="card-t">Game Night MVPs</div><div class="card-s">Best performer each night</div><div class="mvp-weekly">';
+    wm.forEach(function(w){
+      var wc=TC[w.team]||'#6366f1';
+      h+='<div class="mvp-week-card"><div class="mwc-date">'+formatDate(w.date)+'</div><div class="mwc-name" style="color:'+wc+'">'+w.player+'</div><div class="mwc-score" style="color:'+wc+'">'+w.score+'</div><div class="mwc-line">'+w.kda+' KDA · '+w.games+'g</div></div>';
+    });
+    h+='</div></div>';
+  }
+
+  document.getElementById('mvpContent').innerHTML=h;
+}
 
 // POWER RANKINGS
 function calcPowerScore(p,all){const ks=['kda','winRate','csPerMin','goldPerMin','damagePerMin','visionPerMin'];const wt=[2,1.5,1,.8,1.2,.8];let tw=0,ws=0;ks.forEach((k,i)=>{const s=[...all].sort((a,b)=>a[k]-b[k]);const rk=s.findIndex(x=>x.player===p.player);const pc=rk/(s.length-1||1);ws+=pc*wt[i];tw+=wt[i]});return+((ws/tw)*100).toFixed(1)}
@@ -1862,17 +2181,47 @@ function renderTimeline(){
   var sortedDates=Object.keys(nights).sort();
   if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS</div>';return}
 
-  // Apply date filters
   var fromVal=document.getElementById('tlFrom').value;
   var toVal=document.getElementById('tlTo').value;
   if(fromVal)sortedDates=sortedDates.filter(function(d){return d>=fromVal});
   if(toVal)sortedDates=sortedDates.filter(function(d){return d<=toVal});
   if(!sortedDates.length){el.innerHTML='<div class="nodata">NO GAME NIGHTS IN RANGE</div>';return}
 
-  // Track running records for "new record" detection
   var allTimeRecords={kills:0,damage:0,kda:0};
+  // Running team records across nights
+  var runningTeamWins={};
 
-  var h='<div class="tl-wrap"><div class="tl-line"></div>';
+  // ═══ SEASON SUMMARY BANNER ═══
+  var totalMatches=0,totalPlayers=new Set(),totalKills=0;
+  sortedDates.forEach(function(date){
+    var nr=nights[date];
+    var mids=new Set();
+    nr.forEach(function(r){
+      var mid=r['Match ID']||'';if(mid)mids.add(mid);
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      if(n)totalPlayers.add(n);
+      totalKills+=(parseFloat(r['Kills'])||0);
+    });
+    totalMatches+=mids.size||Math.ceil(nr.length/10);
+  });
+
+  var h='';
+  h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">';
+  h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px;text-align:center">';
+  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:22px;color:var(--cyan)">'+sortedDates.length+'</div>';
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">GAME NIGHTS</div></div>';
+  h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px;text-align:center">';
+  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:22px;color:var(--cyan)">'+totalMatches+'</div>';
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">TOTAL MATCHES</div></div>';
+  h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px;text-align:center">';
+  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:22px;color:var(--cyan)">'+totalPlayers.size+'</div>';
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">PLAYERS</div></div>';
+  h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px;text-align:center">';
+  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:22px;color:var(--pink)">'+totalKills+'</div>';
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">TOTAL KILLS</div></div>';
+  h+='</div>';
+
+  h+='<div class="tl-wrap"><div class="tl-line"></div>';
 
   sortedDates.forEach(function(date,di){
     var nightRows=nights[date];
@@ -1902,37 +2251,94 @@ function renderTimeline(){
       if(score>mvpScore){mvpScore=score;mvpName=name;mvp=pl}
     }
 
-    // Detect highlights
-    var tags=[];
-    var totalPlayers=Object.keys(players).length;
+    // Team results this night (W-L per team)
+    var teamResults={};
+    var matchGames={};
+    nightRows.forEach(function(r){
+      var mid=r['Match ID']||'';var tm=(r['Teams']||'').trim();
+      if(!tm||!mid)return;
+      var key=mid+'_'+tm;
+      if(!matchGames[key]){
+        matchGames[key]=true;
+        if(!teamResults[tm])teamResults[tm]={w:0,l:0};
+        if(r['Win']==='Win')teamResults[tm].w++;else teamResults[tm].l++;
+      }
+    });
 
-    // MVP tag
-    if(mvpName&&mvp){
-      var mkda=((mvp.kills+mvp.assists)/Math.max(mvp.deaths,1)).toFixed(1);
-      tags.push({cls:'tl-mvp-tag',text:'⭐ MVP: '+mvpName+' ('+mkda+' KDA)'});
+    // Update running team wins
+    for(var tm in teamResults){
+      if(!runningTeamWins[tm])runningTeamWins[tm]=0;
+      runningTeamWins[tm]+=teamResults[tm].w;
     }
 
-    // Check for records broken this night
-    var nightMaxKills=0,nightMaxDmg=0,nightMaxKDA=0;
+    // Closest game detection (smallest kill diff between teams)
+    var closestGame=null;
+    matchIds.forEach(function(mid){
+      var mRows=nightRows.filter(function(r){return r['Match ID']===mid});
+      var teams={};
+      mRows.forEach(function(r){
+        var tm=(r['Teams']||'').trim();if(!tm)return;
+        if(!teams[tm])teams[tm]={kills:0,duration:0};
+        teams[tm].kills+=(parseFloat(r['Kills'])||0);
+        teams[tm].duration=parseFloat(r['Game Duration (min)'])||0;
+      });
+      var tArr=Object.entries(teams);
+      if(tArr.length===2){
+        var diff=Math.abs(tArr[0][1].kills-tArr[1][1].kills);
+        var dur=tArr[0][1].duration||tArr[1][1].duration;
+        if(!closestGame||diff<closestGame.diff){
+          closestGame={diff:diff,t1:tArr[0][0],t1k:tArr[0][1].kills,t2:tArr[1][0],t2k:tArr[1][1].kills,dur:dur};
+        }
+      }
+    });
+
+    // Detect highlights
+    var tags=[];
+    var totalNightPlayers=Object.keys(players).length;
+
+    if(mvpName&&mvp){
+      var mkda=((mvp.kills+mvp.assists)/Math.max(mvp.deaths,1)).toFixed(1);
+      tags.push({cls:'tl-mvp-tag',text:'⭐ MVP: '+mvpName+' ('+mkda+' KDA, '+mvp.wins+'W-'+(mvp.games-mvp.wins)+'L)'});
+    }
+
+    // Closest game tag
+    if(closestGame&&closestGame.diff<=3){
+      var c1=TC[closestGame.t1]||'var(--dim)',c2=TC[closestGame.t2]||'var(--dim)';
+      tags.push({cls:'tl-close-tag',text:'⚡ Closest: '+closestGame.t1+' '+closestGame.t1k+' vs '+closestGame.t2k+' '+closestGame.t2+' ('+closestGame.dur.toFixed(0)+'m)'});
+    }
+
+    // Records
+    var nightMaxKills=0,nightMaxDmg=0;
     nightRows.forEach(function(r){
-      var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
-      var dmg=parseFloat(r['Total Damage to Champions'])||0;
-      var kda=(k+a)/Math.max(d,1);
+      var k=parseFloat(r['Kills'])||0,dmg=parseFloat(r['Total Damage to Champions'])||0;
       if(k>nightMaxKills)nightMaxKills=k;
       if(dmg>nightMaxDmg)nightMaxDmg=dmg;
-      if(kda>nightMaxKDA)nightMaxKDA=kda;
     });
     if(nightMaxKills>allTimeRecords.kills){allTimeRecords.kills=nightMaxKills;tags.push({cls:'tl-record-tag',text:'🏆 NEW KILL RECORD: '+nightMaxKills})}
     if(nightMaxDmg>allTimeRecords.damage){allTimeRecords.damage=nightMaxDmg;tags.push({cls:'tl-record-tag',text:'🏆 NEW DAMAGE RECORD: '+Math.round(nightMaxDmg).toLocaleString()})}
 
-    // High kill games
     for(var pn in players){if(players[pn].bestKills>=15)tags.push({cls:'tl-kill-tag',text:'🔥 '+pn+': '+players[pn].bestKills+' kills'})}
-
-    // Pentakills
     for(var pn2 in players){if(players[pn2].pentas>0)tags.push({cls:'tl-penta-tag',text:'💎 PENTAKILL: '+pn2})}
 
-    // Match count
-    tags.push({cls:'tl-match-tag',text:matchCount+' match'+(matchCount>1?'es':'')+' · '+totalPlayers+' players'});
+    tags.push({cls:'tl-match-tag',text:matchCount+' match'+(matchCount>1?'es':'')+' · '+totalNightPlayers+' players'});
+
+    // Team W/L blocks
+    var teamBlocksHtml='';
+    var sortedTeams=Object.entries(teamResults).sort(function(a,b){return b[1].w-a[1].w});
+    if(sortedTeams.length>1){
+      teamBlocksHtml='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">';
+      sortedTeams.forEach(function(e){
+        var tn=e[0],tr=e[1];
+        var tc=TC[tn]||'#6366f1';
+        teamBlocksHtml+='<div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.02);padding:3px 8px;border-left:2px solid '+tc+'">';
+        teamBlocksHtml+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:'+tc+';font-weight:700">'+tn+'</span>';
+        // W/L dots
+        for(var wi=0;wi<tr.w;wi++)teamBlocksHtml+='<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin:0 1px"></span>';
+        for(var li=0;li<tr.l;li++)teamBlocksHtml+='<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--pink);margin:0 1px"></span>';
+        teamBlocksHtml+='</div>';
+      });
+      teamBlocksHtml+='</div>';
+    }
 
     var isBig=tags.some(function(t){return t.cls==='tl-record-tag'||t.cls==='tl-penta-tag'});
     var dateStr=formatDate(parseDate(date));
@@ -1944,8 +2350,8 @@ function renderTimeline(){
       var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
       var k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;
       var champ=r['Champion']||'';var win=r['Win']==='Win';var tm=(r['Teams']||'').trim();
-      var c=TC[tm]||'var(--dim)';
-      gameRows+='<div class="tl-game"><span class="'+(win?'win':'loss')+'">'+(win?'W':'L')+'</span><span class="champ">'+champ+'</span><span class="player" style="color:'+c+'" onclick="openProfile(\''+n.replace(/'/g,"\\'")+'\')">' +n+'</span><span class="kda">'+k+'/'+d+'/'+a+'</span><span style="color:var(--dim)">'+tm+'</span></div>';
+      var cc=TC[tm]||'var(--dim)';
+      gameRows+='<div class="tl-game"><span class="'+(win?'win':'loss')+'">'+(win?'W':'L')+'</span><span class="champ">'+champ+'</span><span class="player" style="color:'+cc+'" onclick="openProfile(\''+n.replace(/'/g,"\\'")+'\')">' +n+'</span><span class="kda">'+k+'/'+d+'/'+a+'</span><span style="color:var(--dim)">'+tm+'</span></div>';
     });
 
     h+='<div class="tl-node" style="animation-delay:'+delay+'s">';
@@ -1954,6 +2360,7 @@ function renderTimeline(){
     h+='<div class="tl-date" style="color:'+(isBig?'var(--gold)':'var(--cyan)')+'">'+dateStr+'</div>';
     h+='<div class="tl-summary">GAME NIGHT '+(di+1)+'</div>';
     h+='<div class="tl-highlights">'+tags.map(function(t){return'<span class="tl-tag '+t.cls+'">'+t.text+'</span>'}).join('')+'</div>';
+    h+=teamBlocksHtml;
     h+='<div class="tl-expand"><div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--dim);letter-spacing:1px;margin-bottom:6px">ALL GAMES THIS NIGHT</div>'+gameRows+'</div>';
     h+='</div></div>';
   });
@@ -1961,6 +2368,7 @@ function renderTimeline(){
   h+='</div>';
   el.innerHTML=h;
 }
+
 
 // ════════════════════════════════════════
 // SCOUTING TAB — FULL DEEP DIVE
@@ -2713,22 +3121,23 @@ function renderH2H(player1,player2,c1,c2){
 function renderPOTW(){
   var banner=document.getElementById('potwBanner');if(!banner)return;
   if(!RAW||!RAW.length){banner.innerHTML='';return}
-  // Find the most recent game night
-  var dates={};
+  // Group rows by game night (date only, no time)
+  var nights={};
   RAW.forEach(function(r){
     var d=r['Date']||'';if(!d)return;
-    if(!dates[d])dates[d]=[];
-    dates[d].push(r);
+    var nightKey=parseDate(d);if(!nightKey)return;
+    if(!nights[nightKey])nights[nightKey]=[];
+    nights[nightKey].push(r);
   });
-  var sortedDates=Object.keys(dates).sort();
-  if(!sortedDates.length){banner.innerHTML='';return}
-  var latestDate=sortedDates[sortedDates.length-1];
-  var latestRows=dates[latestDate];
-  // Aggregate stats for that night
+  var sortedNights=Object.keys(nights).sort();
+  if(!sortedNights.length){banner.innerHTML='';return}
+  var latestNight=sortedNights[sortedNights.length-1];
+  var latestRows=nights[latestNight];
+  // Aggregate stats per player for the entire night
   var players={};
   latestRows.forEach(function(r){
     var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(!n)return;
-    if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champ:''};
+    if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champs:{}};
     var p=players[n];
     p.kills+=parseFloat(r['Kills'])||0;
     p.deaths+=parseFloat(r['Deaths'])||0;
@@ -2737,27 +3146,44 @@ function renderPOTW(){
     p.games++;
     if(r['Win']==='Win')p.wins++;
     p.team=(r['Teams']||'').trim();
-    p.champ=r['Champion']||'';
+    var ch=r['Champion']||'';
+    if(ch)p.champs[ch]=(p.champs[ch]||0)+1;
   });
-  // Score each player: KDA*2 + win%*3 + dmg_normalized
+  // Find most-played champion per player for icon
+  for(var pn in players){
+    var p=players[pn],topChamp='',topCount=0;
+    for(var ch in p.champs){if(p.champs[ch]>topCount){topCount=p.champs[ch];topChamp=ch}}
+    p.champ=topChamp;
+  }
+  // Score using AVERAGES: avgKDA*2 + winRate*3 + avgDmg/1000
+  // Prefer players with 2+ games; fall back to 1 if nobody played multiple
+  var minGames=2;
+  var anyMulti=false;
+  for(var nm in players){if(players[nm].games>=2){anyMulti=true;break}}
+  if(!anyMulti)minGames=1;
   var best=null,bestScore=-1,bestName='';
   for(var name in players){
     var pl=players[name];
-    var kda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
+    if(pl.games<minGames)continue;
+    var avgKda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
     var wr=pl.wins/pl.games;
-    var score=kda*2+wr*3+(pl.dmg/pl.games/1000);
+    var score=avgKda*2+wr*3+(pl.dmg/pl.games/1000);
     if(score>bestScore){bestScore=score;best=pl;bestName=name}
   }
   if(!best||!bestName){banner.innerHTML='';return}
   var c=TC[best.team]||'var(--cyan)';
   var kda=((best.kills+best.assists)/Math.max(best.deaths,1)).toFixed(2);
   var wr=Math.round(best.wins/best.games*100);
+  var avgK=(best.kills/best.games).toFixed(1);
+  var avgD=(best.deaths/best.games).toFixed(1);
+  var avgA=(best.assists/best.games).toFixed(1);
   var avgDmg=Math.round(best.dmg/best.games).toLocaleString();
-  var dateStr=formatDate(parseDate(latestDate));
+  var dateStr=formatDate(latestNight);
   var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
   var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
-  banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+best.kills+'/'+best.deaths+'/'+best.assists+'</div><div class="potw-stat-lbl">K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">DMG/GAME</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+  banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">AVG KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgK+'/'+avgD+'/'+avgA+'</div><div class="potw-stat-lbl">AVG K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">AVG DMG</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
 }
+
 
 // ════════════════════════════════════════
 // SCOUTING: TEAM-RELATIVE STATS
