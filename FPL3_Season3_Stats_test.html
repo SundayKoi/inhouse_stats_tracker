@@ -792,7 +792,7 @@ function fmtVal(v,f){if(v===null||v===undefined)return'-';if(f==='pct')return v.
 // GLOBAL FILTER
 var _filterCache={key:'',rows:null};
 function getFilteredRows(){const ph=document.getElementById('phaseSel').value;const se=document.getElementById('seasonSel').value;const ck=ph+'|'+se+'|'+RAW.length;if(_filterCache.key===ck&&_filterCache.rows)return _filterCache.rows;let r=RAW;if(ph!=='All')r=r.filter(x=>(x['Season Phase']||'')===ph);if(se!=='All')r=r.filter(x=>(x['Season']||'')===se);_filterCache={key:ck,rows:r};return r}
-function onGlobalFilter(){_filterCache={key:'',rows:null};if(typeof _scoutCache!=='undefined')_scoutCache={key:'',data:{}};const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
+function onGlobalFilter(){_filterCache={key:'',rows:null};invalidateScoutCache();setTimeout(precomputeAllScouting,100);const r=getFilteredRows();const res=aggregate(r,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange||'—';renderCurrentTab()}
 
 // AGGREGATE
 function aggregate(matchRows,rosterMap){
@@ -804,7 +804,7 @@ const players=[];for(const[name,s]of Object.entries(ps)){const g=s.games,d=s.dur
 players.push({player:name,team,games:g,wins:s.wins,losses:g-s.wins,winRate:+(s.wins/g*100).toFixed(1),kda:+((s.kills+s.assists)/Math.max(s.deaths,1)).toFixed(2),killsPerGame:+(s.kills/g).toFixed(2),deathsPerGame:+(s.deaths/g).toFixed(2),assistsPerGame:+(s.assists/g).toFixed(2),csPerMin:+(s.cs/d).toFixed(2),goldPerMin:+(s.gold/d).toFixed(1),damagePerMin:+(s.damage/d).toFixed(1),visionPerMin:+(s.vision/d).toFixed(2),damageTakenPerGame:Math.round(s.damageTaken/g),damageMitigatedPerGame:Math.round(s.damageMitigated/g),totalKills:s.kills,totalDeaths:s.deaths,totalAssists:s.assists,doubleKills:s.doubles,tripleKills:s.triples,quadraKills:s.quadras,pentaKills:s.pentas,wardsPlacedPerGame:+(s.wardsPlaced/g).toFixed(1),wardsKilledPerGame:+(s.wardsKilled/g).toFixed(1),controlWardsPerGame:+(s.controlWards/g).toFixed(1),turretKillsPerGame:+(s.turretKills/g).toFixed(1),turretDamagePerGame:Math.round(s.turretDamage/g),objectiveDamagePerGame:Math.round(s.objectiveDamage/g),teamDragonsPerGame:+(s.teamDragons/g).toFixed(1),teamBaronsPerGame:+(s.teamBarons/g).toFixed(1),teamHeraldsPerGame:+(s.teamHeralds/g).toFixed(1),teamGrubsPerGame:+(s.teamGrubs/g).toFixed(1),teamTowersPerGame:+(s.teamTowers/g).toFixed(1),firstBloodRate:+(s.firstBloods/g*100).toFixed(1),mainRole,champData:s.champions})}
 players.sort((a,b)=>b.games-a.games);mids.delete('');dates.delete('');const sd=[...dates].sort();const dr=sd.length?formatDate(sd[0])+' — '+formatDate(sd[sd.length-1]):'';return{players,totalMatches:mids.size,gameNights:dates.size,dateRange:dr}}
 // LOAD DATA
-async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','scouting','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
+async function loadData(){try{const mr=await loadSheetJSONP('Sheet1');RAW=mr;ROSTER={};for(const r of mr){let n=(r['Summoner Name']||'').trim();const t=(r['Teams']||'').trim();if(NAME_MERGES[n])n=NAME_MERGES[n];if(n&&t)ROSTER[n]=t}const res=aggregate(mr,ROSTER);PD=res.players;document.getElementById('mPlayers').textContent=PD.length;document.getElementById('mMatches').textContent=res.totalMatches;document.getElementById('mNights').textContent=res.gameNights;document.getElementById('mDates').textContent=res.dateRange;const ss=document.getElementById('statSel');STATS.forEach(s=>{const o=document.createElement('option');o.value=s.key;o.textContent=s.name;ss.appendChild(o)});const ts=[...new Set(PD.map(p=>p.team))].sort();const tS=document.getElementById('teamSel');tS.innerHTML='<option value="All">All Teams</option>';ts.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;tS.appendChild(o)});document.getElementById('mTeams').textContent=ts.filter(t=>t!=='Sub').length;const now=new Date();document.getElementById('mUpdated').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});document.getElementById('loadingEl').style.display='none';document.getElementById('pg-leaderboard').style.removeProperty('display');const h=location.hash.replace('#','');const vt=['leaderboard','teams','champions','records','mvp','power','timeline','scouting','lookup'];if(h&&vt.includes(h))switchTab(h,false);else renderLeaderboard();setTimeout(precomputeAllScouting,100);const up=new URLSearchParams(location.search);const pp=up.get('player');if(pp)setTimeout(()=>openProfile(esc(decodeURIComponent(pp))),200)}catch(e){document.getElementById('loadingEl').innerHTML='<div class="load-error">⚠ FAILED TO LOAD<br><span style="font-size:10px;color:var(--dim)">'+e.message+'</span></div>'}}
 
 // LEADERBOARD
 function setType(t){curType=t;document.getElementById('bHigh').className='tbtn'+(t==='top10'?' ah':'');document.getElementById('bLow').className='tbtn'+(t==='bot10'?' al':'');document.getElementById('bAll').className='tbtn'+(t==='all'?' aa':'');renderLeaderboard()}
@@ -1308,18 +1308,30 @@ function renderMVP(){
 function calcPowerScore(p,all){const ks=['kda','winRate','csPerMin','goldPerMin','damagePerMin','visionPerMin'];const wt=[2,1.5,1,.8,1.2,.8];let tw=0,ws=0;ks.forEach((k,i)=>{const s=[...all].sort((a,b)=>a[k]-b[k]);const rk=s.findIndex(x=>x.player===p.player);const pc=rk/(s.length-1||1);ws+=pc*wt[i];tw+=wt[i]});return+((ws/tw)*100).toFixed(1)}
 function renderPower(){const mg=parseInt(document.getElementById('prMinG').value);const el=PD.filter(p=>p.games>=mg);if(!el.length){document.getElementById('powerContent').innerHTML='<div class="nodata">Not enough data</div>';return}el.forEach(p=>p.powerScore=calcPowerScore(p,el));el.sort((a,b)=>b.powerScore-a.powerScore);const mx=el[0].powerScore;document.getElementById('powerContent').innerHTML=el.map((p,i)=>{const c=TC[p.team]||'#6366f1';const pct=(p.powerScore/mx*100).toFixed(1);const dl=Math.min(i*0.03,1.5);const rc=i===0?'r1':i===1?'r2':i===2?'r3':'';return`<div class="pr-row" style="animation-delay:${dl}s"><div class="pr-rank ${rc}" style="color:${i<3?c:'var(--dim)'}">${i+1}</div><div class="pr-info"><div class="pr-name" style="color:${c}" onclick="openProfile('${p.player.replace(/'/g,"\\'")}')">${p.player}</div><div class="pr-detail">${p.team} · ${ROLE_MAP[p.mainRole]||p.mainRole} · ${p.games}g · ${p.winRate}%WR</div></div><div class="pr-bar"><div class="pr-bar-fill" style="width:${pct}%;background:${c}"></div></div><div class="pr-score" style="color:${c}">${p.powerScore}</div></div>`}).join('')}
 // PLAYER PROFILE
-function openProfile(pn){const p=PD.find(x=>x.player===pn);if(!p)return;const c=TC[p.team]||'#6366f1';const rl=ROLE_MAP[p.mainRole]||p.mainRole;const el=PD.filter(x=>x.games>=3);el.forEach(x=>x.powerScore=calcPowerScore(x,el));el.sort((a,b)=>b.powerScore-a.powerScore);const pr=el.findIndex(x=>x.player===pn)+1;const ps=p.powerScore||calcPowerScore(p,el);const cm={};(p.champData||[]).forEach(x=>{if(!cm[x.champ])cm[x.champ]={games:0,wins:0,kills:0,deaths:0,assists:0};const ch=cm[x.champ];ch.games++;ch.wins+=(x.win?1:0);ch.kills+=x.kills;ch.deaths+=x.deaths;ch.assists+=x.assists});const cl=Object.entries(cm).map(([n,x])=>({name:n,games:x.games,wr:+(x.wins/x.games*100).toFixed(0),kda:+((x.kills+x.assists)/Math.max(x.deaths,1)).toFixed(2)})).sort((a,b)=>b.games-a.games);
-function gR(k,inv){const s=[...PD].sort((a,b)=>inv?a[k]-b[k]:b[k]-a[k]);return s.findIndex(x=>x.player===pn)+1}
-const avg={};const sks=['kda','killsPerGame','deathsPerGame','assistsPerGame','csPerMin','goldPerMin','damagePerMin','visionPerMin','winRate'];sks.forEach(k=>{const vs=PD.filter(x=>x.games>=3).map(x=>x[k]);avg[k]=vs.length?+(vs.reduce((a,b)=>a+b,0)/vs.length).toFixed(2):0});
-const dp={};(p.champData||[]).forEach(x=>{if(!dp[x.date])dp[x.date]={kills:0,deaths:0,assists:0,games:0,wins:0,damage:0,duration:0};const d=dp[x.date];d.games++;d.kills+=x.kills;d.deaths+=x.deaths;d.assists+=x.assists;d.wins+=(x.win?1:0);d.damage+=x.damage;d.duration+=x.duration});const td=Object.keys(dp).sort();const tk=td.map(d=>{const x=dp[d];return+((x.kills+x.assists)/Math.max(x.deaths,1)).toFixed(2)});
-let h=`<div class="prof-header"><div><div class="prof-name" style="color:${c}">${p.player}</div><div class="prof-sub">${p.team} · ${rl} · ${p.games} Games · ${p.wins}W ${p.losses}L</div></div><div style="display:flex;align-items:center"><div class="prof-rating" style="color:${c}" title="Power Rating">${ps}<span style="font-size:12px;color:var(--dim)"> #${pr}</span></div><button class="prof-share" onclick="shareProfile('${p.player.replace(/'/g,"\\'")}')"><span>⚡ SHARE</span></button></div></div>`;
+function openProfile(pn){const p=PD.find(x=>x.player===pn);if(!p)return;
+const c=TC[p.team]||'#6366f1';const rl=ROLE_MAP[p.mainRole]||p.mainRole;
+var pw=_powerData[pn]||{score:0,rank:0};
+var ps=pw.score||0,pr=pw.rank||0;
+if(!pr){var el=PD.filter(x=>x.games>=3);el.forEach(x=>x.powerScore=calcPowerScore(x,el));el.sort((a,b)=>b.powerScore-a.powerScore);pr=el.findIndex(x=>x.player===pn)+1;ps=p.powerScore||0}
+const cm={};(p.champData||[]).forEach(x=>{if(!cm[x.champ])cm[x.champ]={games:0,wins:0,kills:0,deaths:0,assists:0};const ch=cm[x.champ];ch.games++;ch.wins+=(x.win?1:0);ch.kills+=x.kills;ch.deaths+=x.deaths;ch.assists+=x.assists});
+const cl=Object.entries(cm).map(([n,x])=>({name:n,games:x.games,wr:+(x.wins/x.games*100).toFixed(0),kda:+((x.kills+x.assists)/Math.max(x.deaths,1)).toFixed(2)})).sort((a,b)=>b.games-a.games);
+var ranks=_rankData[pn]||{};
+function gR(k){return ranks[k]||0}
+var avg=_rankData._avg||{};
+if(!Object.keys(avg).length){var sks=['kda','killsPerGame','deathsPerGame','assistsPerGame','csPerMin','goldPerMin','damagePerMin','visionPerMin','winRate'];sks.forEach(k=>{var vs=PD.filter(x=>x.games>=3).map(x=>x[k]);avg[k]=vs.length?+(vs.reduce((a,b)=>a+b,0)/vs.length).toFixed(2):0})}
+const dp={};(p.champData||[]).forEach(x=>{if(!dp[x.date])dp[x.date]={kills:0,deaths:0,assists:0,games:0,wins:0,damage:0,duration:0};const d=dp[x.date];d.games++;d.kills+=x.kills;d.deaths+=x.deaths;d.assists+=x.assists;d.wins+=(x.win?1:0);d.damage+=x.damage;d.duration+=x.duration});
+const td=Object.keys(dp).sort();const tk=td.map(d=>{const x=dp[d];return+((x.kills+x.assists)/Math.max(x.deaths,1)).toFixed(2)});
+let h='<div class="prof-header"><div><div class="prof-name" style="color:'+c+'">'+p.player+'</div><div class="prof-sub">'+p.team+' \xb7 '+rl+' \xb7 '+p.games+' Games \xb7 '+p.wins+'W '+p.losses+'L</div></div><div style="display:flex;align-items:center"><div class="prof-rating" style="color:'+c+'" title="Power Rating">'+ps+'<span style="font-size:12px;color:var(--dim)"> #'+pr+'</span></div><button class="prof-share" onclick="shareProfile(\''+p.player.replace(/'/g,"\\'")+'\')"><span>\u26a1 SHARE</span></button></div></div>';
 h+='<div class="prof-section"><div class="prof-section-title">Core Stats</div><div class="prof-stats">';
-[{label:'KDA',val:p.kda,fmt:'dec',key:'kda'},{label:'Win Rate',val:p.winRate,fmt:'pct',key:'winRate'},{label:'K/G',val:p.killsPerGame,fmt:'dec',key:'killsPerGame'},{label:'D/G',val:p.deathsPerGame,fmt:'dec',key:'deathsPerGame',inv:true},{label:'A/G',val:p.assistsPerGame,fmt:'dec',key:'assistsPerGame'},{label:'CS/Min',val:p.csPerMin,fmt:'dec',key:'csPerMin'},{label:'Gold/Min',val:p.goldPerMin,fmt:'dec',key:'goldPerMin'},{label:'DMG/Min',val:p.damagePerMin,fmt:'num',key:'damagePerMin'},{label:'Vision/Min',val:p.visionPerMin,fmt:'dec',key:'visionPerMin'},{label:'Games',val:p.games,fmt:'int',key:'games'}].forEach(s=>{const rk=gR(s.key,s.inv);const rc=rk<=3?'var(--gold)':rk<=10?'var(--cyan)':'var(--dim)';h+=`<div class="prof-stat"><div class="prof-stat-val" style="color:${c}">${fmtVal(s.val,s.fmt)}</div><div class="prof-stat-label">${s.label}</div><div class="prof-stat-rank" style="color:${rc}">#${rk} of ${PD.length}</div></div>`});h+='</div></div>';
-h+='<div class="prof-section"><div class="prof-section-title">Vs League Average</div><div class="prof-vs-avg">';sks.forEach(function(k){var s=STATS.find(function(x){return x.key===k})||{name:k,fmt:'dec'};var pv=p[k],av=avg[k];var df=pv-av;var inv=(k==='deathsPerGame');var dc=inv?(df<0?'var(--green)':'var(--pink)'):(df>0?'var(--green)':'var(--pink)');var ds=(df>0?'+':'')+fmtVal(df,s.fmt);var mx=Math.max.apply(null,PD.map(function(x){return x[k]||0}));if(mx===0)mx=1;var pPct=(pv/mx*100).toFixed(1);var aPct=(av/mx*100).toFixed(1);var barColor=inv?(pv<=av?'var(--green)':'var(--pink)'):(pv>=av?'var(--green)':'var(--pink)');h+='<div class="vs-bar-row"><div class="vs-bar-label">'+s.name+'</div><div class="vs-bar-val" style="color:'+c+'">'+fmtVal(pv,s.fmt)+'</div><div class="vs-bar-track"><div class="vs-bar-fill" data-width="'+pPct+'" style="background:'+barColor+'"></div><div class="vs-bar-avg-mark" style="left:'+aPct+'%"><div class="vs-bar-avg-label">AVG</div></div></div><div class="vs-bar-diff" style="color:'+dc+'">'+ds+'</div></div>'});h+='</div></div>';
-if(cl.length){h+='<div class="prof-section"><div class="prof-section-title">Champion Pool</div><div class="prof-champs">';cl.forEach(x=>{const wc=x.wr>=55?'var(--green)':x.wr<=45?'var(--pink)':'var(--text)';h+=`<div class="prof-champ"><div><div class="prof-champ-name">${x.name}</div><div class="prof-champ-games">${x.games} games · ${x.kda} KDA</div></div><div class="prof-champ-wr" style="color:${wc}">${x.wr}%</div></div>`});h+='</div></div>'}
+[{label:'KDA',val:p.kda,fmt:'dec',key:'kda'},{label:'Win Rate',val:p.winRate,fmt:'pct',key:'winRate'},{label:'K/G',val:p.killsPerGame,fmt:'dec',key:'killsPerGame'},{label:'D/G',val:p.deathsPerGame,fmt:'dec',key:'deathsPerGame'},{label:'A/G',val:p.assistsPerGame,fmt:'dec',key:'assistsPerGame'},{label:'CS/Min',val:p.csPerMin,fmt:'dec',key:'csPerMin'},{label:'Gold/Min',val:p.goldPerMin,fmt:'dec',key:'goldPerMin'},{label:'DMG/Min',val:p.damagePerMin,fmt:'num',key:'damagePerMin'},{label:'Vision/Min',val:p.visionPerMin,fmt:'dec',key:'visionPerMin'},{label:'Games',val:p.games,fmt:'int',key:'games'}].forEach(s=>{const rk=gR(s.key);const rc=rk<=3?'var(--gold)':rk<=10?'var(--cyan)':'var(--dim)';h+='<div class="prof-stat"><div class="prof-stat-val" style="color:'+c+'">'+fmtVal(s.val,s.fmt)+'</div><div class="prof-stat-label">'+s.label+'</div><div class="prof-stat-rank" style="color:'+rc+'">#'+rk+' of '+PD.length+'</div></div>'});h+='</div></div>';
+h+='<div class="prof-section"><div class="prof-section-title">Vs League Average</div><div class="prof-vs-avg">';
+var STATS_REF=typeof STATS!=='undefined'?STATS:[];
+['kda','killsPerGame','deathsPerGame','assistsPerGame','csPerMin','goldPerMin','damagePerMin','visionPerMin','winRate'].forEach(function(k){var s=STATS_REF.find(function(x){return x.key===k})||{name:k,fmt:'dec'};var pv=p[k],av=avg[k]||0;var df=pv-av;var inv=(k==='deathsPerGame');var dc=inv?(df<0?'var(--green)':'var(--pink)'):(df>0?'var(--green)':'var(--pink)');var ds=(df>0?'+':'')+fmtVal(df,s.fmt);var mx=Math.max.apply(null,PD.map(function(x){return x[k]||0}));if(mx===0)mx=1;var pPct=(pv/mx*100).toFixed(1);var aPct=(av/mx*100).toFixed(1);var barColor=inv?(pv<=av?'var(--green)':'var(--pink)'):(pv>=av?'var(--green)':'var(--pink)');h+='<div class="vs-bar-row"><div class="vs-bar-label">'+s.name+'</div><div class="vs-bar-val" style="color:'+c+'">'+fmtVal(pv,s.fmt)+'</div><div class="vs-bar-track"><div class="vs-bar-fill" data-width="'+pPct+'" style="background:'+barColor+'"></div><div class="vs-bar-avg-mark" style="left:'+aPct+'%"><div class="vs-bar-avg-label">AVG</div></div></div><div class="vs-bar-diff" style="color:'+dc+'">'+ds+'</div></div>'});h+='</div></div>';
+if(cl.length){h+='<div class="prof-section"><div class="prof-section-title">Champion Pool</div><div class="prof-champs">';cl.forEach(x=>{const wc=x.wr>=55?'var(--green)':x.wr<=45?'var(--pink)':'var(--text)';h+='<div class="prof-champ"><div><div class="prof-champ-name">'+x.name+'</div><div class="prof-champ-games">'+x.games+' games \xb7 '+x.kda+' KDA</div></div><div class="prof-champ-wr" style="color:'+wc+'">'+x.wr+'%</div></div>'});h+='</div></div>'}
 if(td.length>1)h+='<div class="prof-section"><div class="prof-section-title">KDA Trend by Game Night</div><div class="prof-trend"><canvas id="trendCanvas" width="850" height="120"></canvas></div></div>';
-if(p.doubleKills||p.tripleKills||p.quadraKills||p.pentaKills){h+='<div class="prof-section"><div class="prof-section-title">Multi-Kills</div><div class="prof-stats">';[{l:'Doubles',v:p.doubleKills},{l:'Triples',v:p.tripleKills},{l:'Quadras',v:p.quadraKills},{l:'Pentas',v:p.pentaKills}].forEach(m=>{if(m.v)h+=`<div class="prof-stat"><div class="prof-stat-val" style="color:${c}">${m.v}</div><div class="prof-stat-label">${m.l}</div></div>`});h+='</div></div>'}
+if(p.doubleKills||p.tripleKills||p.quadraKills||p.pentaKills){h+='<div class="prof-section"><div class="prof-section-title">Multi-Kills</div><div class="prof-stats">';[{l:'Doubles',v:p.doubleKills},{l:'Triples',v:p.tripleKills},{l:'Quadras',v:p.quadraKills},{l:'Pentas',v:p.pentaKills}].forEach(m=>{if(m.v)h+='<div class="prof-stat"><div class="prof-stat-val" style="color:'+c+'">'+m.v+'</div><div class="prof-stat-label">'+m.l+'</div></div>'});h+='</div></div>'}
 document.getElementById('profileContent').innerHTML=h;document.getElementById('profileModal').classList.add('active');if(td.length>1)setTimeout(()=>drawTrend(td,tk,c),50)}
+
 
 function drawTrend(dates,vals,color){const cv=document.getElementById('trendCanvas');if(!cv)return;const cx=cv.getContext('2d');const W=cv.width,H=cv.height,pd=30;cx.clearRect(0,0,W,H);const mn=Math.min(...vals)*.8,mx=Math.max(...vals)*1.2;const xs=(W-pd*2)/(dates.length-1||1);cx.strokeStyle='#1a1a3040';cx.lineWidth=1;for(let i=0;i<4;i++){const y=pd+(H-pd*2)*i/3;cx.beginPath();cx.moveTo(pd,y);cx.lineTo(W-pd,y);cx.stroke()}cx.beginPath();cx.strokeStyle=color;cx.lineWidth=2;const pts=[];vals.forEach((v,i)=>{const x=pd+i*xs,y=H-pd-(v-mn)/(mx-mn||1)*(H-pd*2);pts.push({x,y});i===0?cx.moveTo(x,y):cx.lineTo(x,y)});cx.stroke();
 cx.beginPath();cx.strokeStyle=color;cx.lineWidth=6;cx.globalAlpha=.15;pts.forEach((p,i)=>{i===0?cx.moveTo(p.x,p.y):cx.lineTo(p.x,p.y)});cx.stroke();cx.globalAlpha=1;
@@ -1586,10 +1598,10 @@ openProfile=function(pn){
     if(bgHTML){const div=document.createElement('div');div.innerHTML=bgHTML;coreSection.after(div.firstElementChild)}
   }
   // DEFER heavy scouting so modal opens instantly
-  const _defer=typeof requestIdleCallback!=='undefined'?requestIdleCallback:function(fn){setTimeout(fn,16)};
-  _defer(function(){
-    const rows=getFilteredRows();
-    const scout=getCachedScouting(pn,rows);
+
+  // All scouting data is precomputed - instant lookups
+    // Using precomputed data
+    const scout=getCachedScouting(pn);
     if(scout.badges&&scout.badges.length){
       const header=profContent.querySelector('.prof-header')||profContent.firstElementChild;
       if(header){const bdiv=document.createElement('div');bdiv.innerHTML=renderBadgesHTML(scout.badges);header.after(bdiv.firstElementChild)}
@@ -1636,8 +1648,9 @@ openProfile=function(pn){
         var w=bar.getAttribute('data-width');if(w)bar.style.width=w+'%';
       });
     },50);
-  });
+
 }
+
 ;
 
 // Patch onGlobalFilter to rebuild ticker
@@ -3155,24 +3168,60 @@ function renderPOTW(){
   banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">AVG KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgK+'/'+avgD+'/'+avgA+'</div><div class="potw-stat-lbl">AVG K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">AVG DMG</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
 }
 
-// SCOUTING CACHE
-var _scoutCache={key:"",data:{}};
-function getScoutCacheKey(){return(document.getElementById("phaseSel").value||"")+"|"+(document.getElementById("seasonSel").value||"")+"|"+RAW.length}
-function clearScoutCache(){_scoutCache={key:"",data:{}}}
-function getCachedScouting(player,rows){
-  var ck=getScoutCacheKey();
-  if(_scoutCache.key!==ck){_scoutCache={key:ck,data:{}};}
-  if(_scoutCache.data[player])return _scoutCache.data[player];
-  var result={
-    teamRel:getTeamRelativeStats(player,rows),
-    consistency:getConsistency(player,rows),
-    form:getFormRating(player,rows),
-    tags:getPlaystyleTags(player,rows),
-    badges:getAchievements(player,rows)
-  };
-  _scoutCache.data[player]=result;
-  return result;
+// PRECOMPUTED SCOUTING + RANKINGS CACHE
+var _scoutData={},_rankData={},_powerData={},_scoutReady=false;
+function precomputeAllScouting(){
+  _scoutData={};_rankData={};_powerData={};
+  var rows=getFilteredRows();
+  var eligible=PD.filter(function(x){return x.games>=3});
+  // Precompute power scores
+  eligible.forEach(function(x){x.powerScore=calcPowerScore(x,eligible)});
+  eligible.sort(function(a,b){return b.powerScore-a.powerScore});
+  eligible.forEach(function(x,i){_powerData[x.player]={score:x.powerScore,rank:i+1}});
+  // Precompute rankings for every stat
+  var statKeys=['kda','winRate','killsPerGame','deathsPerGame','assistsPerGame','csPerMin','goldPerMin','damagePerMin','visionPerMin','games'];
+  var invKeys={deathsPerGame:true};
+  statKeys.forEach(function(k){
+    var sorted=PD.slice().sort(function(a,b){return invKeys[k]?a[k]-b[k]:b[k]-a[k]});
+    sorted.forEach(function(x,i){
+      if(!_rankData[x.player])_rankData[x.player]={};
+      _rankData[x.player][k]=i+1;
+    });
+  });
+  // Precompute averages
+  var avgData={};
+  var sks=['kda','killsPerGame','deathsPerGame','assistsPerGame','csPerMin','goldPerMin','damagePerMin','visionPerMin','winRate'];
+  sks.forEach(function(k){
+    var vs=eligible.map(function(x){return x[k]});
+    avgData[k]=vs.length?+(vs.reduce(function(a,b){return a+b},0)/vs.length).toFixed(2):0;
+  });
+  _rankData._avg=avgData;
+  // Precompute scouting for all players in background
+  var playerList=PD.map(function(p){return p.player});
+  var idx=0;
+  function processNext(){
+    if(idx>=playerList.length){_scoutReady=true;console.log('Scouting precomputed for '+PD.length+' players');return}
+    var batch=Math.min(5,playerList.length-idx);
+    for(var b=0;b<batch;b++){
+      var name=playerList[idx+b];
+      _scoutData[name]={
+        teamRel:getTeamRelativeStats(name,rows),
+        consistency:getConsistency(name,rows),
+        form:getFormRating(name,rows),
+        tags:getPlaystyleTags(name,rows),
+        badges:getAchievements(name,rows)
+      };
+    }
+    idx+=batch;
+    setTimeout(processNext,0);
+  }
+  processNext();
 }
+function getCachedScouting(player){
+  return _scoutData[player]||{teamRel:null,consistency:null,form:null,tags:[],badges:[]};
+}
+function invalidateScoutCache(){_scoutReady=false;_scoutData={};_rankData={};_powerData={}}
+
 
 // ════════════════════════════════════════
 // SCOUTING: TEAM-RELATIVE STATS
