@@ -3121,22 +3121,23 @@ function renderH2H(player1,player2,c1,c2){
 function renderPOTW(){
   var banner=document.getElementById('potwBanner');if(!banner)return;
   if(!RAW||!RAW.length){banner.innerHTML='';return}
-  // Find the most recent game night
-  var dates={};
+  // Group rows by game night (date only, no time)
+  var nights={};
   RAW.forEach(function(r){
     var d=r['Date']||'';if(!d)return;
-    if(!dates[d])dates[d]=[];
-    dates[d].push(r);
+    var nightKey=parseDate(d);if(!nightKey)return;
+    if(!nights[nightKey])nights[nightKey]=[];
+    nights[nightKey].push(r);
   });
-  var sortedDates=Object.keys(dates).sort();
-  if(!sortedDates.length){banner.innerHTML='';return}
-  var latestDate=sortedDates[sortedDates.length-1];
-  var latestRows=dates[latestDate];
-  // Aggregate stats for that night
+  var sortedNights=Object.keys(nights).sort();
+  if(!sortedNights.length){banner.innerHTML='';return}
+  var latestNight=sortedNights[sortedNights.length-1];
+  var latestRows=nights[latestNight];
+  // Aggregate stats per player for the entire night
   var players={};
   latestRows.forEach(function(r){
     var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(!n)return;
-    if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champ:''};
+    if(!players[n])players[n]={kills:0,deaths:0,assists:0,dmg:0,games:0,wins:0,team:'',champs:{}};
     var p=players[n];
     p.kills+=parseFloat(r['Kills'])||0;
     p.deaths+=parseFloat(r['Deaths'])||0;
@@ -3145,27 +3146,44 @@ function renderPOTW(){
     p.games++;
     if(r['Win']==='Win')p.wins++;
     p.team=(r['Teams']||'').trim();
-    p.champ=r['Champion']||'';
+    var ch=r['Champion']||'';
+    if(ch)p.champs[ch]=(p.champs[ch]||0)+1;
   });
-  // Score each player: KDA*2 + win%*3 + dmg_normalized
+  // Find most-played champion per player for icon
+  for(var pn in players){
+    var p=players[pn],topChamp='',topCount=0;
+    for(var ch in p.champs){if(p.champs[ch]>topCount){topCount=p.champs[ch];topChamp=ch}}
+    p.champ=topChamp;
+  }
+  // Score using AVERAGES: avgKDA*2 + winRate*3 + avgDmg/1000
+  // Prefer players with 2+ games; fall back to 1 if nobody played multiple
+  var minGames=2;
+  var anyMulti=false;
+  for(var nm in players){if(players[nm].games>=2){anyMulti=true;break}}
+  if(!anyMulti)minGames=1;
   var best=null,bestScore=-1,bestName='';
   for(var name in players){
     var pl=players[name];
-    var kda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
+    if(pl.games<minGames)continue;
+    var avgKda=(pl.kills+pl.assists)/Math.max(pl.deaths,1);
     var wr=pl.wins/pl.games;
-    var score=kda*2+wr*3+(pl.dmg/pl.games/1000);
+    var score=avgKda*2+wr*3+(pl.dmg/pl.games/1000);
     if(score>bestScore){bestScore=score;best=pl;bestName=name}
   }
   if(!best||!bestName){banner.innerHTML='';return}
   var c=TC[best.team]||'var(--cyan)';
   var kda=((best.kills+best.assists)/Math.max(best.deaths,1)).toFixed(2);
   var wr=Math.round(best.wins/best.games*100);
+  var avgK=(best.kills/best.games).toFixed(1);
+  var avgD=(best.deaths/best.games).toFixed(1);
+  var avgA=(best.assists/best.games).toFixed(1);
   var avgDmg=Math.round(best.dmg/best.games).toLocaleString();
-  var dateStr=formatDate(parseDate(latestDate));
+  var dateStr=formatDate(latestNight);
   var champKey=best.champ.replace(/[^a-zA-Z]/g,'');
   var imgSrc=DD_BASE+(CHAMP_KEY_OVERRIDES[best.champ]||champKey)+'.png';
-  banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+best.kills+'/'+best.deaths+'/'+best.assists+'</div><div class="potw-stat-lbl">K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">DMG/GAME</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
+  banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">AVG KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgK+'/'+avgD+'/'+avgA+'</div><div class="potw-stat-lbl">AVG K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">AVG DMG</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
 }
+
 
 // ════════════════════════════════════════
 // SCOUTING: TEAM-RELATIVE STATS
