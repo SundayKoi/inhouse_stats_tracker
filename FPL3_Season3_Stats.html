@@ -3,13 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <title>Stats Dashboard</title>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"></noscript>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#06060c;--bg2:#0c0c16;--bg3:#12121e;--border:#1a1a30;--cyan:#00f0ff;--cyan-dim:#00f0ff25;--cyan-glow:#00f0ff40;--pink:#ff2d7b;--pink-glow:#ff2d7b40;--purple:#a855f7;--purple-glow:#a855f740;--green:#22c55e;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32;--text:#e2e8f0;--dim:#4a5568}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -631,6 +628,26 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .scout-export-btn:hover{background:var(--cyan);color:var(--bg)}
 .scout-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--cyan);color:var(--bg);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 24px;border-radius:4px;z-index:999;opacity:0;transition:opacity .3s;letter-spacing:1px}
 .scout-toast.show{opacity:1}
+
+/* PERFORMANCE OPTIMIZATIONS */
+#particleCanvas{will-change:transform;contain:strict}
+.potw,.card,.team-card,.record-card,.brow{contain:layout style paint}
+.tab-page{contain:content}
+.modal-overlay,.trading-card-overlay{contain:layout style}
+.wrap{contain:layout style}
+body::before{will-change:auto;pointer-events:none;contain:strict}
+body::after{contain:strict}
+.ambient-orb{contain:strict}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  #particleCanvas{display:none}
+  body::before,body::after{display:none}
+}
+
+/* Font display optimization */
+@font-face{font-family:'Orbitron';font-display:swap}
+@font-face{font-family:'Share Tech Mono';font-display:swap}
+@font-face{font-family:'Rajdhani';font-display:swap}
 </style>
 </head>
 <body>
@@ -721,11 +738,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <script>
 // PARTICLE SYSTEM
 (function(){
-const cv=document.getElementById('particleCanvas'),cx=cv.getContext('2d');let W,H,pts=[];
+const cv=document.getElementById('particleCanvas'),cx=cv.getContext('2d');
+let W,H,pts=[],paused=false,lastFrame=0;
+const FPS_CAP=30,FRAME_MS=1000/FPS_CAP,MAX_DIST=80,NUM_PARTICLES=30;
 function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
+document.addEventListener('visibilitychange',function(){paused=document.hidden;if(!paused)requestAnimationFrame(anim)});
 class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.15;this.vy=(Math.random()-.5)*.15;this.sz=Math.random()*1.5+.5;this.a=Math.random()*.3+.05;this.c=Math.random()>.7?'0,240,255':'255,45,123';this.life=Math.random()*400+200;this.ml=this.life}update(){this.x+=this.vx;this.y+=this.vy;this.life--;if(this.life<=0||this.x<0||this.x>W||this.y<0||this.y>H)this.reset()}draw(){const f=Math.min(this.life/50,(this.ml-this.life)/50,1);cx.beginPath();cx.arc(this.x,this.y,this.sz,0,Math.PI*2);cx.fillStyle=`rgba(${this.c},${this.a*f})`;cx.fill()}}
-for(let i=0;i<60;i++)pts.push(new P);
-function anim(){cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/120)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});requestAnimationFrame(anim)}anim()})();
+for(let i=0;i<NUM_PARTICLES;i++)pts.push(new P);
+function anim(ts){if(paused)return;requestAnimationFrame(anim);if(ts-lastFrame<FRAME_MS)return;lastFrame=ts;cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d2=dx*dx+dy*dy;if(d2<MAX_DIST*MAX_DIST){const d=Math.sqrt(d2);cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/MAX_DIST)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});};requestAnimationFrame(anim)})();
 
 // DATA CONFIG
 const SHEET_ID='13AS2PQUOGFKHosSwmQqPlxsSXoUKTO33FOOP21gfm2A';
@@ -3184,7 +3204,6 @@ function renderPOTW(){
   banner.innerHTML='<div class="potw"><div class="potw-label"><span class="star">\u2605</span> PLAYER OF THE WEEK <span class="star">\u2605</span></div><div class="potw-main"><img class="potw-champ" src="'+imgSrc+'" alt="'+best.champ+'" onerror="this.style.display=\'none\'"><div class="potw-info"><div class="potw-name" style="color:'+c+'" onclick="openProfile(\''+bestName.replace(/'/g,"\\'")+'\')">' +bestName+'</div><div class="potw-team">'+best.team+' \xb7 '+best.champ+' \xb7 '+best.games+' GAME'+(best.games>1?'S':'')+'</div></div><div class="potw-stats"><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+kda+'</div><div class="potw-stat-lbl">AVG KDA</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+(wr>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</div><div class="potw-stat-lbl">WIN RATE</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgK+'/'+avgD+'/'+avgA+'</div><div class="potw-stat-lbl">AVG K/D/A</div></div><div class="potw-stat"><div class="potw-stat-val" style="color:'+c+'">'+avgDmg+'</div><div class="potw-stat-lbl">AVG DMG</div></div></div><div class="potw-date">'+dateStr+'</div></div></div>';
 }
 
-
 // ════════════════════════════════════════
 // SCOUTING: TEAM-RELATIVE STATS
 // ════════════════════════════════════════
@@ -3543,6 +3562,21 @@ async function init(){
   buildTicker();animateMetaNumbers();
 }
 init();
+</script>
+<script>
+// Pause CSS animations on off-screen elements
+if('IntersectionObserver' in window){
+  var animObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      e.target.style.animationPlayState=e.isIntersecting?'running':'paused';
+    });
+  },{rootMargin:'100px'});
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(function(){
+      document.querySelectorAll('.card,.team-card,.record-card,.potw,.brow').forEach(function(el){animObs.observe(el)});
+    },2000);
+  });
+}
 </script>
 </body>
 </html>
