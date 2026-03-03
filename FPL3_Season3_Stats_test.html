@@ -2137,7 +2137,7 @@ function runLookup(playerName){
 
   // Game Log
   // H2H Matchup History
-  var h2hCard=renderMatchupHistoryHTML(playerName,c,6);
+  var h2hCard=renderMatchupHistoryHTML(playerName,c,6,true);
   if(h2hCard)h+=h2hCard.replace('prof-section','lookup-card" style="grid-column:1/-1').replace('prof-section-title','lc-title');
 
   h+=`<div class="lookup-card" style="grid-column:1/-1"><div class="lc-title">Game Log (Last 20)</div>`;
@@ -3137,7 +3137,7 @@ function renderH2H(player1,player2,c1,c2){
 // ════════════════════════════════════════
 // HEAD-TO-HEAD MATCHUP HISTORY
 // ════════════════════════════════════════
-function getMatchupHistory(playerName,allRows){
+function getMatchupHistory(playerName,allRows,roleFilter){
   // Group rows by Match ID
   var matchIds={};
   allRows.forEach(function(r){var mid=r['Match ID']||'';if(!mid)return;if(!matchIds[mid])matchIds[mid]=[];matchIds[mid].push(r)});
@@ -3155,12 +3155,14 @@ function getMatchupHistory(playerName,allRows){
     var pDeaths=parseFloat(pRow['Deaths'])||0;
     var pAssists=parseFloat(pRow['Assists'])||0;
     var pDmg=parseFloat(pRow['Total Damage to Champions'])||0;
+    var pRole=pRow['Role']||'';
     var gameDate=parseDate(pRow['Date']||'');
     // Find opponents on the other team
     rows.forEach(function(r){
       var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
       var t=(r['Teams']||'').trim();
       if(n===playerName||t===pTeam||!n)return;
+      if(roleFilter&&(r['Role']||'')!==pRole)return;
       if(!opponents[n])opponents[n]={name:n,team:t,wins:0,losses:0,games:[]};
       var opp=opponents[n];
       opp.team=t;
@@ -3180,12 +3182,12 @@ function getMatchupHistory(playerName,allRows){
   return Object.values(opponents).sort(function(a,b){return(b.wins+b.losses)-(a.wins+a.losses)});
 }
 
-function renderMatchupHistoryHTML(playerName,color,maxOpponents){
+function renderMatchupHistoryHTML(playerName,color,maxOpponents,sameRoleOnly){
   var scout=_scoutData[playerName];
-  var matchups=scout&&scout.matchups?scout.matchups:getMatchupHistory(playerName,getFilteredRows());
+  var matchups;if(sameRoleOnly){matchups=getMatchupHistory(playerName,getFilteredRows(),true)}else{matchups=scout&&scout.matchups?scout.matchups:getMatchupHistory(playerName,getFilteredRows())}
   if(!matchups.length)return'';
   var max=maxOpponents||10;
-  var h='<div class="prof-section"><div class="prof-section-title">\u2694\ufe0f Head-to-Head Matchups</div>';
+  var titleSuffix=sameRoleOnly?' (Lane Opponents)':'';var h='<div class="prof-section"><div class="prof-section-title">\u2694\ufe0f Head-to-Head Matchups'+titleSuffix+'</div>';
   h+='<div class="h2h-history">';
   matchups.slice(0,max).forEach(function(opp,idx){
     var total=opp.wins+opp.losses;
@@ -3708,7 +3710,7 @@ init();
 </script>
 <script>
   // HEAD-TO-HEAD MATCHUP HISTORY
-  var h2hHTML=renderMatchupHistoryHTML(pn,c,8);
+  var h2hHTML=renderMatchupHistoryHTML(pn,c,8,true);
   if(h2hHTML){
     var lastSection=profContent.querySelectorAll('.prof-section');
     if(lastSection.length){
