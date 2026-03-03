@@ -648,6 +648,36 @@ body::after{contain:strict}
 @font-face{font-family:'Orbitron';font-display:swap}
 @font-face{font-family:'Share Tech Mono';font-display:swap}
 @font-face{font-family:'Rajdhani';font-display:swap}
+
+/* H2H MATCHUP HISTORY */
+.h2h-history{display:flex;flex-direction:column;gap:2px}
+.h2h-matchup-row{background:var(--bg2);border:1px solid var(--border);overflow:hidden;transition:border-color .2s}
+.h2h-matchup-row:hover{border-color:var(--dim)}
+.h2h-matchup-header{display:grid;grid-template-columns:1fr auto auto auto 20px;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .2s}
+.h2h-matchup-header:hover{background:#ffffff06}
+.h2h-opp-info{display:flex;align-items:center;gap:8px;min-width:0}
+.h2h-opp-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h2h-opp-team{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px}
+.h2h-record{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;display:flex;gap:4px;align-items:center}
+.h2h-sep{color:var(--dim);font-size:10px}
+.h2h-wr{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;min-width:40px;text-align:right}
+.h2h-games-count{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;min-width:55px;text-align:right}
+.h2h-expand-icon{font-size:8px;color:var(--dim);transition:transform .2s}
+.h2h-game-details{background:var(--bg);border-top:1px solid var(--border);padding:6px 14px}
+.h2h-game-row{display:grid;grid-template-columns:24px 1fr 1fr auto;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #ffffff06;font-size:11px}
+.h2h-game-row:last-child{border-bottom:none}
+.h2h-game-result{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;text-align:center}
+.h2h-game-champs{font-weight:600;display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden}
+.h2h-game-kda{font-family:'Share Tech Mono',monospace;font-size:10px;display:flex;align-items:center;gap:4px}
+.h2h-vs-mini{color:var(--dim);font-size:9px;font-family:'Share Tech Mono',monospace}
+.h2h-game-date{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
+@media(max-width:600px){
+  .h2h-matchup-header{grid-template-columns:1fr auto auto 16px;gap:8px;padding:8px 10px}
+  .h2h-games-count{display:none}
+  .h2h-game-row{grid-template-columns:20px 1fr auto;gap:6px}
+  .h2h-game-kda{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -2106,6 +2136,10 @@ function runLookup(playerName){
   h+=`</div></div>`;
 
   // Game Log
+  // H2H Matchup History
+  var h2hCard=renderMatchupHistoryHTML(playerName,c,6);
+  if(h2hCard)h+=h2hCard.replace('prof-section','lookup-card" style="grid-column:1/-1').replace('prof-section-title','lc-title');
+
   h+=`<div class="lookup-card" style="grid-column:1/-1"><div class="lc-title">Game Log (Last 20)</div>`;
   h+=`<div style="overflow-x:auto">`;
   gameLog.slice(0,20).forEach(g=>{
@@ -3099,6 +3133,95 @@ function renderH2H(player1,player2,c1,c2){
   return'<div class="h2h-card"><div class="h2h-header">\u2694 HEAD TO HEAD \xb7 '+games.length+' GAME'+(games.length>1?'S':'')+'</div><div class="h2h-vs"><div class="h2h-player"><div class="name" style="color:'+c1+'">'+player1+'</div><div class="score" style="color:'+(w1>=w2?c1:'var(--dim)')+'">'+w1+'</div></div><div class="h2h-divider">VS</div><div class="h2h-player"><div class="name" style="color:'+c2+'">'+player2+'</div><div class="score" style="color:'+(w2>=w1?c2:'var(--dim)')+'">'+w2+'</div></div></div><div class="h2h-stats">'+sr('WINS',w1,w2)+sr('KDA',kda1,kda2)+sr('KILLS',k1,k2)+sr('DEATHS',d1,d2,true)+sr('ASSISTS',a1,a2)+sr('DAMAGE',dm1,dm2)+'</div></div>';
 }
 
+
+// ════════════════════════════════════════
+// HEAD-TO-HEAD MATCHUP HISTORY
+// ════════════════════════════════════════
+function getMatchupHistory(playerName,allRows){
+  // Group rows by Match ID
+  var matchIds={};
+  allRows.forEach(function(r){var mid=r['Match ID']||'';if(!mid)return;if(!matchIds[mid])matchIds[mid]=[];matchIds[mid].push(r)});
+  // Find all games where playerName played, and who was on the other team
+  var opponents={};
+  for(var mid in matchIds){
+    var rows=matchIds[mid];
+    var pRow=null;
+    rows.forEach(function(r){var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n===playerName)pRow=r});
+    if(!pRow)continue;
+    var pTeam=(pRow['Teams']||'').trim();
+    var pWin=pRow['Win']==='Win';
+    var pChamp=pRow['Champion']||'';
+    var pKills=parseFloat(pRow['Kills'])||0;
+    var pDeaths=parseFloat(pRow['Deaths'])||0;
+    var pAssists=parseFloat(pRow['Assists'])||0;
+    var pDmg=parseFloat(pRow['Total Damage to Champions'])||0;
+    var gameDate=parseDate(pRow['Date']||'');
+    // Find opponents on the other team
+    rows.forEach(function(r){
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      var t=(r['Teams']||'').trim();
+      if(n===playerName||t===pTeam||!n)return;
+      if(!opponents[n])opponents[n]={name:n,team:t,wins:0,losses:0,games:[]};
+      var opp=opponents[n];
+      opp.team=t;
+      if(pWin)opp.wins++;else opp.losses++;
+      opp.games.push({
+        date:gameDate,
+        pChamp:pChamp,oChamp:r['Champion']||'',
+        pWin:pWin,
+        pKDA:pKills+'/'+pDeaths+'/'+pAssists,
+        oKDA:(parseFloat(r['Kills'])||0)+'/'+(parseFloat(r['Deaths'])||0)+'/'+(parseFloat(r['Assists'])||0),
+        pDmg:pDmg,
+        oDmg:parseFloat(r['Total Damage to Champions'])||0
+      });
+    });
+  }
+  // Convert to sorted array — most games first
+  return Object.values(opponents).sort(function(a,b){return(b.wins+b.losses)-(a.wins+a.losses)});
+}
+
+function renderMatchupHistoryHTML(playerName,color,maxOpponents){
+  var scout=_scoutData[playerName];
+  var matchups=scout&&scout.matchups?scout.matchups:getMatchupHistory(playerName,getFilteredRows());
+  if(!matchups.length)return'';
+  var max=maxOpponents||10;
+  var h='<div class="prof-section"><div class="prof-section-title">\u2694\ufe0f Head-to-Head Matchups</div>';
+  h+='<div class="h2h-history">';
+  matchups.slice(0,max).forEach(function(opp,idx){
+    var total=opp.wins+opp.losses;
+    var wr=Math.round(opp.wins/total*100);
+    var wrColor=wr>=60?'var(--green)':wr<=40?'var(--pink)':'var(--text)';
+    var oppColor=TC[opp.team]||'var(--cyan)';
+    var expandId='h2h_expand_'+idx;
+    h+='<div class="h2h-matchup-row">';
+    h+='<div class="h2h-matchup-header" onclick="var el=document.getElementById(\''+expandId+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">';
+    h+='<div class="h2h-opp-info"><span class="h2h-opp-name" style="color:'+oppColor+'">'+opp.name+'</span><span class="h2h-opp-team">'+opp.team+'</span></div>';
+    h+='<div class="h2h-record"><span class="h2h-wins" style="color:var(--green)">'+opp.wins+'W</span><span class="h2h-sep">-</span><span class="h2h-losses" style="color:var(--pink)">'+opp.losses+'L</span></div>';
+    h+='<div class="h2h-wr" style="color:'+wrColor+'">'+wr+'%</div>';
+    h+='<div class="h2h-games-count">'+total+' game'+(total>1?'s':'')+'</div>';
+    h+='<div class="h2h-expand-icon">\u25bc</div>';
+    h+='</div>';
+    // Expandable game details
+    h+='<div id="'+expandId+'" class="h2h-game-details" style="display:none">';
+    opp.games.sort(function(a,b){return b.date.localeCompare(a.date)});
+    opp.games.forEach(function(g){
+      h+='<div class="h2h-game-row">';
+      h+='<div class="h2h-game-result" style="color:'+(g.pWin?'var(--green)':'var(--pink)')+'">'+(g.pWin?'W':'L')+'</div>';
+      h+='<div class="h2h-game-champs"><span style="color:'+color+'">'+g.pChamp+'</span><span class="h2h-vs-mini">vs</span><span style="color:'+oppColor+'">'+g.oChamp+'</span></div>';
+      h+='<div class="h2h-game-kda"><span style="color:'+color+'">'+g.pKDA+'</span><span class="h2h-vs-mini">·</span><span style="color:'+oppColor+'">'+g.oKDA+'</span></div>';
+      h+='<div class="h2h-game-date">'+formatDate(g.date)+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+    h+='</div>';
+  });
+  if(matchups.length>max){
+    h+='<div class="h2h-more" style="text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim);padding:8px">+'+(matchups.length-max)+' more opponents</div>';
+  }
+  h+='</div></div>';
+  return h;
+}
+
 // ════════════════════════════════════════
 // PLAYER OF THE WEEK SPOTLIGHT
 // ════════════════════════════════════════
@@ -3209,7 +3332,8 @@ function precomputeAllScouting(){
         consistency:getConsistency(name,rows),
         form:getFormRating(name,rows),
         tags:getPlaystyleTags(name,rows),
-        badges:getAchievements(name,rows)
+        badges:getAchievements(name,rows),
+        matchups:getMatchupHistory(name,rows)
       };
     }
     idx+=batch;
@@ -3583,6 +3707,16 @@ async function init(){
 init();
 </script>
 <script>
+  // HEAD-TO-HEAD MATCHUP HISTORY
+  var h2hHTML=renderMatchupHistoryHTML(pn,c,8);
+  if(h2hHTML){
+    var lastSection=profContent.querySelectorAll('.prof-section');
+    if(lastSection.length){
+      var insertTarget=lastSection[lastSection.length-1];
+      var h2hDiv=document.createElement('div');h2hDiv.innerHTML=h2hHTML;
+      insertTarget.after(h2hDiv.firstElementChild);
+    }
+  }
 // Pause CSS animations on off-screen elements
 if('IntersectionObserver' in window){
   var animObs=new IntersectionObserver(function(entries){
