@@ -749,9 +749,10 @@ body::after{contain:strict}
       <div class="card-t">🔍 Scouting Report</div>
       <div class="card-s">Deep-dive analytics — player or team breakdowns</div>
       <!-- Mode toggle -->
-      <div style="display:flex;gap:4px;margin-bottom:16px">
+      <div style="display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap">
         <button id="scoutModePlayer" class="tbtn ah" onclick="setScoutMode('player')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">👤 PLAYER</button>
-        <button id="scoutModeTeam" class="tbtn" onclick="setScoutMode('team')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">🛡 TEAM</button>
+        <button id="scoutModeTeam" class="tbtn" onclick="setScoutMode('team')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">🛡 TEAM OVERVIEW</button>
+        <button id="scoutModeRoster" class="tbtn" onclick="setScoutMode('roster')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">👥 TEAM ROSTER</button>
       </div>
       <!-- Player mode -->
       <div id="scoutPlayerMode">
@@ -759,11 +760,17 @@ body::after{contain:strict}
         <div class="scout-suggestions" id="scoutSuggestions"></div>
         <div id="scoutReport" class="scout-profile"></div>
       </div>
-      <!-- Team mode -->
+      <!-- Team overview mode -->
       <div id="scoutTeamMode" style="display:none">
         <div class="scout-search"><input type="text" id="scoutTeamInput" placeholder="Type a team name..." oninput="onScoutTeamSearch(this.value)"><button class="scout-btn primary" onclick="runTeamScoutReport()">GENERATE REPORT</button></div>
         <div class="scout-suggestions" id="scoutTeamSuggestions"></div>
         <div id="scoutTeamReport" class="scout-profile"></div>
+      </div>
+      <!-- Team roster mode -->
+      <div id="scoutRosterMode" style="display:none">
+        <div class="scout-search"><input type="text" id="scoutRosterInput" placeholder="Type a team name..." oninput="onScoutRosterSearch(this.value)"><button class="scout-btn primary" onclick="runRosterScoutReport()">GENERATE REPORTS</button></div>
+        <div class="scout-suggestions" id="scoutRosterSuggestions"></div>
+        <div id="scoutRosterReport"></div>
       </div>
     </div>
   </div>
@@ -2928,8 +2935,226 @@ function setScoutMode(mode){
   _scoutMode=mode;
   document.getElementById('scoutModePlayer').className='tbtn'+(mode==='player'?' ah':'');
   document.getElementById('scoutModeTeam').className='tbtn'+(mode==='team'?' ah':'');
+  document.getElementById('scoutModeRoster').className='tbtn'+(mode==='roster'?' ah':'');
   document.getElementById('scoutPlayerMode').style.display=mode==='player'?'':'none';
   document.getElementById('scoutTeamMode').style.display=mode==='team'?'':'none';
+  document.getElementById('scoutRosterMode').style.display=mode==='roster'?'':'none';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: ROSTER MODE SEARCH
+// ════════════════════════════════════════
+function onScoutRosterSearch(val){
+  var sug=document.getElementById('scoutRosterSuggestions');
+  if(!val.trim()){sug.innerHTML='';return}
+  var q=val.toLowerCase();
+  var teams=[...new Set(PD.map(function(p){return p.team}))].filter(function(t){return t!=='Sub'&&t.toLowerCase().includes(q)}).slice(0,8);
+  if(!teams.length){sug.innerHTML='';return}
+  sug.innerHTML=teams.map(function(t){
+    var c=TC[t]||'#6366f1';
+    return'<span class="scout-suggest" style="border-left:3px solid '+c+'" onclick="document.getElementById(\'scoutRosterInput\').value=\''+t.replace(/'/g,"\\'")+'\';document.getElementById(\'scoutRosterSuggestions\').innerHTML=\'\';runRosterScoutReport()">'+t+'</span>';
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// SCOUTING: TEAM ROSTER REPORT
+// ════════════════════════════════════════
+function runRosterScoutReport(){
+  var input=document.getElementById('scoutRosterInput').value.trim();
+  document.getElementById('scoutRosterSuggestions').innerHTML='';
+  var el=document.getElementById('scoutRosterReport');
+  if(!input){el.innerHTML='<div style="color:var(--dim);font-family:\'Share Tech Mono\',monospace;font-size:11px;padding:20px 0">Enter a team name above.</div>';return}
+
+  var allTeams=[...new Set(PD.map(function(p){return p.team}))];
+  var teamName=allTeams.find(function(t){return t.toLowerCase()===input.toLowerCase()})||allTeams.find(function(t){return t.toLowerCase().includes(input.toLowerCase())});
+  if(!teamName){el.innerHTML='<div style="color:var(--dim);font-family:\'Share Tech Mono\',monospace;font-size:11px;padding:20px 0">Team not found.</div>';return}
+
+  var c=TC[teamName]||'#6366f1';
+  var roster=PD.filter(function(p){return p.team===teamName});
+
+  // Sort roster by role order then games played
+  var roleOrder=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+  roster.sort(function(a,b){
+    var ra=roleOrder.indexOf(a.mainRole),rb=roleOrder.indexOf(b.mainRole);
+    if(ra!==rb)return ra-rb;
+    return b.games-a.games;
+  });
+
+  var rows=getFilteredRows();
+
+  // ── HEADER BANNER ──
+  var h='<div style="background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative;overflow:hidden">';
+  h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+c+'"></div>';
+  h+='<div style="position:absolute;top:0;left:0;right:0;height:10px;background:'+c+';filter:blur(8px);opacity:.3"></div>';
+  h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:22px;font-weight:900;color:'+c+';margin-bottom:4px">'+teamName+'</div>';
+  h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--dim);letter-spacing:1px">👥 FULL ROSTER SCOUTING — '+roster.length+' PLAYERS</div>';
+  h+='<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">';
+  roster.forEach(function(p){
+    var pc=TC[p.team]||c;
+    var role=ROLE_MAP[p.mainRole]||p.mainRole;
+    h+='<span style="background:var(--bg2);border:1px solid '+pc+'40;padding:4px 12px;font-family:\'Share Tech Mono\',monospace;font-size:10px;cursor:pointer;color:'+pc+'" onclick="document.getElementById(\'roster-anchor-'+p.player.replace(/[^a-zA-Z0-9]/g,\'_')+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">'+role+' '+p.player+'</span>';
+  });
+  h+='</div>';
+
+  // Copy all button
+  h+='<button class="scout-btn primary" style="margin-top:14px" onclick="copyAllRosterReports(\''+teamName.replace(/'/g,"\\'")+'\')">📋 COPY ALL REPORTS</button>';
+  h+='</div>';
+
+  // ── PLAYER CARDS ──
+  roster.forEach(function(p,idx){
+    var pc=TC[p.team]||'#6366f1';
+    var role=ROLE_MAP[p.mainRole]||p.mainRole;
+    var consist=getConsistency(p.player,rows);
+    var form=getFormRating(p.player,rows);
+    var tags=getPlaystyleTags(p.player,rows);
+    var tr=getTeamRelativeStats(p.player,rows);
+
+    // Top champs
+    var champMap={};(p.champData||[]).forEach(function(x){if(!champMap[x.champ])champMap[x.champ]={g:0,w:0};champMap[x.champ].g++;if(x.win)champMap[x.champ].w++});
+    var top3Champs=Object.entries(champMap).sort(function(a,b){return b[1].g-a[1].g}).slice(0,3);
+
+    // Percentile helper
+    var eligible=PD.filter(function(x){return x.games>=3});
+    function pctOf(key,inv){
+      var sorted=eligible.slice().sort(function(a,b){return a[key]-b[key]});
+      var idx=sorted.findIndex(function(x){return x.player===p.player});
+      if(idx<0)return 0.5;
+      var pc=idx/(sorted.length-1||1);
+      return inv?1-pc:pc;
+    }
+
+    var anchorId='roster-anchor-'+p.player.replace(/[^a-zA-Z0-9]/g,'_');
+
+    h+='<div id="'+anchorId+'" style="background:var(--bg3);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden">';
+    // Accent bar
+    h+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+pc+'"></div>';
+    h+='<div style="position:absolute;top:0;left:0;right:0;height:10px;background:'+pc+';filter:blur(8px);opacity:.25"></div>';
+
+    // Player header row
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">';
+    h+='<div>';
+    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:18px;font-weight:700;color:'+pc+';cursor:pointer" onclick="openProfile(\''+p.player.replace(/'/g,"\\'")+'\')">'+p.player+'</div>';
+    h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim);letter-spacing:1px;margin-top:2px">'+role+' · '+p.games+'g · '+p.winRate+'% WR</div>';
+    // Playstyle tags
+    if(tags.length){
+      h+='<div class="playstyle-row" style="margin-top:6px">';
+      tags.forEach(function(t){h+='<span class="playstyle-tag" style="color:'+t.color+';background:'+t.bg+';border-color:'+t.border+'">'+t.icon+' '+t.text+'</span>'});
+      h+='</div>';
+    }
+    h+='</div>';
+    // Form badge + copy button
+    h+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">';
+    if(form){
+      h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:16px;color:'+form.color+'" title="'+form.label+'">'+form.icon+' <span style="font-size:10px;letter-spacing:1px">'+form.label+'</span></div>';
+      h+='<div class="form-bar" style="gap:3px">';
+      form.dots.forEach(function(w){h+='<div class="form-dot" style="width:10px;height:10px;background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+      h+='</div>';
+    }
+    h+='<button class="scout-btn" style="font-size:9px;padding:4px 10px" onclick="copyScoutReportFull(\''+p.player.replace(/'/g,"\\'")+'\')">📋 COPY</button>';
+    h+='</div>';
+    h+='</div>'; // end header row
+
+    // Stats grid
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">';
+
+    // Core stats block
+    h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px">';
+    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px">CORE STATS</div>';
+    var coreStats=[
+      {label:'KDA',val:p.kda,color:p.kda>=4?'var(--green)':p.kda<=2?'var(--pink)':pc},
+      {label:'Kills/G',val:p.killsPerGame},
+      {label:'Deaths/G',val:p.deathsPerGame,color:p.deathsPerGame<=2.5?'var(--green)':p.deathsPerGame>=4?'var(--pink)':pc},
+      {label:'Assists/G',val:p.assistsPerGame},
+      {label:'CS/Min',val:p.csPerMin},
+      {label:'DMG/Min',val:Math.round(p.damagePerMin)},
+      {label:'Gold/Min',val:p.goldPerMin},
+      {label:'Vision/Min',val:p.visionPerMin},
+    ];
+    coreStats.forEach(function(s){
+      h+='<div class="scout-row"><span class="scout-row-label">'+s.label+'</span><span class="scout-row-val" style="color:'+(s.color||pc)+'">'+s.val+'</span></div>';
+    });
+    // Consistency
+    if(consist){
+      h+='<div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">';
+      h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim)">CONSISTENCY</span>';
+      h+='<span style="font-family:\'Orbitron\',sans-serif;font-size:13px;font-weight:700;color:'+consist.color+'">'+consist.score+' <span style="font-size:9px">'+consist.label+'</span></span>';
+      h+='</div>';
+    }
+    h+='</div>';
+
+    // Team impact block
+    if(tr&&tr.gamesAnalyzed){
+      h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px">';
+      h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px">TEAM IMPACT ('+tr.gamesAnalyzed+'g)</div>';
+      if(tr.dmgShare!==null){var dc=tr.dmgShare>=25?'var(--green)':tr.dmgShare<=15?'var(--pink)':pc;h+='<div class="scout-row"><span class="scout-row-label">DMG Share</span><span class="scout-row-val" style="color:'+dc+'">'+tr.dmgShare.toFixed(1)+'%</span></div>'}
+      if(tr.goldShare!==null){h+='<div class="scout-row"><span class="scout-row-label">Gold Share</span><span class="scout-row-val" style="color:'+pc+'">'+tr.goldShare.toFixed(1)+'%</span></div>'}
+      if(tr.killParticipation!==null){var kc=tr.killParticipation>=70?'var(--green)':tr.killParticipation<=50?'var(--pink)':pc;h+='<div class="scout-row"><span class="scout-row-label">Kill Part.</span><span class="scout-row-val" style="color:'+kc+'">'+tr.killParticipation.toFixed(1)+'%</span></div>'}
+      if(tr.deathShare!==null){var dsc=tr.deathShare<=15?'var(--green)':tr.deathShare>=30?'var(--pink)':pc;h+='<div class="scout-row"><span class="scout-row-label">Death Share</span><span class="scout-row-val" style="color:'+dsc+'">'+tr.deathShare.toFixed(1)+'%</span></div>'}
+      if(tr.csDiffAt10!==null){var cc2=tr.csDiffAt10>=5?'var(--green)':tr.csDiffAt10<=-5?'var(--pink)':pc;h+='<div class="scout-row"><span class="scout-row-label">CS Diff @10</span><span class="scout-row-val" style="color:'+cc2+'">'+(tr.csDiffAt10>=0?'+':'')+tr.csDiffAt10.toFixed(1)+'</span></div>'}
+      // Strengths
+      var strengths=[],weaknesses=[];
+      [{key:'kda',name:'KDA'},{key:'winRate',name:'Win Rate'},{key:'killsPerGame',name:'Kills'},{key:'deathsPerGame',name:'Deaths',inv:true},{key:'csPerMin',name:'CS/Min'},{key:'damagePerMin',name:'Damage'},{key:'visionPerMin',name:'Vision'}].forEach(function(ch){
+        var pc2=pctOf(ch.key,ch.inv);
+        if(pc2>=0.8)strengths.push(ch.name);
+        if(pc2<=0.2)weaknesses.push(ch.name);
+      });
+      if(strengths.length){h+='<div style="margin-top:8px"><span style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--green)">✅ '+strengths.join(' · ')+'</span></div>'}
+      if(weaknesses.length){h+='<div style="margin-top:4px"><span style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--pink)">⚠ '+weaknesses.join(' · ')+'</span></div>'}
+      h+='</div>';
+    }
+
+    // Champion pool block
+    if(top3Champs.length){
+      h+='<div style="background:var(--bg2);border:1px solid var(--border);padding:12px">';
+      h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px">CHAMPION POOL</div>';
+      top3Champs.forEach(function(e){
+        var wrC=e[1].w/e[1].g>=0.55?'var(--green)':e[1].w/e[1].g<=0.45?'var(--pink)':'var(--text)';
+        var barW=(e[1].g/top3Champs[0][1].g*100).toFixed(0);
+        h+='<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #ffffff04">';
+        h+='<img src="'+DD_BASE+(CHAMP_KEY_OVERRIDES[e[0]]||e[0].replace(/[^a-zA-Z]/g,''))+'.png" style="width:22px;height:22px;border-radius:3px" loading="lazy" onerror="this.style.display=\'none\'">';
+        h+='<div style="flex:1;font-size:11px;font-weight:700">'+e[0]+'</div>';
+        h+='<div class="bc" style="flex:1;height:14px"><div class="bf" style="width:'+barW+'%;background:'+pc+';color:'+pc+'"></div></div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;min-width:60px;text-align:right">'+e[1].g+'g · <span style="color:'+wrC+'">'+(e[1].w/e[1].g*100).toFixed(0)+'%</span></div>';
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+
+    h+='</div>'; // end stats grid
+    h+='</div>'; // end player card
+
+    // Divider between players (not after last)
+    if(idx<roster.length-1){
+      h+='<div style="height:1px;background:linear-gradient(90deg,transparent,'+c+',transparent);margin:4px 0 20px;opacity:.3"></div>';
+    }
+  });
+
+  el.innerHTML=h;
+
+  // Trigger bar animations
+  setTimeout(function(){
+    el.querySelectorAll('.bf').forEach(function(bar){
+      var w=bar.style.width;bar.style.width='0';setTimeout(function(){bar.style.width=w},50);
+    });
+  },80);
+}
+
+// ════════════════════════════════════════
+// SCOUTING: COPY ALL ROSTER REPORTS
+// ════════════════════════════════════════
+function copyAllRosterReports(teamName){
+  var roster=PD.filter(function(p){return p.team===teamName});
+  var roleOrder=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+  roster.sort(function(a,b){
+    var ra=roleOrder.indexOf(a.mainRole),rb=roleOrder.indexOf(b.mainRole);
+    return ra!==rb?ra-rb:b.games-a.games;
+  });
+  var all=['╔══════════════════════════════╗','║  '+teamName.toUpperCase().padEnd(28,' ')+'║','╚══════════════════════════════╝',''];
+  roster.forEach(function(p){
+    all.push(generateScoutReport(p.player));
+    all.push('');
+  });
+  navigator.clipboard.writeText(all.join('\n')).then(function(){showScoutToast('📋 ALL '+roster.length+' REPORTS COPIED FOR '+teamName.toUpperCase())});
 }
 
 // ════════════════════════════════════════
