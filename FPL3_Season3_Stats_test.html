@@ -2992,7 +2992,8 @@ function runRosterScoutReport(){
   roster.forEach(function(p){
     var pc=TC[p.team]||c;
     var role=ROLE_MAP[p.mainRole]||p.mainRole;
-    h+='<span style="background:var(--bg2);border:1px solid '+pc+'40;padding:4px 12px;font-family:\'Share Tech Mono\',monospace;font-size:10px;cursor:pointer;color:'+pc+'" onclick="document.getElementById(\'roster-anchor-'+p.player.replace(/[^a-zA-Z0-9]/g,\'_')+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">'+role+' '+p.player+'</span>';
+    var aid='roster-anchor-'+p.player.replace(/[^a-zA-Z0-9]/g,'_');
+    h+='<span style="background:var(--bg2);border:1px solid '+pc+'40;padding:4px 12px;font-family:\'Share Tech Mono\',monospace;font-size:10px;cursor:pointer;color:'+pc+'" onclick="document.getElementById(\''+aid+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">'+role+' '+p.player+'</span>';
   });
   h+='</div>';
 
