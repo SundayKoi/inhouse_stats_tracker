@@ -3218,9 +3218,10 @@ function runTeamScoutReport(){
   // Objective focused
   if(parseFloat(avgDrg)>=2.5)patterns.push({icon:'🐉',text:'Dragon-focused team ('+avgDrg+'/g) — contest dragon prio or expect to cede elemental soul',color:'var(--gold)'});
   // Early game team
-  if(matches.filter(function(m){return m.win&&m.duration<25}).length/Math.max(matches.filter(function(m){return m.duration<25}).length,1)>=0.6&&matches.filter(function(m){return m.duration<25}).length>=2)patterns.push({icon:'⚡',text:'Strong early game ('++(matches.filter(function(m){return m.win&&m.duration<25}).length/Math.max(matches.filter(function(m){return m.duration<25}).length,1)*100).toFixed(0)+'% WR sub-25 min) — slow the game down, outscale them',color:'var(--green)'});
+  var earlyTotal=matches.filter(function(m){return m.duration<25}).length;var earlyWins=matches.filter(function(m){return m.win&&m.duration<25}).length;
+  if(earlyTotal>=2&&earlyWins/earlyTotal>=0.6)patterns.push({icon:'⚡',text:'Strong early game ('+(earlyWins/earlyTotal*100).toFixed(0)+'% WR sub-25 min) — slow the game down, outscale them',color:'var(--green)'});
   // Late game
-  if(longTotal>=2&&(longWins/longTotal)>=0.6)patterns.push({icon:'⏰',text:'Late game dominant ('++(longWins/longTotal*100).toFixed(0)+'% WR 35+ min) — end the game early before they scale',color:'var(--pink)'});
+  if(longTotal>=2&&(longWins/longTotal)>=0.6)patterns.push({icon:'⏰',text:'Late game dominant ('+(longWins/longTotal*100).toFixed(0)+'% WR 35+ min) — end the game early before they scale',color:'var(--pink)'});
   // FB exploitable
   if(parseInt(fbRate)<40)patterns.push({icon:'🩸',text:'Low first blood rate ('+fbRate+'%) — invade early, force level-1 fights, punish weak early skirmishers',color:'var(--green)'});
   // High deaths
@@ -3228,7 +3229,7 @@ function runTeamScoutReport(){
   // Vision weak
   if(avgVision<200)patterns.push({icon:'👁️',text:'Below-average vision ('+avgVision.toFixed(0)+' score/g) — use flanks, ambushes, and uncontested deep wards',color:'var(--green)'});
   // Weak link
-  if(bottomCarry&&bottomCarry.winRate<=40&&bottomCarry.games>=3)patterns.push({icon:'🎯',text:'Target '+bottomCarry.player+' ('+ROLE_MAP[bottomCarry.mainRole]||bottomCarry.mainRole+') — lowest win rate at '+bottomCarry.winRate+'%, deny early and snowball that lane',color:'var(--pink)'});
+  if(bottomCarry&&bottomCarry.winRate<=40&&bottomCarry.games>=3)patterns.push({icon:'🎯',text:'Target '+bottomCarry.player+' ('+(ROLE_MAP[bottomCarry.mainRole]||bottomCarry.mainRole)+') — lowest win rate at '+bottomCarry.winRate+'%, deny early and snowball that lane',color:'var(--pink)'});
 
   if(patterns.length){
     patterns.forEach(function(pt){
@@ -4109,16 +4110,8 @@ async function init(){
 init();
 </script>
 <script>
-  // HEAD-TO-HEAD MATCHUP HISTORY
-  var h2hHTML=renderMatchupHistoryHTML(pn,c,8,true);
-  if(h2hHTML){
-    var lastSection=profContent.querySelectorAll('.prof-section');
-    if(lastSection.length){
-      var insertTarget=lastSection[lastSection.length-1];
-      var h2hDiv=document.createElement('div');h2hDiv.innerHTML=h2hHTML;
-      insertTarget.after(h2hDiv.firstElementChild);
-    }
-  }
+  // HEAD-TO-HEAD MATCHUP HISTORY (runs inside openProfile context via patched function)
+  // This block is intentionally a no-op at page load — logic is handled inside openProfile patch above.
 // Pause CSS animations on off-screen elements
 if('IntersectionObserver' in window){
   var animObs=new IntersectionObserver(function(entries){
