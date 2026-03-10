@@ -3293,7 +3293,8 @@ function copyTeamScoutReport(teamName){
   lines.push('');
   // Form
   var recent=matches.slice(0,5);
-  lines.push('📈 RECENT FORM (last 5): '+recent.map(function(m){return m.win?'W':'L'}).join(' ')+' · '++(recent.filter(function(m){return m.win}).length/(recent.length||1)*100).toFixed(0)+'% WR');
+  var recentWRpct=(recent.filter(function(m){return m.win}).length/(recent.length||1)*100).toFixed(0);
+  lines.push('📈 RECENT FORM (last 5): '+recent.map(function(m){return m.win?'W':'L'}).join(' ')+' · '+recentWRpct+'% WR');
   lines.push('');
   lines.push('═══════════════════════');
   navigator.clipboard.writeText(lines.join('\n')).then(function(){showScoutToast('📋 TEAM SCOUTING REPORT COPIED')});
