@@ -744,7 +744,29 @@ body::after{contain:strict}
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
   <div class="tab-page" id="pg-mvp"><div id="mvpContent"></div></div>
   <div class="tab-page" id="pg-power"><div class="card"><div class="card-t">Power Rankings</div><div class="card-s">Composite player rating based on weighted stats</div><div style="margin-bottom:12px"><div class="ctrl" style="max-width:200px"><label>Min Games</label><select id="prMinG" onchange="renderPower()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option></select></div></div><div id="powerContent"></div></div></div>
-  <div class="tab-page" id="pg-scouting"><div class="card"><div class="card-t">🔍 Player Scouting Report</div><div class="card-s">Deep-dive analytics with laning, team impact, and advanced stats</div><div class="scout-search"><input type="text" id="scoutInput" placeholder="Type a player name..." oninput="onScoutSearch(this.value)"><button class="scout-btn primary" onclick="runScoutReport()">GENERATE REPORT</button></div><div class="scout-suggestions" id="scoutSuggestions"></div><div id="scoutReport" class="scout-profile"></div></div></div>
+  <div class="tab-page" id="pg-scouting">
+    <div class="card">
+      <div class="card-t">🔍 Scouting Report</div>
+      <div class="card-s">Deep-dive analytics — player or team breakdowns</div>
+      <!-- Mode toggle -->
+      <div style="display:flex;gap:4px;margin-bottom:16px">
+        <button id="scoutModePlayer" class="tbtn ah" onclick="setScoutMode('player')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">👤 PLAYER</button>
+        <button id="scoutModeTeam" class="tbtn" onclick="setScoutMode('team')" style="flex:0 0 auto;padding:8px 20px;font-size:10px">🛡 TEAM</button>
+      </div>
+      <!-- Player mode -->
+      <div id="scoutPlayerMode">
+        <div class="scout-search"><input type="text" id="scoutInput" placeholder="Type a player name..." oninput="onScoutSearch(this.value)"><button class="scout-btn primary" onclick="runScoutReport()">GENERATE REPORT</button></div>
+        <div class="scout-suggestions" id="scoutSuggestions"></div>
+        <div id="scoutReport" class="scout-profile"></div>
+      </div>
+      <!-- Team mode -->
+      <div id="scoutTeamMode" style="display:none">
+        <div class="scout-search"><input type="text" id="scoutTeamInput" placeholder="Type a team name..." oninput="onScoutTeamSearch(this.value)"><button class="scout-btn primary" onclick="runTeamScoutReport()">GENERATE REPORT</button></div>
+        <div class="scout-suggestions" id="scoutTeamSuggestions"></div>
+        <div id="scoutTeamReport" class="scout-profile"></div>
+      </div>
+    </div>
+  </div>
   <div class="tab-page" id="pg-timeline"><div class="card"><div class="card-t">Game Night Timeline</div><div class="card-s">The story of the season, night by night</div><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><div class="ctrl"><label>From</label><input type="date" id="tlFrom" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><div class="ctrl"><label>To</label><input type="date" id="tlTo" onchange="renderTimeline()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);padding:6px 10px;font-family:'Share Tech Mono',monospace;font-size:11px"></div><button onclick="document.getElementById('tlFrom').value='';document.getElementById('tlTo').value='';renderTimeline()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 12px;cursor:pointer;letter-spacing:1px;margin-top:18px">CLEAR</button></div><div id="timelineContent"></div></div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
@@ -2896,6 +2918,384 @@ function shareScoutDiscord(playerName){
   // Copy as JSON for pasting into webhook tester or bot
   var jsonStr=JSON.stringify(embed,null,2);
   navigator.clipboard.writeText(jsonStr).then(function(){showScoutToast('🎮 DISCORD EMBED JSON COPIED — Paste into webhook or bot')});
+}
+
+// ════════════════════════════════════════
+// SCOUTING: MODE SWITCH (PLAYER / TEAM)
+// ════════════════════════════════════════
+var _scoutMode='player';
+function setScoutMode(mode){
+  _scoutMode=mode;
+  document.getElementById('scoutModePlayer').className='tbtn'+(mode==='player'?' ah':'');
+  document.getElementById('scoutModeTeam').className='tbtn'+(mode==='team'?' ah':'');
+  document.getElementById('scoutPlayerMode').style.display=mode==='player'?'':'none';
+  document.getElementById('scoutTeamMode').style.display=mode==='team'?'':'none';
+}
+
+// ════════════════════════════════════════
+// SCOUTING: TEAM SEARCH
+// ════════════════════════════════════════
+function onScoutTeamSearch(val){
+  var sug=document.getElementById('scoutTeamSuggestions');
+  if(!val.trim()){sug.innerHTML='';return}
+  var q=val.toLowerCase();
+  var teams=Object.keys(TC).filter(function(t){return t!=='Sub'&&t.toLowerCase().includes(q)}).slice(0,8);
+  // Also include teams from PD that may not be in TC
+  var pdTeams=[...new Set(PD.map(function(p){return p.team}))].filter(function(t){return t!=='Sub'&&t.toLowerCase().includes(q)&&!teams.includes(t)});
+  teams=teams.concat(pdTeams).slice(0,8);
+  if(!teams.length){sug.innerHTML='';return}
+  sug.innerHTML=teams.map(function(t){
+    var c=TC[t]||'#6366f1';
+    return'<span class="scout-suggest" style="border-left:3px solid '+c+'" onclick="document.getElementById(\'scoutTeamInput\').value=\''+t.replace(/'/g,"\\'")+'\';;document.getElementById(\'scoutTeamSuggestions\').innerHTML=\'\';runTeamScoutReport()">'+t+'</span>';
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// SCOUTING: TEAM REPORT RENDER
+// ════════════════════════════════════════
+function runTeamScoutReport(){
+  var teamName=document.getElementById('scoutTeamInput').value.trim();
+  document.getElementById('scoutTeamSuggestions').innerHTML='';
+  var el=document.getElementById('scoutTeamReport');
+  if(!teamName){el.innerHTML='<div style="color:var(--dim);font-family:\'Share Tech Mono\',monospace;font-size:11px;padding:20px 0">Enter a team name above.</div>';el.classList.add('active');return}
+
+  // Find team — case-insensitive
+  var allTeams=[...new Set(PD.map(function(p){return p.team}))];
+  var matched=allTeams.find(function(t){return t.toLowerCase()===teamName.toLowerCase()})||allTeams.find(function(t){return t.toLowerCase().includes(teamName.toLowerCase())});
+  if(!matched){el.innerHTML='<div style="color:var(--dim);font-family:\'Share Tech Mono\',monospace;font-size:11px;padding:20px 0">Team not found. Check the name and try again.</div>';el.classList.add('active');return}
+
+  var teamName=matched;
+  var c=TC[teamName]||'#6366f1';
+  var rows=getFilteredRows();
+  var roster=PD.filter(function(p){return p.team===teamName});
+
+  // Aggregate team-level match data
+  var matchData={};
+  rows.forEach(function(r){
+    var t=(r['Teams']||'').trim();if(t!==teamName)return;
+    var mid=r['Match ID']||'';
+    if(!matchData[mid])matchData[mid]={win:r['Win']==='Win',date:parseDate(r['Date']||''),kills:0,deaths:0,assists:0,damage:0,gold:0,vision:0,duration:parseFloat(r['Game Duration (min)'])||0,players:new Set(),dragons:parseFloat(r['Team Dragons'])||0,barons:parseFloat(r['Team Barons'])||0,towers:parseFloat(r['Team Towers'])||0,heralds:parseFloat(r['Team Heralds'])||0,grubs:parseFloat(r['Team Grubs'])||0,fb:(r['Team First Blood']||'').toLowerCase()==='yes'};
+    var m=matchData[mid];
+    m.kills+=parseFloat(r['Kills'])||0;
+    m.deaths+=parseFloat(r['Deaths'])||0;
+    m.assists+=parseFloat(r['Assists'])||0;
+    m.damage+=parseFloat(r['Total Damage to Champions'])||0;
+    m.gold+=parseFloat(r['Gold Earned'])||0;
+    m.vision+=parseFloat(r['Vision Score'])||0;
+    var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(n)m.players.add(n);
+  });
+
+  var matches=Object.values(matchData).filter(function(m){return m.duration>0});
+  matches.sort(function(a,b){return b.date.localeCompare(a.date)});
+  var wins=matches.filter(function(m){return m.win}).length;
+  var losses=matches.length-wins;
+  var wr=matches.length?+(wins/matches.length*100).toFixed(1):0;
+  function teamAvg(key){return matches.length?+(matches.reduce(function(s,m){return s+m[key]},0)/matches.length).toFixed(2):0}
+  function teamAvgPerMin(key,durKey){
+    var tot=matches.reduce(function(s,m){return s+m[key]},0);
+    var dur=matches.reduce(function(s,m){return s+m['duration']},0)||1;
+    return+(tot/dur).toFixed(2);
+  }
+  var avgKills=teamAvg('kills'),avgDeaths=teamAvg('deaths'),avgAssists=teamAvg('assists');
+  var teamKDA=+((avgKills+avgAssists)/Math.max(avgDeaths,1)).toFixed(2);
+  var avgDmgMin=teamAvgPerMin('damage');
+  var avgGoldMin=teamAvgPerMin('gold');
+  var avgVision=teamAvg('vision');
+  var avgDur=+(matches.reduce(function(s,m){return s+m.duration},0)/(matches.length||1)).toFixed(1);
+  var fbRate=+(matches.filter(function(m){return m.fb}).length/(matches.length||1)*100).toFixed(0);
+  var avgDrg=+(matches.reduce(function(s,m){return s+m.dragons},0)/(matches.length||1)).toFixed(1);
+  var avgBrn=+(matches.reduce(function(s,m){return s+m.barons},0)/(matches.length||1)).toFixed(1);
+  var avgTwr=+(matches.reduce(function(s,m){return s+m.towers},0)/(matches.length||1)).toFixed(1);
+
+  // Recent form (last 5 matches)
+  var recentFive=matches.slice(0,5);
+  var formDots=recentFive.map(function(m){return m.win});
+  var recentWR=recentFive.length?+(recentFive.filter(function(m){return m.win}).length/recentFive.length*100).toFixed(0):0;
+
+  // Win-loss streak
+  var streak=0,streakType='';
+  for(var i=0;i<matches.length;i++){
+    if(i===0){streak=1;streakType=matches[0].win?'W':'L'}
+    else if((matches[i].win&&streakType==='W')||(!matches[i].win&&streakType==='L')){streak++}
+    else break;
+  }
+
+  // Strongest / weakest roster members by KDA and WR
+  var rosRanked=[].concat(roster).filter(function(p){return p.games>=3}).sort(function(a,b){return b.kda-a.kda});
+  var topCarry=rosRanked[0]||null;
+  var bottomCarry=rosRanked[rosRanked.length-1]||null;
+  var topWR=[].concat(roster).filter(function(p){return p.games>=3}).sort(function(a,b){return b.winRate-a.winRate})[0]||null;
+
+  // Role breakdown
+  var roleOrder=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+  var roleStats=[];
+  roleOrder.forEach(function(role){
+    var players=roster.filter(function(p){return p.mainRole===role&&p.games>=1});
+    if(!players.length)return;
+    players.sort(function(a,b){return b.games-a.games});
+    var starter=players[0];
+    roleStats.push({role:ROLE_MAP[role]||role,player:starter.player,kda:starter.kda,wr:starter.winRate,games:starter.games,dmg:Math.round(starter.damagePerMin),cs:starter.csPerMin});
+  });
+
+  // Top 3 champions played by the team
+  var teamChamps={};
+  rows.forEach(function(r){
+    var t=(r['Teams']||'').trim();if(t!==teamName)return;
+    var ch=r['Champion']||'';if(!ch)return;
+    if(!teamChamps[ch])teamChamps[ch]={games:0,wins:0};
+    teamChamps[ch].games++;
+    if(r['Win']==='Win')teamChamps[ch].wins++;
+  });
+  var topChamps=Object.entries(teamChamps).sort(function(a,b){return b[1].games-a[1].games}).slice(0,6).map(function(e){
+    return{name:e[0],games:e[1].games,wr:+(e[1].wins/e[1].games*100).toFixed(0)};
+  });
+
+  // Compare this team vs league average team stats
+  var allTeamEntries={};
+  rows.forEach(function(r){
+    var t=(r['Teams']||'').trim();if(!t||t==='Sub')return;
+    var mid=r['Match ID']||'';if(!mid)return;
+    var k=t+'|'+mid;
+    if(!allTeamEntries[k])allTeamEntries[k]={team:t,kills:0,deaths:0,duration:0,damage:0,gold:0};
+    var e=allTeamEntries[k];
+    e.kills+=parseFloat(r['Kills'])||0;e.deaths+=parseFloat(r['Deaths'])||0;
+    e.duration=parseFloat(r['Game Duration (min)'])||e.duration;
+    e.damage+=parseFloat(r['Total Damage to Champions'])||0;
+    e.gold+=parseFloat(r['Gold Earned'])||0;
+  });
+  var allMatchVals=Object.values(allTeamEntries).filter(function(e){return e.duration>0});
+  function leagueAvg(fn){
+    var vals=allMatchVals.map(fn);
+    return vals.length?vals.reduce(function(s,v){return s+v},0)/vals.length:0;
+  }
+  var lgAvgKPG=leagueAvg(function(e){return e.kills});
+  var lgAvgKDA=leagueAvg(function(e){return(e.kills+(e.kills*1.2))/Math.max(e.deaths,1)});
+  var lgAvgDmgMin=leagueAvg(function(e){return e.damage/e.duration});
+  var lgAvgGoldMin=leagueAvg(function(e){return e.gold/e.duration});
+
+  // ── BUILD HTML ──
+  var h='';
+  h+='<div class="scout-header">';
+  h+='<div><div class="scout-name" style="color:'+c+'">'+teamName+'</div>';
+  h+='<div class="scout-sub">'+wins+'W — '+losses+'L · '+wr+'% WR · '+matches.length+' matches · '+avgDur+'m avg</div></div>';
+  h+='<div class="scout-actions">';
+  h+='<button class="scout-btn primary" onclick="copyTeamScoutReport(\''+teamName.replace(/'/g,"\\'")+'\')" title="Copy plain-text report">📋 COPY REPORT</button>';
+  h+='</div></div>';
+
+  // Form & streak bar
+  h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">';
+  h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim);letter-spacing:1px">RECENT FORM</span>';
+  h+='<div class="form-bar" style="gap:4px">';
+  formDots.forEach(function(w){h+='<div class="form-dot" style="width:12px;height:12px;background:'+(w?'var(--green)':'var(--pink)')+'"></div>'});
+  h+='</div>';
+  if(streak>1){var sc=streakType==='W'?'var(--green)':'var(--pink)';h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:'+sc+'">'+streakType+streak+' STREAK</span>'}
+  h+='<span style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">Last 5: '+recentWR+'% WR</span>';
+  h+='</div>';
+
+  // Core stats grid
+  h+='<div class="scout-grid">';
+
+  // Card 1: Team Stats Overview
+  h+='<div class="scout-card"><div class="scout-card-title" style="color:'+c+'">📊 Core Stats ('+matches.length+' matches)</div>';
+  var statRows=[
+    {label:'KDA',val:teamKDA,color:teamKDA>=3?'var(--green)':teamKDA<=2?'var(--pink)':c},
+    {label:'Kills/Match',val:avgKills.toFixed(1)},
+    {label:'Deaths/Match',val:avgDeaths.toFixed(1)},
+    {label:'Assists/Match',val:avgAssists.toFixed(1)},
+    {label:'Dmg/Min',val:Math.round(avgDmgMin),suffix:''},
+    {label:'Gold/Min',val:Math.round(avgGoldMin)},
+    {label:'Vision/Match',val:avgVision.toFixed(1)},
+    {label:'Avg Duration',val:avgDur+'m'},
+  ];
+  statRows.forEach(function(s){
+    var col=s.color||c;
+    h+='<div class="scout-row"><span class="scout-row-label">'+s.label+'</span><span class="scout-row-val" style="color:'+col+'">'+s.val+'</span></div>';
+  });
+  h+='</div>';
+
+  // Card 2: Objective Control
+  h+='<div class="scout-card"><div class="scout-card-title" style="color:'+c+'">🎯 Objective Control</div>';
+  var objRows=[
+    {label:'First Blood Rate',val:fbRate+'%',color:parseInt(fbRate)>=50?'var(--green)':'var(--dim)'},
+    {label:'Dragons/Match',val:avgDrg,color:parseFloat(avgDrg)>=2.5?'var(--green)':c},
+    {label:'Barons/Match',val:avgBrn},
+    {label:'Towers/Match',val:avgTwr},
+  ];
+  objRows.forEach(function(s){
+    var col=s.color||c;
+    h+='<div class="scout-row"><span class="scout-row-label">'+s.label+'</span><span class="scout-row-val" style="color:'+col+'">'+s.val+'</span></div>';
+  });
+
+  // Win-rate by game duration buckets
+  var shortWins=matches.filter(function(m){return m.duration<25&&m.win}).length;
+  var shortTotal=matches.filter(function(m){return m.duration<25}).length;
+  var midWins=matches.filter(function(m){return m.duration>=25&&m.duration<35&&m.win}).length;
+  var midTotal=matches.filter(function(m){return m.duration>=25&&m.duration<35}).length;
+  var longWins=matches.filter(function(m){return m.duration>=35&&m.win}).length;
+  var longTotal=matches.filter(function(m){return m.duration>=35}).length;
+  if(shortTotal||midTotal||longTotal){
+    h+='<div style="margin-top:8px;font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:var(--dim);margin-bottom:4px">WR BY GAME LENGTH</div>';
+    if(shortTotal)h+='<div class="scout-row"><span class="scout-row-label">&lt;25 min ('+shortTotal+'g)</span><span class="scout-row-val" style="color:'+(shortWins/shortTotal>=0.5?'var(--green)':'var(--pink)')+'">'+(shortTotal?+(shortWins/shortTotal*100).toFixed(0):0)+'%</span></div>';
+    if(midTotal)h+='<div class="scout-row"><span class="scout-row-label">25–35 min ('+midTotal+'g)</span><span class="scout-row-val" style="color:'+(midWins/midTotal>=0.5?'var(--green)':'var(--pink)')+'">'+(midTotal?+(midWins/midTotal*100).toFixed(0):0)+'%</span></div>';
+    if(longTotal)h+='<div class="scout-row"><span class="scout-row-label">35+ min ('+longTotal+'g)</span><span class="scout-row-val" style="color:'+(longWins/longTotal>=0.5?'var(--green)':'var(--pink)')+'">'+(longTotal?+(longWins/longTotal*100).toFixed(0):0)+'%</span></div>';
+  }
+  h+='</div>';
+
+  // Card 3: League Comparison
+  h+='<div class="scout-card"><div class="scout-card-title" style="color:'+c+'">📈 vs League Average</div>';
+  function vsRow(label,teamVal,lgVal,invert){
+    var diff=teamVal-lgVal;
+    var better=invert?diff<0:diff>0;
+    var dc=better?'var(--green)':'var(--pink)';
+    var sign=diff>=0?'+':'';
+    var barPct=Math.min(teamVal/Math.max(lgVal,0.01)*100,200);
+    var lgBarPct=100;
+    h+='<div style="padding:5px 0;border-bottom:1px solid #ffffff06">';
+    h+='<div style="display:flex;justify-content:space-between;font-family:\'Share Tech Mono\',monospace;font-size:9px;margin-bottom:3px">';
+    h+='<span style="color:var(--dim)">'+label+'</span><span style="color:'+dc+'">'+sign+diff.toFixed(1)+'</span></div>';
+    h+='<div style="display:flex;gap:4px;align-items:center">';
+    h+='<div style="flex:1;height:6px;background:#ffffff08;position:relative"><div style="height:100%;width:'+Math.min(barPct,200)+'%;max-width:100%;background:'+c+';transition:width .8s"></div></div>';
+    h+='<div style="font-family:\'Orbitron\',sans-serif;font-size:10px;font-weight:700;color:'+c+';min-width:48px;text-align:right">'+teamVal.toFixed(1)+'</div>';
+    h+='</div></div>';
+  }
+  vsRow('Kills/Match',parseFloat(avgKills.toFixed(1)),parseFloat(lgAvgKPG.toFixed(1)));
+  vsRow('Deaths/Match',parseFloat(avgDeaths.toFixed(1)),parseFloat(lgAvgKPG.toFixed(1)),true);
+  vsRow('Dmg/Min',parseFloat(avgDmgMin.toFixed(1)),parseFloat(lgAvgDmgMin.toFixed(1)));
+  vsRow('Gold/Min',parseFloat(avgGoldMin.toFixed(1)),parseFloat(lgAvgGoldMin.toFixed(1)));
+  h+='</div>';
+
+  // Card 4: Roster Breakdown (full width)
+  h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title" style="color:'+c+'">👥 Roster Breakdown</div>';
+  h+='<div style="overflow-x:auto"><table class="champ-table" style="min-width:560px">';
+  h+='<thead><tr><th>Role</th><th>Player</th><th>Games</th><th>KDA</th><th>WR</th><th>DMG/Min</th><th>CS/Min</th></tr></thead><tbody>';
+  roleStats.forEach(function(rs){
+    var kdaColor=rs.kda>=3?'var(--green)':rs.kda<=1.5?'var(--pink)':c;
+    var wrColor=rs.wr>=60?'var(--green)':rs.wr<=40?'var(--pink)':'var(--text)';
+    h+='<tr>';
+    h+='<td style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+rs.role+'</td>';
+    h+='<td style="font-weight:700;cursor:pointer;color:'+c+'" onclick="openProfile(\''+rs.player.replace(/'/g,"\\'")+'\')" title="Open profile">'+rs.player+'</td>';
+    h+='<td>'+rs.games+'</td>';
+    h+='<td style="color:'+kdaColor+'">'+rs.kda+'</td>';
+    h+='<td style="color:'+wrColor+'">'+rs.wr+'%</td>';
+    h+='<td>'+rs.dmg+'</td>';
+    h+='<td>'+rs.cs+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+
+  // Roster strengths/weaknesses
+  if(topCarry||topWR){
+    h+='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">';
+    if(topCarry)h+='<div style="flex:1;min-width:160px;background:var(--bg);border:1px solid #22c55e30;padding:10px 14px"><div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--green);letter-spacing:1px;margin-bottom:4px">⚔ TOP CARRY</div><div style="font-weight:700;cursor:pointer;color:'+c+'" onclick="openProfile(\''+topCarry.player.replace(/'/g,"\\'")+'\')" >'+topCarry.player+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">KDA '+topCarry.kda+' · '+topCarry.winRate+'% WR</div></div>';
+    if(topWR&&topWR.player!==(topCarry&&topCarry.player))h+='<div style="flex:1;min-width:160px;background:var(--bg);border:1px solid #ffd70030;padding:10px 14px"><div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--gold);letter-spacing:1px;margin-bottom:4px">🏆 HIGHEST WR</div><div style="font-weight:700;cursor:pointer;color:'+c+'" onclick="openProfile(\''+topWR.player.replace(/'/g,"\\'")+'\')" >'+topWR.player+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">'+topWR.winRate+'% WR · '+topWR.games+'g</div></div>';
+    if(bottomCarry&&bottomCarry.player!==(topCarry&&topCarry.player))h+='<div style="flex:1;min-width:160px;background:var(--bg);border:1px solid #ef444430;padding:10px 14px"><div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--pink);letter-spacing:1px;margin-bottom:4px">⚠ WEAK LINK</div><div style="font-weight:700;cursor:pointer;color:'+c+'" onclick="openProfile(\''+bottomCarry.player.replace(/'/g,"\\'")+'\')" >'+bottomCarry.player+'</div><div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--dim)">KDA '+bottomCarry.kda+' · '+bottomCarry.winRate+'% WR</div></div>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Card 5: Team Champion Pool
+  h+='<div class="scout-card"><div class="scout-card-title" style="color:'+c+'">🏆 Team Champion Pool</div>';
+  if(topChamps.length){
+    topChamps.forEach(function(ch){
+      var wrC=ch.wr>=55?'var(--green)':ch.wr<=45?'var(--pink)':'var(--text)';
+      var barW=(ch.games/topChamps[0].games*100).toFixed(0);
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #ffffff04">';
+      h+='<img src="'+DD_BASE+(CHAMP_KEY_OVERRIDES[ch.name]||ch.name.replace(/[^a-zA-Z]/g,''))+'.png" style="width:24px;height:24px;border-radius:3px" loading="lazy" onerror="this.style.display=\'none\'">';
+      h+='<div style="flex:1;font-size:12px;font-weight:700">'+ch.name+'</div>';
+      h+='<div class="bc" style="flex:2;height:18px"><div class="bf" style="width:'+barW+'%;background:'+c+';color:'+c+'"></div></div>';
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px;min-width:70px;text-align:right">'+ch.games+'g · <span style="color:'+wrC+'">'+ch.wr+'%</span></div>';
+      h+='</div>';
+    });
+  }else{h+='<div style="color:var(--dim);font-size:10px">No champion data.</div>'}
+  h+='</div>';
+
+  // Card 6: Intel / Exploitable Patterns
+  h+='<div class="scout-card"><div class="scout-card-title" style="color:'+c+'">🔎 Scouting Intel</div>';
+
+  var patterns=[];
+  // Aggression
+  if(parseFloat(avgKills)>=12)patterns.push({icon:'⚔️',text:'High kill output ('+avgKills.toFixed(1)+'/g) — aggressive playstyle, bait early fights and punish overextensions',color:'var(--green)'});
+  // Objective focused
+  if(parseFloat(avgDrg)>=2.5)patterns.push({icon:'🐉',text:'Dragon-focused team ('+avgDrg+'/g) — contest dragon prio or expect to cede elemental soul',color:'var(--gold)'});
+  // Early game team
+  if(matches.filter(function(m){return m.win&&m.duration<25}).length/Math.max(matches.filter(function(m){return m.duration<25}).length,1)>=0.6&&matches.filter(function(m){return m.duration<25}).length>=2)patterns.push({icon:'⚡',text:'Strong early game ('++(matches.filter(function(m){return m.win&&m.duration<25}).length/Math.max(matches.filter(function(m){return m.duration<25}).length,1)*100).toFixed(0)+'% WR sub-25 min) — slow the game down, outscale them',color:'var(--green)'});
+  // Late game
+  if(longTotal>=2&&(longWins/longTotal)>=0.6)patterns.push({icon:'⏰',text:'Late game dominant ('++(longWins/longTotal*100).toFixed(0)+'% WR 35+ min) — end the game early before they scale',color:'var(--pink)'});
+  // FB exploitable
+  if(parseInt(fbRate)<40)patterns.push({icon:'🩸',text:'Low first blood rate ('+fbRate+'%) — invade early, force level-1 fights, punish weak early skirmishers',color:'var(--green)'});
+  // High deaths
+  if(avgDeaths>=15)patterns.push({icon:'💀',text:'High team deaths ('+avgDeaths.toFixed(1)+'/g) — punish split map pressure, force teamfights with hard engage',color:'var(--green)'});
+  // Vision weak
+  if(avgVision<200)patterns.push({icon:'👁️',text:'Below-average vision ('+avgVision.toFixed(0)+' score/g) — use flanks, ambushes, and uncontested deep wards',color:'var(--green)'});
+  // Weak link
+  if(bottomCarry&&bottomCarry.winRate<=40&&bottomCarry.games>=3)patterns.push({icon:'🎯',text:'Target '+bottomCarry.player+' ('+ROLE_MAP[bottomCarry.mainRole]||bottomCarry.mainRole+') — lowest win rate at '+bottomCarry.winRate+'%, deny early and snowball that lane',color:'var(--pink)'});
+
+  if(patterns.length){
+    patterns.forEach(function(pt){
+      h+='<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #ffffff04;font-family:\'Share Tech Mono\',monospace;font-size:10px">';
+      h+='<span>'+pt.icon+'</span><span style="color:'+pt.color+'">'+pt.text+'</span></div>';
+    });
+  }else{
+    h+='<div style="color:var(--dim);font-size:10px">No major exploitable patterns detected — well-rounded team.</div>';
+  }
+  h+='</div>';
+
+  h+='</div>'; // close scout-grid
+
+  el.innerHTML=h;
+  el.classList.add('active');
+
+  // Trigger bar animations
+  setTimeout(function(){
+    el.querySelectorAll('.bf').forEach(function(bar){
+      var w=bar.style.width;bar.style.width='0';setTimeout(function(){bar.style.width=w},50);
+    });
+  },50);
+}
+
+// ════════════════════════════════════════
+// SCOUTING: TEAM REPORT CLIPBOARD EXPORT
+// ════════════════════════════════════════
+function copyTeamScoutReport(teamName){
+  var c=TC[teamName]||'#6366f1';
+  var rows=getFilteredRows();
+  var roster=PD.filter(function(p){return p.team===teamName});
+
+  var matchData={};
+  rows.forEach(function(r){
+    var t=(r['Teams']||'').trim();if(t!==teamName)return;
+    var mid=r['Match ID']||'';if(!mid)return;
+    if(!matchData[mid])matchData[mid]={win:r['Win']==='Win',date:parseDate(r['Date']||''),kills:0,deaths:0,assists:0,duration:parseFloat(r['Game Duration (min)'])||0,dragons:parseFloat(r['Team Dragons'])||0,barons:parseFloat(r['Team Barons'])||0,towers:parseFloat(r['Team Towers'])||0,fb:(r['Team First Blood']||'').toLowerCase()==='yes'};
+    var m=matchData[mid];
+    m.kills+=parseFloat(r['Kills'])||0;m.deaths+=parseFloat(r['Deaths'])||0;m.assists+=parseFloat(r['Assists'])||0;
+  });
+  var matches=Object.values(matchData).filter(function(m){return m.duration>0}).sort(function(a,b){return b.date.localeCompare(a.date)});
+  var wins=matches.filter(function(m){return m.win}).length;
+  var losses=matches.length-wins;
+  var wr=matches.length?+(wins/matches.length*100).toFixed(1):0;
+  function avg(key){return matches.length?+(matches.reduce(function(s,m){return s+m[key]},0)/matches.length).toFixed(1):0}
+  var avgKills=avg('kills'),avgDeaths=avg('deaths'),avgAssists=avg('assists');
+  var kda=+((avgKills+avgAssists)/Math.max(avgDeaths,1)).toFixed(2);
+
+  var lines=[];
+  lines.push('═══ TEAM SCOUTING REPORT ═══');
+  lines.push(teamName);
+  lines.push('Record: '+wins+'W — '+losses+'L · '+wr+'% WR · '+matches.length+' matches');
+  lines.push('');
+  lines.push('📊 TEAM STATS');
+  lines.push('   KDA: '+kda+' | K/D/A: '+avgKills+'/'+avgDeaths+'/'+avgAssists+' per match');
+  lines.push('');
+  lines.push('👥 ROSTER (by KDA)');
+  roster.filter(function(p){return p.games>=3}).sort(function(a,b){return b.kda-a.kda}).forEach(function(p){
+    lines.push('   '+p.player+' ['+( ROLE_MAP[p.mainRole]||p.mainRole)+'] — KDA: '+p.kda+' | WR: '+p.winRate+'% | '+p.games+'g');
+  });
+  lines.push('');
+  // Form
+  var recent=matches.slice(0,5);
+  lines.push('📈 RECENT FORM (last 5): '+recent.map(function(m){return m.win?'W':'L'}).join(' ')+' · '++(recent.filter(function(m){return m.win}).length/(recent.length||1)*100).toFixed(0)+'% WR');
+  lines.push('');
+  lines.push('═══════════════════════');
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){showScoutToast('📋 TEAM SCOUTING REPORT COPIED')});
 }
 
 function showScoutToast(msg){
