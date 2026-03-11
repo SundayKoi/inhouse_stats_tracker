@@ -4301,27 +4301,41 @@ function buildSystemPrompt() {
     .sort((a,b) => b[1].g - a[1].g)
     .map(([name, p]) => {
       const champs = Object.entries(p.champs).map(([c,v]) => c+'('+v.g+'g '+v.wr+'%WR)').join(', ');
-      return name+': '+p.r+' | '+p.t+' | S'+p.s+' | '+p.g+'g '+p.wr+'%WR | KDA '+p.kda+' | DPM '+p.dpm+' | KP '+p.kp+'% | Champs: '+champs;
+      return name+': '+p.r+' | '+p.t+' | '+p.g+'g '+p.wr+'%WR | KDA '+p.kda
+        +' | DPM '+p.dpm+' | GPM '+p.gpm+' | CSM '+p.csm+' | KP '+p.kp+'%'
+        +' | DmgShare '+p.ds+'% | GoldShare '+p.gs+'% | VSM '+p.vsm
+        +' | SK '+p.sk+' | FB '+p.fb+' | Penta '+p.penta
+        +' | Champs: '+champs;
     }).join('\n');
 
   const teamList = Object.entries(d.teams)
+    .filter(([t]) => t && t !== 'null')
     .sort((a,b) => b[1].wr - a[1].wr)
     .map(([t,v]) => t+': '+v.w+'W-'+(v.g-v.w)+'L ('+v.wr+'%)').join('\n');
 
-  const lastNight = d.nights[d.nights.length-1];
-  const nightStr = lastNight ? 'Last game night ('+lastNight.date+'): '+
-    lastNight.matches.map(m => m.winner+' won in '+m.dur+'min, MVP: '+m.mvp+' ('+m.mvp_dpm+' DPM)').join(' | ') : 'No recent nights';
+  // Group all nights by date and send the full most-recent session (all games on last date)
+  const lastDate = d.nights.length ? d.nights[d.nights.length-1].date.split(' ')[0] : null;
+  const sessionNights = lastDate ? d.nights.filter(n => n.date.startsWith(lastDate)) : [];
+  const nightStr = sessionNights.length ? 'LAST GAME NIGHT ('+lastDate+', '+sessionNights.length+' games):\n'+
+    sessionNights.map((night, i) => {
+      const m = night.matches[0];
+      const sorted = m.players.slice().sort((a,b) => b.dpm - a.dpm);
+      const playerLines = sorted.map(p =>
+        '  '+p.n+' ('+p.t+'): '+p.c+' | '+(p.w?'WIN':'LOSS')+' | K/D/A: '+p.k+'/'+p.d+'/'+p.a+' | DPM: '+p.dpm
+      ).join('\n');
+      return 'Game '+(i+1)+' ('+night.date.split(' ')[1]+' '+night.date.split(' ')[2]+'): '+m.winner+' won ('+m.dur+'min) | MVP: '+m.mvp+' '+m.mvp_dpm+' DPM\n'+playerLines;
+    }).join('\n\n') : 'No recent nights';
 
   const la = d.league_avg;
-  const leagueAvgStr = 'League avg (5g+ players): KDA '+la.kda+' | DPM '+la.dpm+' | GPM '+la.gpm+' | CS/min '+la.csm+' | KP '+la.kp+'% | DmgShare '+la.ds+'%';
+  const leagueAvgStr = 'League avg: KDA '+la.kda+' | DPM '+la.dpm+' | GPM '+la.gpm+' | CSM '+la.csm+' | KP '+la.kp+'% | DmgShare '+la.ds+'% | GoldShare '+la.gs+'%';
 
   return `You are FPL Analyst, an expert AI analyst for the Franchise Premier League (FPL), an inhouse League of Legends competitive league.
 
-You have complete access to all player stats across ${d.seasons.join(', ')} — ${d.total_games} total games, ${Object.keys(d.players).length} players, ${Object.keys(d.teams).length} teams.
+You have complete access to all player stats across ${d.seasons.join(', ')} — ${d.total_games} total games, ${Object.keys(d.players).length} players, ${Object.keys(d.teams).filter(t=>t&&t!=='null').length} teams.
 
 ${leagueAvgStr}
 
-ALL PLAYERS (name: role | team | season | games WR | KDA | DPM | KP | top champs):
+ALL PLAYERS (name: role | team | games WR | KDA | DPM | GPM | CSM | KP | DmgShare | GoldShare | VSM | SoloKills | FirstBloods | Pentas | top champs):
 ${playerList}
 
 TEAM RECORDS:
