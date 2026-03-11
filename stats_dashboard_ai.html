@@ -735,7 +735,6 @@ body::after{contain:strict}
     <button class="tab-btn" data-tab="timeline">📅 Timeline</button>
     <button class="tab-btn" data-tab="scouting">🔍 Scouting</button>
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
-    <button class="tab-btn" data-tab="ai">🤖 AI Assistant</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
   <div id="potwBanner"></div>
@@ -4503,6 +4502,168 @@ function aiScoutReport(playerName) {
   aiQuickAsk(prompt);
 }
 
+</script>
+<!-- ── FLOATING AI CHAT BUBBLE ── -->
+<div id="aiFloat">
+  <!-- Toggle button -->
+  <button id="aiBubble" onclick="toggleAIFloat()" title="FPL AI Assistant">
+    <span id="aiBubbleIcon">🤖</span>
+    <span id="aiBubblePulse"></span>
+  </button>
+  <!-- Chat panel -->
+  <div id="aiPanel">
+    <div id="aiPanelHeader">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;background:linear-gradient(90deg,var(--cyan),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent">🤖 FPL ANALYST</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:1px;margin-top:1px">Ask anything about the league</div>
+      </div>
+      <button onclick="toggleAIFloat()" style="background:transparent;border:none;color:var(--dim);font-size:18px;cursor:pointer;padding:0;line-height:1">✕</button>
+    </div>
+    <!-- Quick chips -->
+    <div id="aiFloatChips">
+      <button class="ai-chip" onclick="floatAsk('Who had the highest damage last game night?')">🔥 Top damage</button>
+      <button class="ai-chip" onclick="floatAsk('Which team has the best win rate?')">🏆 Best team</button>
+      <button class="ai-chip" onclick="floatAsk('Who are the most consistent players?')">📊 Consistency</button>
+      <button class="ai-chip" onclick="floatAsk('What are the most picked champions this season?')">🎯 Meta champs</button>
+    </div>
+    <!-- Messages -->
+    <div id="aiFloatMessages">
+      <div class="ai-msg ai-msg-system">
+        <div class="ai-avatar">🤖</div>
+        <div class="ai-bubble">
+          <div style="font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;color:var(--cyan);margin-bottom:4px">FPL ANALYST</div>
+          <div style="font-size:11px">Hey! Ask me anything about FPL stats, players, or teams. You can also hit ✨ AI Scout Report on any player card.</div>
+        </div>
+      </div>
+    </div>
+    <!-- Input -->
+    <div id="aiFloatInputRow">
+      <textarea id="aiFloatInput" placeholder="Ask about any player or team..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();floatSend()}" oninput="autoResizeFloat(this)"></textarea>
+      <button id="aiFloatSend" onclick="floatSend()">▶</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#aiFloat{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#aiBubble{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),#0080ff);border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 20px #00f0ff40;transition:transform .2s;position:relative;display:flex;align-items:center;justify-content:center}
+#aiBubble:hover{transform:scale(1.1)}
+#aiBubblePulse{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--cyan);animation:bubblePulse 2s infinite;opacity:.5}
+@keyframes bubblePulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:0}}
+#aiPanel{width:360px;max-width:calc(100vw - 48px);background:var(--bg);border:1px solid var(--border);box-shadow:0 8px 40px #00000080;display:none;flex-direction:column;max-height:520px;animation:panelIn .25s ease}
+#aiPanel.open{display:flex}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+#aiPanelHeader{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden}
+#aiPanelHeader::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+#aiFloatChips{padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg2)}
+#aiFloatMessages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:0}
+#aiFloatMessages .ai-bubble{font-size:11px;padding:8px 10px;line-height:1.6}
+#aiFloatMessages .ai-avatar{width:26px;height:26px;font-size:13px}
+#aiFloatInputRow{display:flex;gap:6px;padding:10px 12px;background:var(--bg3);border-top:1px solid var(--border)}
+#aiFloatInput{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:11px;padding:7px 10px;resize:none;height:34px;max-height:90px;outline:none;line-height:1.4}
+#aiFloatInput:focus{border-color:var(--cyan)}
+#aiFloatSend{background:var(--cyan);border:none;color:#000;font-size:14px;font-weight:900;width:34px;height:34px;cursor:pointer;flex-shrink:0;transition:opacity .2s}
+#aiFloatSend:hover{opacity:.85}
+</style>
+
+<script>
+var _floatOpen = false;
+var _floatTyping = false;
+var _floatHistory = [];
+
+function toggleAIFloat() {
+  _floatOpen = !_floatOpen;
+  var panel = document.getElementById('aiPanel');
+  panel.classList.toggle('open', _floatOpen);
+  if (_floatOpen) {
+    setTimeout(function(){ document.getElementById('aiFloatInput').focus(); }, 100);
+    scrollFloatToBottom();
+  }
+}
+
+function floatSend() {
+  var input = document.getElementById('aiFloatInput');
+  var msg = (input.value || '').trim();
+  if (!msg || _floatTyping) return;
+  input.value = '';
+  input.style.height = '34px';
+  floatAsk(msg);
+}
+
+function floatAsk(msg) {
+  if (!_floatOpen) toggleAIFloat();
+  if (_floatTyping) return;
+  appendFloatMsg('user', msg);
+  _floatHistory.push({ role: 'user', content: msg });
+  _floatTyping = true;
+
+  var sendBtn = document.getElementById('aiFloatSend');
+  sendBtn.textContent = '…';
+  sendBtn.disabled = true;
+
+  var typingId = 'ft-' + Date.now();
+  var el = document.getElementById('aiFloatMessages');
+  el.insertAdjacentHTML('beforeend',
+    '<div class="ai-msg ai-msg-system" id="'+typingId+'">' +
+    '<div class="ai-avatar">🤖</div>' +
+    '<div class="ai-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>' +
+    '</div>');
+  scrollFloatToBottom();
+
+  fetch(PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-fpl-secret': PROXY_SECRET },
+    body: JSON.stringify({ system: buildSystemPrompt(), messages: _floatHistory })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    document.getElementById(typingId).remove();
+    _floatTyping = false;
+    sendBtn.textContent = '▶';
+    sendBtn.disabled = false;
+    var reply = data.error ? '⚠️ ' + data.error : (data.text || 'No response.');
+    _floatHistory.push({ role: 'assistant', content: reply });
+    appendFloatMsg('system', reply);
+  })
+  .catch(function(){
+    document.getElementById(typingId).remove();
+    _floatTyping = false;
+    sendBtn.textContent = '▶';
+    sendBtn.disabled = false;
+    appendFloatMsg('system', '⚠️ Could not reach AI proxy.');
+  });
+}
+
+function appendFloatMsg(role, text) {
+  var el = document.getElementById('aiFloatMessages');
+  if (!el) return;
+  var isUser = role === 'user';
+  el.insertAdjacentHTML('beforeend',
+    '<div class="ai-msg '+(isUser?'ai-msg-user':'ai-msg-system')+'">' +
+    '<div class="ai-avatar">'+(isUser?'👤':'🤖')+'</div>' +
+    '<div class="ai-bubble">' +
+    (!isUser?'<div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:1px;color:var(--cyan);margin-bottom:3px">FPL ANALYST</div>':'') +
+    '<div>'+formatAIText(text)+'</div>' +
+    '</div></div>');
+  scrollFloatToBottom();
+}
+
+function scrollFloatToBottom() {
+  var el = document.getElementById('aiFloatMessages');
+  if (el) setTimeout(function(){ el.scrollTop = el.scrollHeight; }, 50);
+}
+
+function autoResizeFloat(el) {
+  el.style.height = '34px';
+  el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+
+// Wire aiScoutReport to open float panel too
+var _origAiScoutReport = aiScoutReport;
+aiScoutReport = function(playerName) {
+  if (!_floatOpen) toggleAIFloat();
+  _origAiScoutReport(playerName);
+};
 </script>
 </body>
 </html>
