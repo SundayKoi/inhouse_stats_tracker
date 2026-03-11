@@ -4397,39 +4397,89 @@ function _doAIAsk(msg) {
   var PROXY_URL    = 'https://soft-dawn-d0d8.5jwhrpgmbz.workers.dev';
   var PROXY_SECRET = 'fpl-s3-2026';
 
+  _streamAI(
+    { system: buildSystemPrompt(), messages: _aiHistory },
+    function onChunk(text) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) {
+        typingEl.innerHTML =
+          '<div class="ai-avatar">🤖</div>' +
+          '<div class="ai-bubble"><div class="ai-msg-label">FPL ANALYST</div>' +
+          '<div>' + formatAIText(text) + '</div></div>';
+      }
+    },
+    function onDone(text) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+      _aiTyping = false;
+      document.getElementById('aiSendBtn').textContent = 'SEND ▶';
+      document.getElementById('aiSendBtn').disabled = false;
+      _aiHistory.push({ role: 'assistant', content: text });
+      appendAIMessage('system', text);
+    },
+    function onError(err) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+      _aiTyping = false;
+      document.getElementById('aiSendBtn').textContent = 'SEND ▶';
+      document.getElementById('aiSendBtn').disabled = false;
+      appendAIMessage('system', '⚠️ Could not reach AI proxy. ' + (err||''));
+      console.error('AI error:', err);
+    }
+  );
+}
+
+// ── SHARED SSE STREAMING HELPER ──
+function _streamAI(payload, onChunk, onDone, onError) {
+  var PROXY_URL    = 'https://soft-dawn-d0d8.5jwhrpgmbz.workers.dev';
+  var PROXY_SECRET = 'fpl-s3-2026';
+  var accumulated  = '';
+
   fetch(PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-fpl-secret': PROXY_SECRET },
-    body: JSON.stringify({
-      system: buildSystemPrompt(),
-      messages: _aiHistory
-    })
+    body: JSON.stringify(payload)
   })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    var typingEl = document.getElementById(typingId);
-    if (typingEl) typingEl.remove();
-    _aiTyping = false;
-    document.getElementById('aiSendBtn').textContent = 'SEND ▶';
-    document.getElementById('aiSendBtn').disabled = false;
-
-    if (data.error) {
-      appendAIMessage('system', '⚠️ Error: ' + data.error);
-      return;
+  .then(function(r) {
+    // If not SSE (e.g. error JSON), handle as plain JSON
+    var ct = r.headers.get('content-type') || '';
+    if (!ct.includes('text/event-stream')) {
+      return r.json().then(function(d) {
+        if (d.error) onError(d.error);
+        else onDone(d.text || 'No response.');
+      });
     }
-    var reply = data.text || 'No response.';
-    _aiHistory.push({ role: 'assistant', content: reply });
-    appendAIMessage('system', reply);
+    var reader = r.body.getReader();
+    var decoder = new TextDecoder();
+    var buf = '';
+    function pump() {
+      return reader.read().then(function(result) {
+        if (result.done) { onDone(accumulated); return; }
+        buf += decoder.decode(result.value, { stream: true });
+        var lines = buf.split('\n');
+        buf = lines.pop(); // keep incomplete line
+        lines.forEach(function(line) {
+          if (!line.startsWith('data:')) return;
+          var data = line.slice(5).trim();
+          if (data === '[DONE]') return;
+          try {
+            var evt = JSON.parse(data);
+            if (evt.type === 'content_block_delta' && evt.delta && evt.delta.text) {
+              accumulated += evt.delta.text;
+              onChunk(accumulated);
+            }
+            // Handle non-streaming JSON response wrapped in SSE
+            if (evt.type === 'message_start' && evt.message && evt.message.content) {
+              evt.message.content.forEach(function(c) { if (c.text) accumulated += c.text; });
+            }
+          } catch(e) {}
+        });
+        return pump();
+      });
+    }
+    return pump();
   })
-  .catch(function(err) {
-    var typingEl = document.getElementById(typingId);
-    if (typingEl) typingEl.remove();
-    _aiTyping = false;
-    document.getElementById('aiSendBtn').textContent = 'SEND ▶';
-    document.getElementById('aiSendBtn').disabled = false;
-    appendAIMessage('system', '⚠️ Could not reach AI proxy. Check that PROXY_URL is set correctly in the dashboard.');
-    console.error('AI error:', err);
-  });
+  .catch(function(err) { onError(err && err.message || 'Network error'); });
 }
 
 // ── RENDER MESSAGE ──
@@ -4624,28 +4674,37 @@ function floatAsk(msg) {
     '</div>');
   scrollFloatToBottom();
 
-  fetch(PROXY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-fpl-secret': PROXY_SECRET },
-    body: JSON.stringify({ system: buildSystemPrompt(), messages: _floatHistory })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
-    document.getElementById(typingId).remove();
-    _floatTyping = false;
-    sendBtn.textContent = '▶';
-    sendBtn.disabled = false;
-    var reply = data.error ? '⚠️ ' + data.error : (data.text || 'No response.');
-    _floatHistory.push({ role: 'assistant', content: reply });
-    appendFloatMsg('system', reply);
-  })
-  .catch(function(){
-    document.getElementById(typingId).remove();
-    _floatTyping = false;
-    sendBtn.textContent = '▶';
-    sendBtn.disabled = false;
-    appendFloatMsg('system', '⚠️ Could not reach AI proxy.');
-  });
+  _streamAI(
+    { system: buildSystemPrompt(), messages: _floatHistory },
+    function onChunk(text) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) {
+        typingEl.innerHTML =
+          '<div class="ai-avatar">🤖</div>' +
+          '<div class="ai-bubble"><div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:1px;color:var(--cyan);margin-bottom:3px">FPL ANALYST</div>' +
+          '<div>' + formatAIText(text) + '</div></div>';
+      }
+      scrollFloatToBottom();
+    },
+    function onDone(text) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+      _floatTyping = false;
+      sendBtn.textContent = '▶';
+      sendBtn.disabled = false;
+      _floatHistory.push({ role: 'assistant', content: text });
+      appendFloatMsg('system', text);
+      scrollFloatToBottom();
+    },
+    function onError(err) {
+      var typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+      _floatTyping = false;
+      sendBtn.textContent = '▶';
+      sendBtn.disabled = false;
+      appendFloatMsg('system', '⚠️ Could not reach AI proxy. ' + (err || ''));
+    }
+  );
 }
 
 function appendFloatMsg(role, text) {
