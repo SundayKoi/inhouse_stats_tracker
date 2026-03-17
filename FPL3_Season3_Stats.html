@@ -722,6 +722,82 @@ body::after{contain:strict}
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
+    <!-- ═══ SEASON 3 CHAMPIONS BANNER ═══ -->
+<div id="champBanner" style="margin-bottom:12px;position:relative;z-index:1">
+  <style>
+    @keyframes champShimmer{0%,100%{opacity:.6}50%{opacity:1}}
+    @keyframes champPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+    @keyframes champRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .champ-banner-wrap{background:linear-gradient(135deg,#06060c 0%,#0c1218 40%,#060c0e 100%);border:1px solid #14b8a630;overflow:hidden;position:relative;font-family:'Orbitron','Share Tech Mono',monospace}
+    .champ-top-bar{height:4px;background:linear-gradient(90deg,transparent,#14b8a6,#fbbf24,#14b8a6,transparent);animation:champShimmer 2.5s ease-in-out infinite}
+    .champ-bot-bar{height:4px;background:linear-gradient(90deg,transparent,#14b8a6,#fbbf24,#14b8a6,transparent);animation:champShimmer 2.5s ease-in-out infinite .8s}
+    .champ-inner{padding:28px 28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative}
+    .champ-trophy{flex:0 0 auto;text-align:center;animation:champRise .6s ease .1s backwards}
+    .champ-trophy-icon{font-size:52px;display:block;filter:drop-shadow(0 0 16px #fbbf2480);animation:champPulse 3s ease-in-out infinite}
+    .champ-stars{display:flex;gap:4px;justify-content:center;margin-top:8px}
+    .champ-star{color:#fbbf24;font-size:13px;animation:champShimmer 1.5s ease-in-out infinite}
+    .champ-star:nth-child(2){animation-delay:.2s}
+    .champ-star:nth-child(3){animation-delay:.4s}
+    .champ-star:nth-child(4){animation-delay:.6s}
+    .champ-star:nth-child(5){animation-delay:.8s}
+    .champ-center{flex:1;min-width:200px;animation:champRise .6s ease .2s backwards}
+    .champ-congrats{font-size:9px;letter-spacing:5px;color:#14b8a6;text-transform:uppercase;margin-bottom:6px;opacity:.8}
+    .champ-team-name{font-size:clamp(20px,4vw,34px);font-weight:900;letter-spacing:2px;color:#14b8a6;text-shadow:0 0 30px #14b8a660,0 0 60px #14b8a630;line-height:1.1;margin-bottom:4px}
+    .champ-season{font-size:11px;letter-spacing:4px;color:#fbbf24;margin-bottom:14px;opacity:.9}
+    .champ-divider{height:1px;background:linear-gradient(90deg,transparent,#14b8a640,#fbbf2460,#14b8a640,transparent);margin:10px 0 14px}
+    .champ-flavor{font-family:'Share Tech Mono',monospace;font-size:11px;color:#5a8080;letter-spacing:1px;line-height:1.5}
+    .champ-right{flex:0 0 auto;text-align:center;animation:champRise .6s ease .3s backwards;display:flex;flex-direction:column;gap:10px}
+    .champ-chip{background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.25);padding:8px 16px;text-align:center}
+    .champ-chip-val{font-size:20px;font-weight:700;color:#14b8a6;line-height:1}
+    .champ-chip-lbl{font-size:8px;letter-spacing:2px;color:#3d6060;margin-top:3px}
+    .champ-corner{position:absolute;top:12px;right:48px;font-size:9px;letter-spacing:3px;color:#fbbf2470;font-family:'Share Tech Mono',monospace}
+    .champ-grid-bg{position:absolute;inset:0;background:linear-gradient(90deg,#14b8a604 1px,transparent 1px),linear-gradient(0deg,#14b8a604 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+    .champ-orb1{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#14b8a610 0%,transparent 70%);top:-80px;left:-60px;pointer-events:none}
+    .champ-orb2{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#fbbf2408 0%,transparent 70%);bottom:-60px;right:40px;pointer-events:none}
+    .champ-dismiss{position:absolute;top:10px;right:14px;background:transparent;border:none;color:var(--dim);font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;transition:all .2s;z-index:2;font-family:monospace}
+    .champ-dismiss:hover{color:var(--pink);text-shadow:0 0 8px var(--pink-glow)}
+  </style>
+  <div class="champ-banner-wrap">
+    <div class="champ-grid-bg"></div>
+    <div class="champ-orb1"></div>
+    <div class="champ-orb2"></div>
+    <div class="champ-top-bar"></div>
+    <div style="position:relative">
+      <button class="champ-dismiss" onclick="document.getElementById('champBanner').style.display='none'" title="Dismiss">✕</button>
+      <div class="champ-corner">FPL S3 // OFFICIAL</div>
+      <div class="champ-inner">
+        <div class="champ-trophy">
+          <span class="champ-trophy-icon">🏆</span>
+          <div class="champ-stars">
+            <span class="champ-star">★</span>
+            <span class="champ-star">★</span>
+            <span class="champ-star">★</span>
+            <span class="champ-star">★</span>
+            <span class="champ-star">★</span>
+          </div>
+        </div>
+        <div class="champ-center">
+          <div class="champ-congrats">// congratulations //</div>
+          <div class="champ-team-name">Divine Ascension</div>
+          <div class="champ-season">⬥ FPL Season 3 Champions ⬥</div>
+          <div class="champ-divider"></div>
+          <div class="champ-flavor">They rose above the rest and claimed the crown.<br>Champions of the Franchise Premier League — Season 3.</div>
+        </div>
+        <div class="champ-right">
+          <div class="champ-chip">
+            <div class="champ-chip-val" style="color:#fbbf24">S3</div>
+            <div class="champ-chip-lbl">SEASON</div>
+          </div>
+          <div class="champ-chip">
+            <div class="champ-chip-val">GG</div>
+            <div class="champ-chip-lbl">WELL PLAYED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="champ-bot-bar"></div>
+  </div>
+</div>
   <div id="potwBanner"></div>
   <div class="tab-page active" id="pg-leaderboard" style="display:none">
     <div class="ctrls" id="ctrlsWrap">
