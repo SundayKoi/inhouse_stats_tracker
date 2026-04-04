@@ -691,7 +691,7 @@ body::after{contain:strict}
 <div class="hex-grid"><svg width="100%" height="100%"><defs><pattern id="hexPattern" width="56" height="49" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)"><path d="M28,0 L56,14 L56,35 L28,49 L0,35 L0,14 Z" fill="none" stroke="rgba(0,240,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#hexPattern)"/></svg></div>
 <div class="wrap" style="visibility:hidden" id="mainWrap">
   <header class="hdr">
-    <div class="badge">Season 3 // Official Stats</div>
+    <div class="badge">FPL Official Stats</div>
     <h1 data-text="FRANCHISE PREMIER LEAGUE">FRANCHISE PREMIER LEAGUE</h1>
     <div class="sub">PLAYER PERFORMANCE DASHBOARD</div>
     <div class="cred">Stats compiled by Drib x Lizzo Mukkbang</div>
@@ -722,116 +722,6 @@ body::after{contain:strict}
     <button class="tab-btn" data-tab="lookup">🔍 Player Lookup</button>
   </nav>
   <div class="loading" id="loadingEl"><div class="spin-wrap"><div class="spin"></div><div class="spin-inner"></div><div class="spin-dot"></div></div><p class="typing" style="display:inline-block">LOADING MATCH DATA...</p><div class="load-bar"></div></div>
-    <!-- ═══ SEASON 3 CHAMPIONS BANNER ═══ -->
-<!-- ═══ SEASON 3 CHAMPIONS BANNER ═══ -->
-<div id="champBanner" style="margin-bottom:12px;position:relative;z-index:1;perspective:900px;cursor:pointer;user-select:none">
-  <style>
-    @keyframes champShimmer{0%,100%{opacity:.6}50%{opacity:1}}
-    @keyframes champPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-    @keyframes champRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes starPop{0%,100%{opacity:.7}50%{opacity:1;text-shadow:0 0 10px #fbbf24}}
-    .champ-card{background:linear-gradient(135deg,#06060c 0%,#0c1218 40%,#060c0e 100%);border:1px solid #14b8a640;overflow:hidden;position:relative;font-family:'Orbitron','Share Tech Mono',monospace;transform-style:preserve-3d;transition:transform 0.08s ease,box-shadow 0.08s ease;will-change:transform}
-    .champ-card:hover{box-shadow:0 20px 60px rgba(20,184,166,0.18),0 8px 32px rgba(0,0,0,0.6)}
-    .champ-top-bar{height:4px;background:linear-gradient(90deg,transparent,#14b8a6,#fbbf24,#14b8a6,transparent);animation:champShimmer 2.5s ease-in-out infinite}
-    .champ-bot-bar{height:4px;background:linear-gradient(90deg,transparent,#14b8a6,#fbbf24,#14b8a6,transparent);animation:champShimmer 2.5s ease-in-out infinite .8s}
-    .champ-inner{padding:28px 28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative}
-    .champ-trophy{flex:0 0 auto;text-align:center;animation:champRise .6s ease .1s backwards;transform:translateZ(30px)}
-    .champ-trophy-icon{font-size:52px;display:block;filter:drop-shadow(0 0 16px #fbbf2480);animation:champPulse 3s ease-in-out infinite}
-    .champ-stars{display:flex;gap:4px;justify-content:center;margin-top:8px}
-    .champ-star{color:#fbbf24;font-size:13px;animation:starPop 1.5s ease-in-out infinite}
-    .champ-star:nth-child(2){animation-delay:.2s}
-    .champ-star:nth-child(3){animation-delay:.4s}
-    .champ-star:nth-child(4){animation-delay:.6s}
-    .champ-star:nth-child(5){animation-delay:.8s}
-    .champ-center{flex:1;min-width:200px;animation:champRise .6s ease .2s backwards;transform:translateZ(20px)}
-    .champ-congrats{font-size:9px;letter-spacing:5px;color:#14b8a6;text-transform:uppercase;margin-bottom:6px;opacity:.8}
-    .champ-team-name{font-size:clamp(20px,4vw,34px);font-weight:900;letter-spacing:2px;color:#14b8a6;text-shadow:0 0 30px #14b8a660,0 0 60px #14b8a630;line-height:1.1;margin-bottom:4px}
-    .champ-season{font-size:11px;letter-spacing:4px;color:#fbbf24;margin-bottom:14px;opacity:.9}
-    .champ-divider{height:1px;background:linear-gradient(90deg,transparent,#14b8a640,#fbbf2460,#14b8a640,transparent);margin:10px 0 14px}
-    .champ-flavor{font-family:'Share Tech Mono',monospace;font-size:11px;color:#5a8080;letter-spacing:1px;line-height:1.5}
-    .champ-right{flex:0 0 auto;text-align:center;animation:champRise .6s ease .3s backwards;display:flex;flex-direction:column;gap:10px;transform:translateZ(25px)}
-    .champ-chip{background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.25);padding:8px 16px;text-align:center}
-    .champ-chip-val{font-size:20px;font-weight:700;color:#14b8a6;line-height:1}
-    .champ-chip-lbl{font-size:8px;letter-spacing:2px;color:#3d6060;margin-top:3px}
-    .champ-corner{position:absolute;top:12px;right:48px;font-size:9px;letter-spacing:3px;color:#fbbf2470;font-family:'Share Tech Mono',monospace}
-    .champ-grid-bg{position:absolute;inset:0;background:linear-gradient(90deg,#14b8a604 1px,transparent 1px),linear-gradient(0deg,#14b8a604 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
-    .champ-orb1{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#14b8a610 0%,transparent 70%);top:-80px;left:-60px;pointer-events:none;transition:transform 0.12s ease}
-    .champ-orb2{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,#fbbf2408 0%,transparent 70%);bottom:-60px;right:40px;pointer-events:none;transition:transform 0.12s ease}
-    .champ-shine{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(20,184,166,0.07) 0%,transparent 60%);pointer-events:none;transition:background 0.08s ease}
-    .champ-dismiss{position:absolute;top:10px;right:14px;background:transparent;border:none;color:#4a5568;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;transition:all .2s;z-index:2;font-family:monospace}
-    .champ-dismiss:hover{color:var(--pink)}
-  </style>
-  <div class="champ-card" id="champCard">
-    <div class="champ-grid-bg"></div>
-    <div class="champ-orb1" id="champOrb1"></div>
-    <div class="champ-orb2" id="champOrb2"></div>
-    <div class="champ-shine" id="champShine"></div>
-    <div class="champ-top-bar"></div>
-    <div style="position:relative">
-      <button class="champ-dismiss" onclick="document.getElementById('champBanner').style.display='none'" title="Dismiss">✕</button>
-      <div class="champ-corner">FPL S3 // OFFICIAL</div>
-      <div class="champ-inner">
-        <div class="champ-trophy">
-          <span class="champ-trophy-icon">🏆</span>
-          <div class="champ-stars">
-            <span class="champ-star">★</span>
-            <span class="champ-star">★</span>
-            <span class="champ-star">★</span>
-            <span class="champ-star">★</span>
-            <span class="champ-star">★</span>
-          </div>
-        </div>
-        <div class="champ-center">
-          <div class="champ-congrats">// congratulations //</div>
-          <div class="champ-team-name">Divine Ascension</div>
-          <div class="champ-season">⬥ FPL Season 3 Champions ⬥</div>
-          <div class="champ-divider"></div>
-          <div class="champ-flavor">They rose above the rest and claimed the crown.<br>Champions of the Franchise Premier League — Season 3.</div>
-        </div>
-        <div class="champ-right">
-          <div class="champ-chip">
-            <div class="champ-chip-val" style="color:#fbbf24">S3</div>
-            <div class="champ-chip-lbl">SEASON</div>
-          </div>
-          <div class="champ-chip">
-            <div class="champ-chip-val">GG</div>
-            <div class="champ-chip-lbl">WELL PLAYED</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="champ-bot-bar"></div>
-  </div>
-  <script>
-    (function(){
-      var card=document.getElementById('champCard');
-      var shine=document.getElementById('champShine');
-      var orb1=document.getElementById('champOrb1');
-      var orb2=document.getElementById('champOrb2');
-      var wrap=document.getElementById('champBanner');
-      var MAX=12;
-      wrap.addEventListener('mousemove',function(e){
-        var r=card.getBoundingClientRect();
-        var dx=(e.clientX-(r.left+r.width/2))/(r.width/2);
-        var dy=(e.clientY-(r.top+r.height/2))/(r.height/2);
-        card.style.transform='rotateX('+(-dy*MAX)+'deg) rotateY('+(dx*MAX)+'deg) scale(1.02)';
-        var sx=Math.round((dx+1)/2*100);
-        var sy=Math.round((dy+1)/2*100);
-        shine.style.background='radial-gradient(ellipse at '+sx+'% '+sy+'%,rgba(20,184,166,0.10) 0%,rgba(251,191,36,0.04) 40%,transparent 65%)';
-        orb1.style.transform='translate('+(dx*12)+'px,'+(dy*12)+'px)';
-        orb2.style.transform='translate('+(-dx*8)+'px,'+(-dy*8)+'px)';
-      });
-      wrap.addEventListener('mouseleave',function(){
-        card.style.transition='transform 0.5s cubic-bezier(.22,1,.36,1),box-shadow 0.5s ease';
-        card.style.transform='rotateX(0deg) rotateY(0deg) scale(1)';
-        shine.style.background='radial-gradient(ellipse at 30% 30%,rgba(20,184,166,0.07) 0%,transparent 60%)';
-        orb1.style.transform='translate(0,0)';
-        orb2.style.transform='translate(0,0)';
-        setTimeout(function(){card.style.transition='transform 0.08s ease,box-shadow 0.08s ease'},500);
-      });
-    })();
-  </script>
-</div>
   <div id="potwBanner"></div>
   <div class="tab-page active" id="pg-leaderboard" style="display:none">
     <div class="ctrls" id="ctrlsWrap">
@@ -869,7 +759,7 @@ body::after{contain:strict}
     </div>
   </div>
   <div class="modal-overlay" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeProfile()">✕</button><div id="profileContent"></div></div></div>
-  <div class="ftr">FPL SEASON 3 — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
+  <div class="ftr">FPL STATS — FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS</div>
 </div>
 <button class="btt" id="bttBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">▲</button>
 <div class="player-preview" id="playerPreview"></div>
@@ -3022,7 +2912,7 @@ function showScoutToast(msg){
 const DEFAULT_CONFIG={
   leagueName:'FRANCHISE PREMIER LEAGUE',
   subtitle:'PLAYER PERFORMANCE DASHBOARD',
-  seasonLabel:'Season 3 // Official Stats',
+  seasonLabel:'FPL Official Stats',
   creditLine:'Stats compiled by Drib x Lizzo Mukkbang',
   footerText:'FRANCHISE PREMIER LEAGUE — POWERED BY RIOT API — LIVE FROM GOOGLE SHEETS',
   colorPrimary:'#00f0ff',
