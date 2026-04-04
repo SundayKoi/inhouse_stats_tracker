@@ -2431,15 +2431,217 @@ function populateScoutTeamFilter(){
 
 function onScoutTeamFilter(team){
   var roster=document.getElementById('scoutTeamRoster');
-  if(!team){roster.style.display='none';roster.innerHTML='';return}
+  if(!team){roster.style.display='none';roster.innerHTML='';document.getElementById('scoutReport').innerHTML='';document.getElementById('scoutReport').classList.remove('active');return}
   var players=PD.filter(function(p){return p.team===team}).sort(function(a,b){return a.player.localeCompare(b.player)});
   if(!players.length){roster.style.display='none';return}
   var c=TC[team]||'var(--cyan)';
   roster.style.display='flex';
-  roster.innerHTML=players.map(function(p){
+  roster.innerHTML='<div class="scout-team-player" style="border-left:3px solid '+c+';background:var(--cyan-dim);color:var(--cyan);font-weight:700" onclick="renderTeamScout(\''+team.replace(/'/g,"\\'")+'\')">📊 FULL TEAM REPORT</div>'+players.map(function(p){
     var rl=ROLE_MAP[p.mainRole]||p.mainRole;
     return'<div class="scout-team-player" style="border-left:3px solid '+c+'" onclick="document.getElementById(\'scoutInput\').value=\''+p.player.replace(/'/g,"\\'")+'\';runScoutReport()">'+rl+' '+p.player+'</div>';
   }).join('');
+  // Auto-generate team report
+  renderTeamScout(team);
+}
+
+function renderTeamScout(teamName){
+  var el=document.getElementById('scoutReport');
+  var players=PD.filter(function(p){return p.team===teamName});
+  if(!players.length){el.innerHTML='<div class="nodata">NO PLAYERS FOUND</div>';el.classList.add('active');return}
+  var c=TC[teamName]||'#6366f1';
+  var rows=getFilteredRows();
+  var teamRows=rows.filter(function(r){var t=(r['Teams']||r['FPL Team']||'').trim();return t===teamName});
+
+  // Team aggregates
+  var totalGames=0,totalWins=0,totalKills=0,totalDeaths=0,totalAssists=0;
+  var matchIds={};
+  teamRows.forEach(function(r){
+    var mid=r['Match ID']||'';
+    if(mid&&!matchIds[mid]){matchIds[mid]=r['Win']==='Win';totalGames++; if(r['Win']==='Win')totalWins++;}
+  });
+  players.forEach(function(p){totalKills+=p.killsPerGame*p.games;totalDeaths+=p.deathsPerGame*p.games;totalAssists+=p.assistsPerGame*p.games});
+  var teamKDA=(totalDeaths>0)?(totalKills+totalAssists)/totalDeaths:0;
+  var teamWR=totalGames>0?totalWins/totalGames*100:0;
+
+  // Avg stats across players
+  function teamAvg(key){var s=0;players.forEach(function(p){s+=p[key]||0});return players.length?s/players.length:0}
+  function teamColAvg(col){var vals=teamRows.map(function(r){return parseFloat(r[col])||0});return vals.length?vals.reduce(function(s,v){return s+v},0)/vals.length:0}
+
+  var h='';
+
+  // === HEADER ===
+  h+='<div class="scout-header"><div><div class="scout-name" style="color:'+c+'">'+teamName+'</div>';
+  h+='<div class="scout-sub">'+players.length+' Players · '+totalGames+' Games · '+totalWins+'W '+(totalGames-totalWins)+'L · '+teamWR.toFixed(0)+'% WR</div>';
+  h+='</div></div>';
+
+  h+='<div class="scout-grid">';
+
+  // Simple row helper
+  function simpleRow(label,val,valColor){
+    return'<div class="scout-row"><span class="scout-row-label">'+label+'</span><span class="scout-row-val" style="color:'+(valColor||'var(--text)')+'">'+val+'</span></div>';
+  }
+
+  // === CARD 1: TEAM OVERVIEW ===
+  h+='<div class="scout-card"><div class="scout-card-title">Team Overview</div>';
+  h+=simpleRow('Win Rate',teamWR.toFixed(1)+'%',teamWR>=55?'var(--green)':teamWR<45?'var(--pink)':c);
+  h+=simpleRow('Team KDA',teamKDA.toFixed(2),teamKDA>=3?'var(--green)':teamKDA<2?'var(--pink)':c);
+  h+=simpleRow('Avg Game Duration',teamColAvg('Game Duration (min)').toFixed(1)+' min');
+  h+=simpleRow('Avg Kills/Game',(teamColAvg('Kills')*5).toFixed(0));
+  h+=simpleRow('Avg Deaths/Game',(teamColAvg('Deaths')*5).toFixed(0));
+  h+=simpleRow('First Blood Rate',((teamRows.filter(function(r){return r['First Blood Kill']==='Yes'}).length/Math.max(teamRows.length,1))*100).toFixed(0)+'%');
+  h+=simpleRow('First Tower Rate',((teamRows.filter(function(r){return r['First Turret Killed']==='Yes'}).length/Math.max(teamRows.length,1))*100).toFixed(0)+'%');
+  h+='</div>';
+
+  // === CARD 2: DAMAGE ===
+  h+='<div class="scout-card"><div class="scout-card-title">Damage</div>';
+  h+=simpleRow('Team DMG/Min',(teamAvg('damagePerMin')*5).toFixed(0));
+  var phys=0,mag=0,tru=0;
+  teamRows.forEach(function(r){phys+=parseFloat(r['Physical Damage'])||0;mag+=parseFloat(r['Magic Damage'])||0;tru+=parseFloat(r['True Damage'])||0});
+  var total=phys+mag+tru||1;
+  h+=simpleRow('Physical',Math.round(phys/total*100)+'%','#ef4444');
+  h+=simpleRow('Magic',Math.round(mag/total*100)+'%','#3b82f6');
+  h+=simpleRow('True',Math.round(tru/total*100)+'%','#fbbf24');
+  h+=simpleRow('Avg Vision/Min',teamAvg('visionPerMin').toFixed(2));
+  h+=simpleRow('Avg CS/Min',teamAvg('csPerMin').toFixed(1));
+  h+=simpleRow('Avg Gold/Min',teamAvg('goldPerMin').toFixed(0));
+  h+='</div>';
+
+  // === CARD 3: PLAYER BREAKDOWN ===
+  h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Player Breakdown</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 60px 50px 50px 50px 60px 60px 60px 60px;gap:4px;padding:4px 0;border-bottom:1px solid var(--border);font-family:\'Share Tech Mono\',monospace;font-size:8px;color:var(--dim);letter-spacing:1px">';
+  h+='<div>PLAYER</div><div style="text-align:center">ROLE</div><div style="text-align:center">GAMES</div><div style="text-align:center">WR%</div><div style="text-align:center">KDA</div><div style="text-align:center">K/G</div><div style="text-align:center">D/G</div><div style="text-align:center">DMG/M</div><div style="text-align:center">CS/M</div></div>';
+  players.sort(function(a,b){
+    var order=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+    return order.indexOf(a.mainRole)-order.indexOf(b.mainRole);
+  }).forEach(function(p){
+    var wrColor=p.winRate>=60?'var(--green)':p.winRate>=50?'var(--text)':'var(--pink)';
+    var kdaColor=p.kda>=4?'var(--green)':p.kda>=2.5?'var(--text)':'var(--pink)';
+    var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+    h+='<div style="display:grid;grid-template-columns:1fr 60px 50px 50px 50px 60px 60px 60px 60px;gap:4px;padding:6px 0;border-bottom:1px solid #ffffff04;align-items:center;font-family:\'Share Tech Mono\',monospace;font-size:11px;cursor:pointer" onclick="document.getElementById(\'scoutInput\').value=\''+p.player.replace(/'/g,"\\'")+'\';runScoutReport()">';
+    h+='<div style="font-weight:700;color:'+c+'">'+p.player+'</div>';
+    h+='<div style="text-align:center;color:var(--dim);font-size:9px">'+rl+'</div>';
+    h+='<div style="text-align:center">'+p.games+'</div>';
+    h+='<div style="text-align:center;color:'+wrColor+'">'+p.winRate+'%</div>';
+    h+='<div style="text-align:center;color:'+kdaColor+'">'+p.kda.toFixed(1)+'</div>';
+    h+='<div style="text-align:center">'+p.killsPerGame.toFixed(1)+'</div>';
+    h+='<div style="text-align:center">'+p.deathsPerGame.toFixed(1)+'</div>';
+    h+='<div style="text-align:center">'+Math.round(p.damagePerMin)+'</div>';
+    h+='<div style="text-align:center">'+p.csPerMin.toFixed(1)+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // === CARD 4: DRAFT INTEL (team-wide ban recommendations) ===
+  var allChamps={};
+  players.forEach(function(p){
+    (p.champData||[]).forEach(function(x){
+      if(!allChamps[x.champ])allChamps[x.champ]={games:0,wins:0,kills:0,deaths:0,assists:0,players:{}};
+      var ch=allChamps[x.champ];ch.games++;if(x.win)ch.wins++;ch.kills+=x.kills;ch.deaths+=x.deaths;ch.assists+=x.assists;
+      if(!ch.players[p.player])ch.players[p.player]=0;ch.players[p.player]++;
+    });
+  });
+  var champList=Object.entries(allChamps).map(function(e){
+    var n=e[0],d=e[1];
+    var kda=(d.kills+d.assists)/Math.max(d.deaths,1);
+    var wr=d.wins/d.games*100;
+    var threat=wr/100*kda*Math.sqrt(d.games);
+    var who=Object.keys(d.players).join(', ');
+    return{name:n,games:d.games,wins:d.wins,wr:wr,kda:kda,threat:threat,who:who};
+  });
+
+  var banPriority=champList.filter(function(ch){return ch.games>=2}).sort(function(a,b){return b.threat-a.threat});
+
+  if(banPriority.length){
+    h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Draft Intelligence — Ban Recommendations</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
+
+    // Top bans
+    h+='<div><div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--pink);margin-bottom:10px">🚫 RECOMMENDED BANS</div>';
+    banPriority.slice(0,5).forEach(function(ch,i){
+      var urgency=i===0?'MUST BAN':i===1?'HIGH PRIORITY':i===2?'STRONG BAN':'CONSIDER';
+      var urgColor=i===0?'var(--pink)':i===1?'#f97316':i===2?'var(--gold)':'var(--dim)';
+      h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ffffff04">';
+      h+='<div style="width:20px;text-align:center;font-family:\'Orbitron\',sans-serif;font-size:11px;color:'+urgColor+'">'+(i+1)+'</div>';
+      h+=champImg(ch.name,'champ-icon');
+      h+='<div style="flex:1"><div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;font-weight:700">'+ch.name+'</div>';
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--dim)">'+ch.games+'g · '+ch.wr.toFixed(0)+'% WR · '+ch.kda.toFixed(1)+' KDA · '+ch.who+'</div></div>';
+      h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:8px;letter-spacing:1px;color:'+urgColor+';text-align:right">'+urgency+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+
+    // Weak picks
+    var weakPicks=champList.filter(function(ch){return ch.games>=2&&ch.wr<50}).sort(function(a,b){return a.wr-b.wr});
+    h+='<div><div style="font-family:\'Orbitron\',sans-serif;font-size:9px;letter-spacing:2px;color:var(--green);margin-bottom:10px">✅ WEAK PICKS (let through)</div>';
+    if(weakPicks.length){
+      weakPicks.slice(0,5).forEach(function(ch){
+        h+='<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #ffffff04">';
+        h+=champImg(ch.name,'champ-icon');
+        h+='<div style="flex:1;font-family:\'Share Tech Mono\',monospace;font-size:11px">'+ch.name+'</div>';
+        h+='<div style="font-family:\'Share Tech Mono\',monospace;font-size:10px"><span style="color:var(--pink)">'+ch.wr.toFixed(0)+'% WR</span> · '+ch.kda.toFixed(1)+' KDA · '+ch.games+'g · '+ch.who+'</div>';
+        h+='</div>';
+      });
+    } else {
+      h+='<div style="color:var(--dim);font-size:10px">No weak picks detected</div>';
+    }
+    h+='</div></div></div>';
+  }
+
+  // === CARD 5: TEAM STRENGTHS & WEAKNESSES ===
+  h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Team Assessment</div>';
+  h+='<div class="scout-metrics">';
+
+  // Win rate rating
+  var wrRating=teamWR>=65?{label:'DOMINANT',color:'var(--green)'}:teamWR>=55?{label:'STRONG',color:'var(--green)'}:teamWR>=45?{label:'AVERAGE',color:'var(--gold)'}:{label:'STRUGGLING',color:'var(--pink)'};
+  h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+wrRating.color+'">'+teamWR.toFixed(0)+'%</div><div class="scout-metric-label">WIN RATE</div><div class="scout-metric-sub" style="color:'+wrRating.color+'">'+wrRating.label+'</div></div>';
+
+  // KDA rating
+  var kdaRating=teamKDA>=3.5?{label:'CLEAN',color:'var(--green)'}:teamKDA>=2.5?{label:'SOLID',color:'var(--gold)'}:{label:'MESSY',color:'var(--pink)'};
+  h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+kdaRating.color+'">'+teamKDA.toFixed(1)+'</div><div class="scout-metric-label">TEAM KDA</div><div class="scout-metric-sub" style="color:'+kdaRating.color+'">'+kdaRating.label+'</div></div>';
+
+  // Carry threat - who does the most damage?
+  var topCarry=players.slice().sort(function(a,b){return b.damagePerMin-a.damagePerMin})[0];
+  if(topCarry){
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:'+c+'">'+topCarry.player+'</div><div class="scout-metric-label">PRIMARY CARRY</div><div class="scout-metric-sub" style="color:var(--dim)">'+Math.round(topCarry.damagePerMin)+' DMG/MIN</div></div>';
+  }
+
+  // Weakest link
+  var weakLink=players.filter(function(p){return p.games>=3}).slice().sort(function(a,b){return a.kda-b.kda})[0];
+  if(weakLink){
+    h+='<div class="scout-metric"><div class="scout-metric-val" style="color:var(--pink)">'+weakLink.player+'</div><div class="scout-metric-label">TARGET PLAYER</div><div class="scout-metric-sub" style="color:var(--dim)">'+weakLink.kda.toFixed(1)+' KDA · '+weakLink.deathsPerGame.toFixed(1)+' D/G</div></div>';
+  }
+
+  h+='</div>';
+
+  // Team patterns
+  var patterns=[];
+  if(teamWR>=60)patterns.push({icon:'🏆',text:'Strong overall record — consistently winning games',color:'var(--green)'});
+  if(teamKDA>=3.5)patterns.push({icon:'✨',text:'Clean teamfighting — low deaths relative to kills',color:'var(--green)'});
+  if(teamKDA<2)patterns.push({icon:'💀',text:'Sloppy fights — high death count, punishable in early skirmishes',color:'var(--pink)'});
+  var avgVis=teamAvg('visionPerMin');
+  if(avgVis>=1.2)patterns.push({icon:'👁️',text:'Strong vision game ('+avgVis.toFixed(2)+' vis/min avg) — hard to catch off guard',color:'var(--green)'});
+  if(avgVis<0.7)patterns.push({icon:'🌑',text:'Weak vision ('+avgVis.toFixed(2)+' vis/min avg) — exploitable with flanks and picks',color:'var(--pink)'});
+  var avgCS=teamAvg('csPerMin');
+  if(avgCS>=7)patterns.push({icon:'🌾',text:'High CS team ('+avgCS.toFixed(1)+' CS/min avg) — strong scaling, try to end early',color:'var(--green)'});
+  var poolSizes=players.map(function(p){var seen={};(p.champData||[]).forEach(function(x){seen[x.champ]=1});return Object.keys(seen).length});
+  var avgPool=poolSizes.length?poolSizes.reduce(function(s,v){return s+v},0)/poolSizes.length:0;
+  if(avgPool<=4)patterns.push({icon:'🎭',text:'Narrow champion pools (avg '+avgPool.toFixed(1)+' champs) — targetable in draft',color:'var(--pink)'});
+  if(avgPool>=10)patterns.push({icon:'🎭',text:'Deep champion pools (avg '+avgPool.toFixed(1)+' champs) — flexible in draft',color:'var(--green)'});
+
+  if(patterns.length){
+    h+='<div style="margin-top:12px">';
+    patterns.forEach(function(pt){
+      h+='<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #ffffff04;font-family:\'Share Tech Mono\',monospace;font-size:10px">';
+      h+='<span>'+pt.icon+'</span><span style="color:'+pt.color+'">'+pt.text+'</span></div>';
+    });
+    h+='</div>';
+  }
+
+  h+='</div>';
+
+  h+='</div>'; // close scout-grid
+  el.innerHTML=h;
+  el.classList.add('active');
 }
 
 function renderFullScout(p){
