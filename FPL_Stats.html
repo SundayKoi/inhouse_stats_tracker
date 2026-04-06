@@ -1226,11 +1226,16 @@ function renderRecords(){const rows=getFilteredRows();const recs=[{label:'Most K
 
 // MVP
 function calcMVPScore(p){
-  // Role-adjusted percentile scoring (0-100)
-  // Compare each stat against players in the SAME ROLE with 3+ games
-  var minG=3;
+  // Role-adjusted scoring (0-100)
+  // Blends normalized stat value (how good is the raw number)
+  // with role percentile (how do you rank vs your role)
+  // This prevents small role pools from inflating scores
+  var minG=5;
   var sameRole=PD.filter(function(x){return x.mainRole===p.mainRole&&x.games>=minG});
-  if(sameRole.length<2)sameRole=PD.filter(function(x){return x.games>=minG});
+  var allQualified=PD.filter(function(x){return x.games>=minG});
+  if(sameRole.length<4)sameRole=allQualified;
+
+  // Percentile within role group
   function pctile(key,invert){
     var sorted=sameRole.slice().sort(function(a,b){return a[key]-b[key]});
     var idx=sorted.findIndex(function(x){return x.player===p.player});
@@ -1238,6 +1243,23 @@ function calcMVPScore(p){
     var pc=idx/(sorted.length-1||1)*100;
     return invert?100-pc:pc;
   }
+
+  // Normalized value: how good is the raw stat on an absolute scale
+  // Uses reasonable benchmarks for each stat
+  function normVal(key,val,maxGood,invert){
+    if(invert) val=maxGood-val;
+    var n=Math.max(0,Math.min(val/maxGood*100,100));
+    return invert?n:n;
+  }
+
+  // Blend: 40% raw normalized value + 60% role percentile
+  // This means even if you're #1 of 3 ADCs, your 75% WR only scores ~75, not 100
+  function blendedScore(key,maxGood,invert){
+    var raw=normVal(key,p[key],maxGood,invert);
+    var pct=pctile(key,invert);
+    return raw*0.4+pct*0.6;
+  }
+
   // Role-specific weights
   var weights;
   switch(p.mainRole){
@@ -1248,13 +1270,20 @@ function calcMVPScore(p){
     case'UTILITY':weights={winRate:25,kda:18,assistsPerGame:18,visionPerMin:20,deathsPerGame:12,killsPerGame:2,damagePerMin:5};break;
     default:weights={winRate:25,kda:20,damagePerMin:15,csPerMin:10,killsPerGame:10,visionPerMin:10,deathsPerGame:10};
   }
+
+  // Max benchmarks for each stat (what "perfect" looks like)
+  var maxBenchmarks={
+    winRate:100, kda:6, damagePerMin:800, csPerMin:9,
+    killsPerGame:10, deathsPerGame:8, assistsPerGame:12, visionPerMin:2
+  };
+
   var score=0,totalWeight=0;
   for(var key in weights){
     var invert=(key==='deathsPerGame');
-    score+=pctile(key,invert)*weights[key]/100;
+    var maxG=maxBenchmarks[key]||100;
+    score+=blendedScore(key,maxG,invert)*weights[key]/100;
     totalWeight+=weights[key];
   }
-  // Normalize to 0-100
   var final=Math.round(score/totalWeight*100);
   return Math.max(0,Math.min(100,final));
 }
@@ -1293,25 +1322,32 @@ function renderMVP(){
     if(rp.length)roleMvps.push({role:role,player:rp[0]});
   });
 
-  // MVP score breakdown - role-adjusted percentiles
+  // MVP score breakdown - blended raw + percentile
   function scoreBreakdown(p){
-    var minG=3;
+    var minG=5;
     var sameRole=PD.filter(function(x){return x.mainRole===p.mainRole&&x.games>=minG});
-    if(sameRole.length<2)sameRole=PD.filter(function(x){return x.games>=minG});
+    if(sameRole.length<4)sameRole=PD.filter(function(x){return x.games>=minG});
     function pctile(key,invert){
       var sorted=sameRole.slice().sort(function(a,b){return a[key]-b[key]});
       var idx=sorted.findIndex(function(x){return x.player===p.player});
       if(idx===-1)return 50;
       var pc=idx/(sorted.length-1||1)*100;
-      return Math.round(invert?100-pc:pc);
+      return invert?100-pc:pc;
+    }
+    function normVal(key,val,maxGood,invert){
+      if(invert) val=maxGood-val;
+      return Math.max(0,Math.min(val/maxGood*100,100));
+    }
+    function blended(key,maxGood,invert){
+      return Math.round(normVal(key,p[key],maxGood,invert)*0.4+pctile(key,invert)*0.6);
     }
     return {
-      wr: pctile('winRate'),
-      kda: pctile('kda'),
-      dmg: pctile('damagePerMin'),
-      kills: pctile('killsPerGame'),
-      deaths: pctile('deathsPerGame',true),
-      vision: pctile('visionPerMin')
+      wr: blended('winRate',100),
+      kda: blended('kda',6),
+      dmg: blended('damagePerMin',800),
+      kills: blended('killsPerGame',10),
+      deaths: blended('deathsPerGame',8,true),
+      vision: blended('visionPerMin',2)
     };
   }
   var mvpBD=scoreBreakdown(mvp);
