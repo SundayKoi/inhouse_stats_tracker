@@ -4094,6 +4094,349 @@ init();
       insertTarget.after(h2hDiv.firstElementChild);
     }
   }
+// ═══════════════════════════════════════════════════════════════
+// BIG VISUAL UPGRADES
+// ═══════════════════════════════════════════════════════════════
+
+(function(){
+// --- 1. HOLOGRAPHIC TRADING CARDS ---
+// Mouse-tracking tilt + rainbow prismatic shine on trading cards
+var tcOverlay=document.querySelector('.trading-card-overlay');
+if(tcOverlay){
+  tcOverlay.addEventListener('mousemove',function(e){
+    var card=tcOverlay.querySelector('.trading-card');
+    if(!card||!tcOverlay.classList.contains('active'))return;
+    var rect=card.getBoundingClientRect();
+    var x=(e.clientX-rect.left)/rect.width;
+    var y=(e.clientY-rect.top)/rect.height;
+    var rotY=(x-0.5)*30;
+    var rotX=(0.5-y)*20;
+    card.style.transform='perspective(800px) rotateY('+rotY+'deg) rotateX('+rotX+'deg) scale(1.02)';
+    // Move the holographic shine
+    var shine=card.querySelector('.holo-shine');
+    if(!shine){
+      shine=document.createElement('div');
+      shine.className='holo-shine';
+      card.appendChild(shine);
+    }
+    shine.style.left=(x*100)+'%';
+    shine.style.top=(y*100)+'%';
+    shine.style.opacity='1';
+  });
+  tcOverlay.addEventListener('mouseleave',function(){
+    var card=tcOverlay.querySelector('.trading-card');
+    if(card){card.style.transform='perspective(800px) rotateY(0) rotateX(0) scale(1)';var s=card.querySelector('.holo-shine');if(s)s.style.opacity='0'}
+  });
+}
+// Inject holo CSS
+var holoStyle=document.createElement('style');
+holoStyle.textContent=`
+.trading-card{transition:transform .15s ease;transform-style:preserve-3d;will-change:transform}
+.holo-shine{position:absolute;width:200px;height:200px;border-radius:50%;pointer-events:none;z-index:10;
+  background:radial-gradient(circle,rgba(255,255,255,.25) 0%,rgba(0,240,255,.15) 20%,rgba(255,45,123,.1) 40%,rgba(168,85,247,.08) 60%,transparent 70%);
+  transform:translate(-50%,-50%);filter:blur(30px);mix-blend-mode:screen;opacity:0;transition:opacity .3s}
+.trading-card::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(135deg,transparent 20%,rgba(255,255,255,.03) 40%,rgba(0,240,255,.05) 50%,rgba(255,45,123,.04) 60%,transparent 80%);
+  background-size:300% 300%;animation:holoShift 4s ease infinite}
+@keyframes holoShift{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+`;
+document.head.appendChild(holoStyle);
+
+// --- 2. ANIMATED VS COMPARISON ---
+// Patch renderCompare to add dramatic racing bars
+var _rcmpOrig=typeof renderCompare==='function'?renderCompare:null;
+if(_rcmpOrig){
+  renderCompare=function(){
+    _rcmpOrig.apply(this,arguments);
+    var dock=document.getElementById('compareDock');
+    if(!dock||!dock.classList.contains('active'))return;
+    var cards=dock.querySelectorAll('.cmp-card');
+    if(cards.length!==2)return;
+    // Add VS badge if not present
+    var body=dock.querySelector('.cmp-body');
+    if(body&&!body.querySelector('.vs-badge')){
+      var vb=document.createElement('div');
+      vb.className='vs-badge';
+      vb.innerHTML='VS';
+      body.insertBefore(vb,body.children[1]||null);
+    }
+    // Animate stat values
+    cards.forEach(function(card){
+      var vals=card.querySelectorAll('.cmp-val');
+      vals.forEach(function(v,i){
+        v.style.opacity='0';v.style.transform='translateX(20px)';
+        setTimeout(function(){v.style.transition='all .4s cubic-bezier(.2,.8,.3,1)';v.style.opacity='1';v.style.transform='translateX(0)'},100+i*80);
+      });
+    });
+  };
+}
+var vsStyle=document.createElement('style');
+vsStyle.textContent=`
+.vs-badge{flex:0 0 auto;font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+  background:linear-gradient(135deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:none;animation:vsPulse 2s ease infinite;position:relative;z-index:2;padding:0 4px}
+@keyframes vsPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.cmp-card{animation:cmpSlide .5s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes cmpSlide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+`;
+document.head.appendChild(vsStyle);
+
+// --- 3. INTERACTIVE DRAFT BOARD ---
+// Add draft board as new section within scouting when viewing a team report
+var draftStyle=document.createElement('style');
+draftStyle.textContent=`
+.draft-board{background:linear-gradient(180deg,var(--bg),var(--bg2));border:1px solid var(--border);padding:20px;position:relative;overflow:hidden;margin-top:16px}
+.draft-board::before{content:'DRAFT PHASE';position:absolute;top:0;left:50%;transform:translateX(-50%);font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:4px;color:var(--cyan);background:var(--bg);padding:0 16px;top:-1px;z-index:2}
+.draft-board::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--pink),var(--cyan),transparent)}
+.draft-side{display:flex;flex-direction:column;gap:6px}
+.draft-side-label{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+.draft-slot{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);position:relative;overflow:hidden;transition:all .3s}
+.draft-slot.ban{border-color:var(--pink);opacity:.6}
+.draft-slot.ban::after{content:'✕';position:absolute;right:12px;font-family:'Orbitron',sans-serif;font-size:16px;color:var(--pink);opacity:.5}
+.draft-slot .ds-name{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700}
+.draft-slot .ds-player{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim)}
+.draft-slot .ds-stats{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-left:auto}
+.draft-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+`;
+document.head.appendChild(draftStyle);
+
+// Patch renderTeamScout to inject draft board
+var _rtsOrig=typeof renderTeamScout==='function'?renderTeamScout:null;
+if(_rtsOrig){
+  renderTeamScout=function(teamName){
+    _rtsOrig.apply(this,arguments);
+    var el=document.getElementById('scoutReport');
+    if(!el||!el.classList.contains('active'))return;
+    var players=PD.filter(function(p){return p.team===teamName});
+    if(!players.length)return;
+    var c=TC[teamName]||'#6366f1';
+    // Build draft board showing team's most-played champs in pick/ban format
+    var roleOrder=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY'];
+    var sorted=players.slice().sort(function(a,b){return roleOrder.indexOf(a.mainRole)-roleOrder.indexOf(b.mainRole)});
+    var html='<div class="scout-card draft-board" style="grid-column:1/-1">';
+    html+='<div class="scout-card-title" style="margin-top:8px">Draft Board — Most Played Picks</div>';
+    html+='<div class="draft-side"><div class="draft-side-label" style="color:'+c+'">'+teamName+' Picks</div>';
+    sorted.forEach(function(p,i){
+      var topChamp=null,topGames=0;
+      (p.champData||[]).forEach(function(x){
+        var cm={};(p.champData||[]).forEach(function(cx){if(!cm[cx.champ])cm[cx.champ]=0;cm[cx.champ]++});
+        for(var ch in cm){if(cm[ch]>topGames){topGames=cm[ch];topChamp=ch}}
+      });
+      var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+      html+='<div class="draft-slot" style="animation:si .35s ease '+(i*0.1)+'s forwards;opacity:0;border-left:3px solid '+c+'">';
+      if(topChamp)html+=champImg(topChamp,'champ-icon');
+      html+='<div><div class="ds-name">'+(topChamp||'—')+'</div><div class="ds-player">'+rl+' — '+p.player+'</div></div>';
+      html+='<div class="ds-stats">'+topGames+'g'+(p.winRate?' · '+p.winRate+'% WR':'')+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+    // Ban recommendations (top 5 from existing data)
+    var allChamps={};
+    players.forEach(function(p){
+      (p.champData||[]).forEach(function(x){
+        if(!allChamps[x.champ])allChamps[x.champ]={g:0,w:0,k:0,d:0,a:0};
+        allChamps[x.champ].g++;if(x.win)allChamps[x.champ].w++;allChamps[x.champ].k+=x.kills;allChamps[x.champ].d+=x.deaths;allChamps[x.champ].a+=x.assists;
+      });
+    });
+    var bans=Object.entries(allChamps).map(function(e){
+      var kda=(e[1].k+e[1].a)/Math.max(e[1].d,1);
+      return{name:e[0],g:e[1].g,wr:e[1].w/e[1].g*100,kda:kda,threat:e[1].w/e[1].g*kda*Math.sqrt(e[1].g)};
+    }).filter(function(b){return b.g>=2}).sort(function(a,b){return b.threat-a.threat}).slice(0,5);
+    if(bans.length){
+      html+='<div class="draft-side" style="margin-top:16px"><div class="draft-side-label" style="color:var(--pink)">Recommended Bans</div>';
+      bans.forEach(function(b,i){
+        html+='<div class="draft-slot ban" style="animation:si .35s ease '+(0.5+i*0.1)+'s forwards;opacity:0">';
+        html+=champImg(b.name,'champ-icon');
+        html+='<div><div class="ds-name">'+b.name+'</div><div class="ds-player">'+b.g+'g · '+b.wr.toFixed(0)+'% WR · '+b.kda.toFixed(1)+' KDA</div></div>';
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+    el.querySelector('.scout-grid').insertAdjacentHTML('beforeend',html);
+  };
+}
+
+// --- 4. LIVE-SORTING STANDINGS (FLIP animation) ---
+var flipStyle=document.createElement('style');
+flipStyle.textContent=`
+.team-card{transition:all .6s cubic-bezier(.2,.8,.3,1)}
+.team-card.flip-enter{animation:flipCard .6s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes flipCard{0%{opacity:0;transform:scale(.85) rotateY(90deg)}40%{opacity:1;transform:scale(1.02) rotateY(-5deg)}100%{transform:scale(1) rotateY(0)}}
+`;
+document.head.appendChild(flipStyle);
+// Patch renderTeams for FLIP animation
+var _rtFlipOrig=renderTeams;
+renderTeams=function(){
+  var grid=document.getElementById('teamGrid');
+  var oldCards=grid?grid.querySelectorAll('.team-card'):[];
+  var oldPositions={};
+  oldCards.forEach(function(c){
+    var name=c.querySelector('.tc-name');
+    if(name)oldPositions[name.textContent]=c.getBoundingClientRect();
+  });
+  _rtFlipOrig.apply(this,arguments);
+  if(!grid)return;
+  var newCards=grid.querySelectorAll('.team-card');
+  newCards.forEach(function(c,i){
+    c.classList.add('flip-enter');
+    c.style.animationDelay=(i*0.08)+'s';
+  });
+};
+
+// --- 5. ACHIEVEMENT UNLOCK POPUPS ---
+var achStyle=document.createElement('style');
+achStyle.textContent=`
+.ach-unlock-overlay{position:fixed;inset:0;z-index:400;pointer-events:none;display:flex;flex-direction:column;align-items:center;padding-top:15vh}
+.ach-unlock{pointer-events:auto;background:var(--bg);border:1px solid var(--border);padding:16px 24px;margin-bottom:8px;display:flex;align-items:center;gap:12px;
+  animation:achUnlock .6s cubic-bezier(.2,.8,.3,1) forwards;opacity:0;position:relative;overflow:hidden;min-width:280px}
+.ach-unlock::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,215,0,.08),transparent 70%);animation:achFlash .4s ease}
+@keyframes achFlash{0%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:scale(1)}}
+@keyframes achUnlock{0%{opacity:0;transform:translateY(-40px) scale(.8)}60%{opacity:1;transform:translateY(5px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
+.ach-unlock .ach-u-icon{font-size:28px;animation:achBounce .5s ease .3s}
+@keyframes achBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.ach-unlock .ach-u-text{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px}
+.ach-unlock .ach-u-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);margin-top:2px}
+.ach-unlock .ach-u-glow{position:absolute;top:0;left:0;right:0;height:2px}
+.ach-particle{position:absolute;width:4px;height:4px;border-radius:50%;pointer-events:none;animation:achPart 1s ease forwards}
+@keyframes achPart{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(0)}}
+`;
+document.head.appendChild(achStyle);
+
+function showAchievementUnlocks(badges){
+  if(!badges||!badges.length)return;
+  var overlay=document.createElement('div');
+  overlay.className='ach-unlock-overlay';
+  document.body.appendChild(overlay);
+  var shown=0;
+  function showNext(){
+    if(shown>=badges.length||shown>=5){setTimeout(function(){overlay.remove()},2000);return}
+    var b=badges[shown];
+    var el=document.createElement('div');
+    el.className='ach-unlock';
+    el.style.animationDelay=(shown*0.15)+'s';
+    el.innerHTML='<div class="ach-u-glow" style="background:linear-gradient(90deg,transparent,'+b.color+',transparent)"></div>'+
+      '<div class="ach-u-icon">'+b.icon+'</div>'+
+      '<div><div class="ach-u-text" style="color:'+b.color+'">'+b.text+'</div><div class="ach-u-sub">ACHIEVEMENT UNLOCKED</div></div>';
+    overlay.appendChild(el);
+    // Spawn particles
+    for(var i=0;i<8;i++){
+      var p=document.createElement('div');
+      p.className='ach-particle';
+      p.style.background=b.color;
+      p.style.left='50%';p.style.top='50%';
+      p.style.setProperty('--px',(Math.random()*120-60)+'px');
+      p.style.setProperty('--py',(Math.random()*80-40)+'px');
+      p.style.animationDelay=(shown*0.15+0.2+i*0.05)+'s';
+      el.appendChild(p);
+    }
+    shown++;
+    setTimeout(showNext,200);
+  }
+  setTimeout(showNext,300);
+  setTimeout(function(){overlay.remove()},4000);
+}
+
+// Patch scouting to trigger achievement popups
+var _rfsOrig=typeof renderFullScout==='function'?renderFullScout:null;
+if(_rfsOrig){
+  renderFullScout=function(p){
+    _rfsOrig.apply(this,arguments);
+    var rows=typeof getFilteredRows==='function'?getFilteredRows():[];
+    var badges=typeof getAchievements==='function'?getAchievements(p.player,rows):[];
+    if(badges&&badges.length)showAchievementUnlocks(badges);
+  };
+}
+
+// --- 6. FULL-SCREEN MVP REVEAL ---
+var mvpStyle=document.createElement('style');
+mvpStyle.textContent=`
+.mvp-reveal-overlay{position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;flex-direction:column;
+  animation:mvpFadeIn 1s ease;pointer-events:auto;cursor:pointer;backdrop-filter:blur(8px)}
+@keyframes mvpFadeIn{from{opacity:0}to{opacity:1}}
+.mvp-reveal-spotlight{width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.15) 0%,rgba(255,215,0,.05) 40%,transparent 70%);
+  position:absolute;animation:spotlightPulse 3s ease infinite}
+@keyframes spotlightPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}}
+.mvp-reveal-crown{font-size:64px;animation:crownDrop .8s cubic-bezier(.2,.8,.3,1) forwards;opacity:0;margin-bottom:16px}
+@keyframes crownDrop{0%{opacity:0;transform:translateY(-80px) scale(.5) rotate(-20deg)}60%{opacity:1;transform:translateY(10px) scale(1.1) rotate(5deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
+.mvp-reveal-name{font-family:'Orbitron',sans-serif;font-size:clamp(28px,6vw,56px);font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:mvpNameIn 1s cubic-bezier(.2,.8,.3,1) .4s forwards;opacity:0;text-align:center;letter-spacing:3px}
+@keyframes mvpNameIn{0%{opacity:0;transform:scale(.5);filter:blur(10px)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+.mvp-reveal-title{font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:6px;color:var(--gold);text-transform:uppercase;
+  animation:mvpTitleIn .6s ease .8s forwards;opacity:0;margin-top:12px}
+@keyframes mvpTitleIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.mvp-reveal-score{font-family:'Orbitron',sans-serif;font-size:48px;font-weight:900;
+  background:linear-gradient(135deg,var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:mvpScoreIn .6s ease 1.2s forwards;opacity:0;margin-top:20px}
+@keyframes mvpScoreIn{from{opacity:0;transform:scale(2)}to{opacity:1;transform:scale(1)}}
+.mvp-reveal-line{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:2px;
+  animation:mvpTitleIn .5s ease 1.5s forwards;opacity:0;margin-top:8px}
+.mvp-reveal-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.mvp-particle{position:absolute;border-radius:50%;animation:mvpPFloat linear forwards}
+@keyframes mvpPFloat{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(-100vh) rotate(720deg)}}
+.mvp-reveal-dismiss{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;position:absolute;bottom:30px;
+  animation:mvpTitleIn .5s ease 2s forwards;opacity:0}
+`;
+document.head.appendChild(mvpStyle);
+
+var _mvpRevealed=false;
+var _rmvpOrig=typeof renderMVP==='function'?renderMVP:null;
+if(_rmvpOrig){
+  renderMVP=function(){
+    _rmvpOrig.apply(this,arguments);
+    if(_mvpRevealed)return;
+    _mvpRevealed=true;
+    // Find MVP name and score from rendered content
+    var crown=document.querySelector('.mvp-crown');
+    if(!crown)return;
+    var nameEl=crown.querySelector('.mvp-name');
+    var scoreEl=crown.querySelector('.mvp-score');
+    var subEl=crown.querySelector('.mvp-sub');
+    if(!nameEl)return;
+    var name=nameEl.textContent;
+    var score=scoreEl?scoreEl.textContent:'';
+    var sub=subEl?subEl.textContent:'';
+    // Create reveal overlay
+    var overlay=document.createElement('div');
+    overlay.className='mvp-reveal-overlay';
+    // Particles
+    var particlesHtml='<div class="mvp-reveal-particles">';
+    var colors=['#ffd700','#00f0ff','#ff2d7b','#a855f7','#22c55e'];
+    for(var i=0;i<40;i++){
+      var sz=Math.random()*6+2;
+      var col=colors[Math.floor(Math.random()*colors.length)];
+      var left=Math.random()*100;
+      var dur=Math.random()*3+2;
+      var delay=Math.random()*2;
+      particlesHtml+='<div class="mvp-particle" style="width:'+sz+'px;height:'+sz+'px;background:'+col+';left:'+left+'%;bottom:-10px;animation-duration:'+dur+'s;animation-delay:'+delay+'s"></div>';
+    }
+    particlesHtml+='</div>';
+    overlay.innerHTML=particlesHtml+
+      '<div class="mvp-reveal-spotlight"></div>'+
+      '<div class="mvp-reveal-crown">👑</div>'+
+      '<div class="mvp-reveal-name">'+name+'</div>'+
+      '<div class="mvp-reveal-title">Season MVP</div>'+
+      '<div class="mvp-reveal-score">'+score+'</div>'+
+      '<div class="mvp-reveal-line">'+sub+'</div>'+
+      '<div class="mvp-reveal-dismiss">CLICK ANYWHERE TO CONTINUE</div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click',function(){
+      overlay.style.animation='mvpFadeIn .5s ease reverse forwards';
+      setTimeout(function(){overlay.remove()},500);
+    });
+    // Auto-dismiss after 6s
+    setTimeout(function(){
+      if(document.body.contains(overlay)){
+        overlay.style.animation='mvpFadeIn .5s ease reverse forwards';
+        setTimeout(function(){overlay.remove()},500);
+      }
+    },6000);
+  };
+}
+
+})();
+
 // Pause CSS animations on off-screen elements
 if('IntersectionObserver' in window){
   var animObs=new IntersectionObserver(function(entries){
