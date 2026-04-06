@@ -2452,6 +2452,11 @@ var _scoutPlayer='';
 
 function onScoutSearch(val){
   var sg=document.getElementById('scoutSuggestions');if(!sg)return;
+  // Clear team roster and reset dropdown when typing a player name
+  var roster=document.getElementById('scoutTeamRoster');
+  if(roster){roster.style.display='none';roster.innerHTML=''}
+  var teamSel=document.getElementById('scoutTeamFilter');
+  if(teamSel)teamSel.value='';
   if(!val||val.length<1){sg.innerHTML='';return}
   var q=val.toLowerCase();
   var matches=PD.filter(function(p){return p.player.toLowerCase().includes(q)}).slice(0,8);
