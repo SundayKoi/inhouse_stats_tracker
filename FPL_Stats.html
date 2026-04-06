@@ -4321,10 +4321,12 @@ function populateHmFilters(){
 }
 
 window.onHmTeamFilter=function(){
-  // Team changed — just let renderHeatmap handle everything via populateHmFilters
   var pSel=document.getElementById('hmPlayerFilter');
-  if(pSel)pSel.value=''; // reset player when team changes
+  if(pSel)pSel.value='';
 };
+
+// Expose renderHeatmap globally so onchange handlers can call it
+window.renderHeatmap=renderHeatmap;
 
 function renderHeatmap(){
   var el=document.getElementById('heatmapContent');

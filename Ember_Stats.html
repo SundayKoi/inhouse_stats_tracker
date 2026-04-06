@@ -4333,6 +4333,9 @@ window.onHmTeamFilter=function(){
   if(pSel)pSel.value='';
 };
 
+// Expose renderHeatmap globally so onchange handlers can call it
+window.renderHeatmap=renderHeatmap;
+
 function renderHeatmap(){
   var el=document.getElementById('heatmapContent');
   if(!el)return;
