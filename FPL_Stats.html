@@ -4094,6 +4094,21 @@ init();
       insertTarget.after(h2hDiv.firstElementChild);
     }
   }
+// Pause CSS animations on off-screen elements
+if('IntersectionObserver' in window){
+  var animObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      e.target.style.animationPlayState=e.isIntersecting?'running':'paused';
+    });
+  },{rootMargin:'100px'});
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(function(){
+      document.querySelectorAll('.card,.team-card,.record-card,.potw,.brow').forEach(function(el){animObs.observe(el)});
+    },2000);
+  });
+}
+</script>
+<script>
 // ═══════════════════════════════════════════════════════════════
 // BIG VISUAL UPGRADES
 // ═══════════════════════════════════════════════════════════════
@@ -4436,20 +4451,6 @@ if(_rmvpOrig){
 }
 
 })();
-
-// Pause CSS animations on off-screen elements
-if('IntersectionObserver' in window){
-  var animObs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      e.target.style.animationPlayState=e.isIntersecting?'running':'paused';
-    });
-  },{rootMargin:'100px'});
-  document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(function(){
-      document.querySelectorAll('.card,.team-card,.record-card,.potw,.brow').forEach(function(el){animObs.observe(el)});
-    },2000);
-  });
-}
 </script>
 </body>
 </html>
