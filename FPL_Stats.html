@@ -1225,7 +1225,39 @@ function sortChamps(k){if(champSort.key===k)champSort.asc=!champSort.asc;else{ch
 function renderRecords(){const rows=getFilteredRows();const recs=[{label:'Most Kills (Single Game)',key:'Kills'},{label:'Most Deaths (Single Game)',key:'Deaths'},{label:'Most Assists (Single Game)',key:'Assists'},{label:'Highest KDA (Single Game)',key:'_kda',calc:r=>{const k=parseFloat(r['Kills'])||0,d=parseFloat(r['Deaths'])||0,a=parseFloat(r['Assists'])||0;return(k+a)/Math.max(d,1)}},{label:'Most CS (Single Game)',key:'CS'},{label:'Most Damage (Single Game)',key:'Total Damage to Champions'},{label:'Most Vision Score (Single Game)',key:'Vision Score'},{label:'Most Gold (Single Game)',key:'Gold Earned'},{label:'Most Turret Kills (Single Game)',key:'Turret Kills'},{label:'Most Wards Placed (Single Game)',key:'Wards Placed'},{label:'Fastest Win (Minutes)',key:'_fastest',calc:r=>r['Win']==='Win'?(parseFloat(r['Game Duration (min)'])||999):999,invert:true},{label:'Longest Game (Minutes)',key:'Game Duration (min)'}];let h='';recs.forEach(rec=>{let best=null,bv=rec.invert?Infinity:-Infinity,br=null;rows.forEach(r=>{let n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];const v=rec.calc?rec.calc(r):(parseFloat(r[rec.key])||0);if(rec.invert?(v<bv):(v>bv)){bv=v;br=r;best=n}});if(!best||bv===Infinity||bv===-Infinity)return;const ch=br?br['Champion']:'';const dt=br?parseDate(br['Date']||''):'';const tm=br?(br['Teams']||''):'';const c=TC[tm]||'var(--cyan)';const dv=rec.key==='_kda'?bv.toFixed(2):rec.key==='_fastest'?bv.toFixed(1):Math.round(bv).toLocaleString();h+=`<div class="record-card"><div class="rec-cat">${rec.label}</div><div class="rec-val" style="color:${c}">${dv}</div><div class="rec-player" style="cursor:pointer" onclick="openProfile('${best.replace(/'/g,"\\'")}')">${best}</div><div class="rec-detail">${ch} · ${tm} · ${formatDate(dt)}</div></div>`});document.getElementById('recordsGrid').innerHTML=h}
 
 // MVP
-function calcMVPScore(p){return+(p.kda*2+p.winRate*0.3+p.damagePerMin*0.02+p.csPerMin*3+p.visionPerMin*10+(p.killsPerGame-p.deathsPerGame)*2).toFixed(1)}
+function calcMVPScore(p){
+  // Role-adjusted percentile scoring (0-100)
+  // Compare each stat against players in the SAME ROLE with 3+ games
+  var minG=3;
+  var sameRole=PD.filter(function(x){return x.mainRole===p.mainRole&&x.games>=minG});
+  if(sameRole.length<2)sameRole=PD.filter(function(x){return x.games>=minG});
+  function pctile(key,invert){
+    var sorted=sameRole.slice().sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===p.player});
+    if(idx===-1)return 50;
+    var pc=idx/(sorted.length-1||1)*100;
+    return invert?100-pc:pc;
+  }
+  // Role-specific weights
+  var weights;
+  switch(p.mainRole){
+    case'TOP':weights={winRate:25,kda:20,damagePerMin:18,csPerMin:12,killsPerGame:10,visionPerMin:5,deathsPerGame:10};break;
+    case'JUNGLE':weights={winRate:25,kda:20,damagePerMin:12,killsPerGame:12,assistsPerGame:10,visionPerMin:11,deathsPerGame:10};break;
+    case'MIDDLE':weights={winRate:25,kda:20,damagePerMin:20,csPerMin:10,killsPerGame:10,visionPerMin:5,deathsPerGame:10};break;
+    case'BOTTOM':weights={winRate:25,kda:18,damagePerMin:22,csPerMin:12,killsPerGame:10,visionPerMin:3,deathsPerGame:10};break;
+    case'UTILITY':weights={winRate:25,kda:18,assistsPerGame:18,visionPerMin:20,deathsPerGame:12,killsPerGame:2,damagePerMin:5};break;
+    default:weights={winRate:25,kda:20,damagePerMin:15,csPerMin:10,killsPerGame:10,visionPerMin:10,deathsPerGame:10};
+  }
+  var score=0,totalWeight=0;
+  for(var key in weights){
+    var invert=(key==='deathsPerGame');
+    score+=pctile(key,invert)*weights[key]/100;
+    totalWeight+=weights[key];
+  }
+  // Normalize to 0-100
+  var final=Math.round(score/totalWeight*100);
+  return Math.max(0,Math.min(100,final));
+}
 function renderMVP(){
   const mg=5;
   const el=PD.filter(p=>p.games>=mg);
@@ -1261,19 +1293,29 @@ function renderMVP(){
     if(rp.length)roleMvps.push({role:role,player:rp[0]});
   });
 
-  // MVP score breakdown components
+  // MVP score breakdown - role-adjusted percentiles
   function scoreBreakdown(p){
+    var minG=3;
+    var sameRole=PD.filter(function(x){return x.mainRole===p.mainRole&&x.games>=minG});
+    if(sameRole.length<2)sameRole=PD.filter(function(x){return x.games>=minG});
+    function pctile(key,invert){
+      var sorted=sameRole.slice().sort(function(a,b){return a[key]-b[key]});
+      var idx=sorted.findIndex(function(x){return x.player===p.player});
+      if(idx===-1)return 50;
+      var pc=idx/(sorted.length-1||1)*100;
+      return Math.round(invert?100-pc:pc);
+    }
     return {
-      kda: +(p.kda*2).toFixed(1),
-      wr: +(p.winRate*0.3).toFixed(1),
-      dmg: +(p.damagePerMin*0.02).toFixed(1),
-      cs: +(p.csPerMin*3).toFixed(1),
-      vis: +(p.visionPerMin*10).toFixed(1),
-      kd: +((p.killsPerGame-p.deathsPerGame)*2).toFixed(1)
+      wr: pctile('winRate'),
+      kda: pctile('kda'),
+      dmg: pctile('damagePerMin'),
+      kills: pctile('killsPerGame'),
+      deaths: pctile('deathsPerGame',true),
+      vision: pctile('visionPerMin')
     };
   }
   var mvpBD=scoreBreakdown(mvp);
-  var bdMax=Math.max(mvpBD.kda,mvpBD.wr,mvpBD.dmg,mvpBD.cs,mvpBD.vis,Math.abs(mvpBD.kd));
+  var bdMax=100;
 
   let h='';
 
@@ -1298,8 +1340,8 @@ function renderMVP(){
     // MVP stat breakdown
     h+='<div class="card" style="margin-bottom:0">';
     h+='<div class="card-t" style="color:'+c+'">'+mvp.player+' · Score Breakdown</div>';
-    h+='<div class="card-s">What makes them #1</div>';
-    var bdItems=[{label:'KDA Weight',val:mvpBD.kda},{label:'Win Rate',val:mvpBD.wr},{label:'Damage',val:mvpBD.dmg},{label:'CS/min',val:mvpBD.cs},{label:'Vision',val:mvpBD.vis},{label:'K-D Diff',val:mvpBD.kd}];
+    h+='<div class="card-s">Percentile vs other '+(ROLE_MAP[mvp.mainRole]||mvp.mainRole)+'s</div>';
+    var bdItems=[{label:'Win Rate',val:mvpBD.wr},{label:'KDA',val:mvpBD.kda},{label:'Damage',val:mvpBD.dmg},{label:'Kills',val:mvpBD.kills},{label:'Survival',val:mvpBD.deaths},{label:'Vision',val:mvpBD.vision}];
     bdItems.forEach(function(item){
       var pct=Math.abs(item.val)/bdMax*100;
       var barColor=item.val>=0?c:'var(--pink)';
