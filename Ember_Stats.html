@@ -836,7 +836,7 @@ for(let i=0;i<NUM_PARTICLES;i++)pts.push(new P);
 function anim(ts){if(paused)return;requestAnimationFrame(anim);if(ts-lastFrame<FRAME_MS)return;lastFrame=ts;cx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d2=dx*dx+dy*dy;if(d2<MAX_DIST*MAX_DIST){const d=Math.sqrt(d2);cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,240,255,${.03*(1-d/MAX_DIST)})`;cx.lineWidth=.5;cx.stroke()}}pts.forEach(p=>{p.update();p.draw()});};requestAnimationFrame(anim)})();
 
 // DATA CONFIG
-const SHEET_ID='PASTE_TITAN_SHEET_ID_HERE';
+const SHEET_ID='11DVStR_JBFOtGl89CCWoI8u7dVnfBXGeVEBIIfWjvqM';
 
 // XSS Protection — sanitize all sheet data before rendering
 function esc(s){if(typeof s!=='string')return s;return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
