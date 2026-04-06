@@ -4115,6 +4115,353 @@ if('IntersectionObserver' in window){
 </script>
 <script>
 // ═══════════════════════════════════════════════════════════════
+// ENHANCED TICKER + HEATMAP + RIVALRY CARDS
+// ═══════════════════════════════════════════════════════════════
+
+(function(){
+
+// ── 1. ENHANCED TICKER ──
+// Add dramatic emoji-driven items + streak/record alerts
+var _btOrig=buildTicker;
+buildTicker=function(){
+  _btOrig.apply(this,arguments);
+  if(!PD.length)return;
+  var track=document.getElementById('tickerTrack');
+  if(!track)return;
+  var rows=typeof getFilteredRows==='function'?getFilteredRows():[];
+  var extraItems=[];
+  // Highest single-game kills
+  var maxKillRow=null,maxKillVal=0;
+  rows.forEach(function(r){var k=parseFloat(r['Kills'])||0;if(k>maxKillVal){maxKillVal=k;maxKillRow=r}});
+  if(maxKillRow&&maxKillVal>=10){
+    var n=maxKillRow['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+    extraItems.push({icon:'🔥',label:'MONSTER GAME',player:n,val:maxKillVal+' KILLS IN ONE GAME'});
+  }
+  // Win streaks
+  var playerStreaks={};
+  rows.forEach(function(r){
+    var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];if(!n)return;
+    if(!playerStreaks[n])playerStreaks[n]={cur:0,max:0,type:''};
+    var w=r['Win']==='Win';
+    if(w){playerStreaks[n].cur++;if(playerStreaks[n].cur>playerStreaks[n].max){playerStreaks[n].max=playerStreaks[n].cur;playerStreaks[n].type='W'}}
+    else playerStreaks[n].cur=0;
+  });
+  var bestStreak=null,bestStreakVal=0;
+  for(var p in playerStreaks){if(playerStreaks[p].max>bestStreakVal){bestStreakVal=playerStreaks[p].max;bestStreak=p}}
+  if(bestStreak&&bestStreakVal>=4)extraItems.push({icon:'⚡',label:'LONGEST WIN STREAK',player:bestStreak,val:bestStreakVal+'W'});
+  // Most deaths in single game
+  var maxDeathRow=null,maxDeathVal=0;
+  rows.forEach(function(r){var d=parseFloat(r['Deaths'])||0;if(d>maxDeathVal){maxDeathVal=d;maxDeathRow=r}});
+  if(maxDeathRow&&maxDeathVal>=10){
+    var dn=maxDeathRow['Summoner Name']||'';if(NAME_MERGES[dn])dn=NAME_MERGES[dn];
+    extraItems.push({icon:'💀',label:'MOST DEATHS',player:dn,val:maxDeathVal+' IN ONE GAME'});
+  }
+  // Highest damage game
+  var maxDmgRow=null,maxDmgVal=0;
+  rows.forEach(function(r){var d=parseFloat(r['Total Damage to Champions'])||0;if(d>maxDmgVal){maxDmgVal=d;maxDmgRow=r}});
+  if(maxDmgRow&&maxDmgVal>=30000){
+    var dmn=maxDmgRow['Summoner Name']||'';if(NAME_MERGES[dmn])dmn=NAME_MERGES[dmn];
+    extraItems.push({icon:'💥',label:'DAMAGE RECORD',player:dmn,val:Math.round(maxDmgVal).toLocaleString()+' DMG'});
+  }
+  // Perfect KDA games (0 deaths)
+  var perfectGames={};
+  rows.forEach(function(r){
+    var d=parseFloat(r['Deaths'])||0;if(d===0){
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      if(!perfectGames[n])perfectGames[n]=0;perfectGames[n]++;
+    }
+  });
+  var topPerfect=null,topPerfectVal=0;
+  for(var pp in perfectGames){if(perfectGames[pp]>topPerfectVal){topPerfectVal=perfectGames[pp];topPerfect=pp}}
+  if(topPerfect&&topPerfectVal>=2)extraItems.push({icon:'🛡️',label:'UNKILLABLE',player:topPerfect,val:topPerfectVal+' DEATHLESS GAMES'});
+  // Append extra items to ticker
+  if(extraItems.length){
+    var extraHtml=extraItems.map(function(i){
+      return'<div class="ticker-item"><span class="ti-label" style="color:var(--text)">'+i.icon+' '+i.label+':</span><span class="ti-player">'+i.player+'</span><span class="ti-val">'+i.val+'</span></div><span class="ticker-sep">◆</span>';
+    }).join('');
+    track.innerHTML=track.innerHTML.replace(/<\/div>$/,'')+extraHtml+track.innerHTML;
+  }
+};
+
+// ── 2. HEAD-TO-HEAD HEATMAP ──
+// Inject heatmap CSS
+var hmStyle=document.createElement('style');
+hmStyle.textContent=`
+.heatmap-wrap{overflow-x:auto;margin-top:16px}
+.heatmap-table{border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:10px}
+.heatmap-table th{padding:6px 4px;text-align:center;font-size:8px;letter-spacing:1px;color:var(--dim);writing-mode:vertical-lr;transform:rotate(180deg);min-width:36px;max-width:36px;border-bottom:1px solid var(--border)}
+.heatmap-table th.hm-row-head{writing-mode:horizontal-tb;transform:none;text-align:right;padding-right:8px;min-width:100px;max-width:150px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heatmap-table td{width:36px;height:36px;text-align:center;font-weight:700;font-size:11px;cursor:pointer;transition:all .2s;position:relative;border:1px solid var(--bg)}
+.heatmap-table td:hover{transform:scale(1.3);z-index:5;box-shadow:0 0 12px rgba(0,0,0,.5)}
+.heatmap-table td.hm-self{background:var(--bg3)!important;color:var(--dim);cursor:default}
+.heatmap-table td.hm-self:hover{transform:none;box-shadow:none}
+.hm-tooltip{position:fixed;z-index:400;background:var(--bg);border:1px solid var(--border);padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:11px;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.6);min-width:180px;display:none}
+.hm-tooltip.visible{display:block}
+.hm-tooltip .hmt-title{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:1px;margin-bottom:6px;color:var(--cyan)}
+.hm-tooltip .hmt-row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #ffffff06}
+.hm-tooltip .hmt-val{font-weight:700}
+`;
+document.head.appendChild(hmStyle);
+
+// Add heatmap tab
+var tabNav=document.getElementById('tabNav');
+if(tabNav&&!document.querySelector('[data-tab="heatmap"]')){
+  var hmBtn=document.createElement('button');
+  hmBtn.className='tab-btn';
+  hmBtn.dataset.tab='heatmap';
+  hmBtn.textContent='Heatmap';
+  hmBtn.addEventListener('click',function(){switchTab('heatmap',true)});
+  tabNav.appendChild(hmBtn);
+}
+// Add heatmap page
+var mainWrap=document.querySelector('.wrap');
+if(mainWrap&&!document.getElementById('pg-heatmap')){
+  var hmPage=document.createElement('div');
+  hmPage.className='tab-page';
+  hmPage.id='pg-heatmap';
+  hmPage.innerHTML='<div class="card"><div class="card-t">⚔ Player vs Player Heatmap</div><div class="card-s">Win/loss record of every player against every other player they\'ve faced</div><div class="heatmap-wrap" id="heatmapContent"></div></div>';
+  // Insert before footer
+  var ftr=mainWrap.querySelector('.ftr');
+  if(ftr)mainWrap.insertBefore(hmPage,ftr);
+  else mainWrap.appendChild(hmPage);
+}
+// Add tooltip element
+if(!document.getElementById('hmTooltip')){
+  var tt=document.createElement('div');
+  tt.className='hm-tooltip';
+  tt.id='hmTooltip';
+  document.body.appendChild(tt);
+}
+
+// Patch switchTab/renderCurrentTab
+var _rctOrig=renderCurrentTab;
+renderCurrentTab=function(){
+  _rctOrig.apply(this,arguments);
+  if(curTab==='heatmap')renderHeatmap();
+};
+
+function renderHeatmap(){
+  var el=document.getElementById('heatmapContent');
+  if(!el)return;
+  var rows=typeof getFilteredRows==='function'?getFilteredRows():[];
+  // Group by Match ID
+  var matches={};
+  rows.forEach(function(r){
+    var mid=r['Match ID']||'';if(!mid)return;
+    if(!matches[mid])matches[mid]=[];
+    matches[mid].push(r);
+  });
+  // Build player vs player W/L
+  var h2h={};
+  var playerSet={};
+  for(var mid in matches){
+    var mRows=matches[mid];
+    // Separate by team
+    var teams={};
+    mRows.forEach(function(r){
+      var t=(r['Teams']||'').trim();if(!t)return;
+      if(!teams[t])teams[t]=[];
+      var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
+      teams[t].push({name:n,win:r['Win']==='Win'});
+      playerSet[n]=1;
+    });
+    var tNames=Object.keys(teams);
+    if(tNames.length!==2)continue;
+    var t1=teams[tNames[0]],t2=teams[tNames[1]];
+    // Each player on team1 vs each on team2
+    t1.forEach(function(p1){
+      t2.forEach(function(p2){
+        if(!h2h[p1.name])h2h[p1.name]={};
+        if(!h2h[p1.name][p2.name])h2h[p1.name][p2.name]={w:0,l:0};
+        if(p1.win){h2h[p1.name][p2.name].w++}else{h2h[p1.name][p2.name].l++}
+        if(!h2h[p2.name])h2h[p2.name]={};
+        if(!h2h[p2.name][p1.name])h2h[p2.name][p1.name]={w:0,l:0};
+        if(p2.win){h2h[p2.name][p1.name].w++}else{h2h[p2.name][p1.name].l++}
+      });
+    });
+  }
+  var players=Object.keys(playerSet).sort();
+  if(!players.length){el.innerHTML='<div class="nodata">NO DATA</div>';return}
+  // Render table
+  var html='<table class="heatmap-table"><thead><tr><th></th>';
+  players.forEach(function(p){html+='<th>'+p+'</th>'});
+  html+='</tr></thead><tbody>';
+  players.forEach(function(p1){
+    html+='<tr><th class="hm-row-head" style="color:'+(TC[PD.find(function(x){return x.player===p1})?.team]||'var(--text)')+'">'+p1+'</th>';
+    players.forEach(function(p2){
+      if(p1===p2){html+='<td class="hm-self">—</td>';return}
+      var rec=h2h[p1]&&h2h[p1][p2]?h2h[p1][p2]:{w:0,l:0};
+      var total=rec.w+rec.l;
+      if(total===0){html+='<td style="background:var(--bg2);color:var(--dim)">—</td>';return}
+      var wr=rec.w/total;
+      // Color: green for winning, red for losing
+      var r=Math.round(255*(1-wr));
+      var g=Math.round(200*wr);
+      var bg='rgba('+r+','+g+',60,0.25)';
+      var textCol=wr>=0.6?'var(--green)':wr<=0.4?'var(--pink)':'var(--text)';
+      html+='<td style="background:'+bg+';color:'+textCol+'" data-p1="'+p1+'" data-p2="'+p2+'" data-w="'+rec.w+'" data-l="'+rec.l+'" onmouseenter="showHmTooltip(event,this)" onmouseleave="hideHmTooltip()">'+rec.w+'-'+rec.l+'</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  el.innerHTML=html;
+}
+
+// Tooltip handlers
+window.showHmTooltip=function(e,td){
+  var tt=document.getElementById('hmTooltip');
+  var p1=td.dataset.p1,p2=td.dataset.p2,w=td.dataset.w,l=td.dataset.l;
+  var total=parseInt(w)+parseInt(l);
+  var wr=total>0?(parseInt(w)/total*100).toFixed(0):'0';
+  tt.innerHTML='<div class="hmt-title">'+p1+' vs '+p2+'</div>'+
+    '<div class="hmt-row"><span>Record</span><span class="hmt-val">'+w+'W - '+l+'L</span></div>'+
+    '<div class="hmt-row"><span>Win Rate</span><span class="hmt-val" style="color:'+(parseInt(wr)>=50?'var(--green)':'var(--pink)')+'">'+wr+'%</span></div>'+
+    '<div class="hmt-row"><span>Games</span><span class="hmt-val">'+total+'</span></div>';
+  tt.classList.add('visible');
+  tt.style.left=Math.min(e.clientX+12,window.innerWidth-200)+'px';
+  tt.style.top=Math.min(e.clientY+12,window.innerHeight-100)+'px';
+};
+window.hideHmTooltip=function(){
+  document.getElementById('hmTooltip').classList.remove('visible');
+};
+
+// ── 3. RIVALRY CARDS ──
+var rivalStyle=document.createElement('style');
+rivalStyle.textContent=`
+.rivalry-section{margin-top:24px}
+.rivalry-title{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;text-shadow:0 0 8px var(--cyan-dim)}
+.rivalry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px}
+.rivalry-card{background:var(--bg2);border:1px solid var(--border);position:relative;overflow:hidden;transition:all .4s}
+.rivalry-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.rivalry-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--team-a-color,var(--cyan)),transparent 45%,transparent 55%,var(--team-b-color,var(--pink)) 100%)}
+.rivalry-card .rc-clash{position:absolute;top:0;left:0;right:0;bottom:0;opacity:.03;pointer-events:none;
+  background:linear-gradient(135deg,var(--team-a-color,var(--cyan)) 0%,transparent 40%,transparent 60%,var(--team-b-color,var(--pink)) 100%)}
+.rivalry-card .rc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;position:relative}
+.rivalry-card .rc-team{text-align:center;flex:1}
+.rivalry-card .rc-team-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px}
+.rivalry-card .rc-team-record{font-family:'Share Tech Mono',monospace;font-size:10px;margin-top:2px}
+.rivalry-card .rc-vs{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;
+  background:linear-gradient(135deg,var(--team-a-color,var(--cyan)),var(--team-b-color,var(--pink)));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  flex:0 0 auto;padding:0 12px}
+.rivalry-card .rc-stats{display:grid;grid-template-columns:1fr auto 1fr;gap:2px;padding:8px 16px 14px;font-family:'Share Tech Mono',monospace;font-size:10px}
+.rivalry-card .rc-stat-label{text-align:center;color:var(--dim);padding:4px 6px}
+.rivalry-card .rc-stat-val{padding:4px 6px;font-weight:700}
+.rivalry-card .rc-stat-val.left{text-align:right}
+.rivalry-card .rc-stat-val.right{text-align:left}
+.rivalry-card .rc-stat-val.winner{text-shadow:0 0 6px currentColor}
+.rivalry-card .rc-fire{position:absolute;top:8px;right:10px;font-size:8px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;padding:2px 6px;border-radius:3px}
+`;
+document.head.appendChild(rivalStyle);
+
+// Patch renderTeams to append rivalry cards
+var _rtRivalOrig=renderTeams;
+renderTeams=function(){
+  _rtRivalOrig.apply(this,arguments);
+  renderRivalries();
+};
+
+function renderRivalries(){
+  // Remove old section if present
+  var old=document.getElementById('rivalrySection');
+  if(old)old.remove();
+  var rows=typeof getFilteredRows==='function'?getFilteredRows():[];
+  // Group matches by Match ID, find team vs team records
+  var matches={};
+  rows.forEach(function(r){
+    var mid=r['Match ID']||'';if(!mid)return;
+    if(!matches[mid])matches[mid]=[];
+    matches[mid].push(r);
+  });
+  var teamH2H={};
+  for(var mid in matches){
+    var mRows=matches[mid];
+    var teamData={};
+    mRows.forEach(function(r){
+      var t=(r['Teams']||'').trim();if(!t)return;
+      if(!teamData[t])teamData[t]={win:r['Win']==='Win',kills:0,deaths:0,assists:0,dmg:0,gold:0,vision:0,count:0};
+      teamData[t].kills+=parseFloat(r['Kills'])||0;
+      teamData[t].deaths+=parseFloat(r['Deaths'])||0;
+      teamData[t].assists+=parseFloat(r['Assists'])||0;
+      teamData[t].dmg+=parseFloat(r['Total Damage to Champions'])||0;
+      teamData[t].gold+=parseFloat(r['Gold Earned'])||0;
+      teamData[t].vision+=parseFloat(r['Vision Score'])||0;
+      teamData[t].count++;
+    });
+    var tNames=Object.keys(teamData).filter(function(t){return t&&t!=='Sub'});
+    if(tNames.length!==2)continue;
+    var key=[tNames[0],tNames[1]].sort().join(' vs ');
+    if(!teamH2H[key])teamH2H[key]={a:tNames.sort()[0],b:tNames.sort()[1],aWins:0,bWins:0,games:0,aKills:0,bKills:0,aDeaths:0,bDeaths:0,aDmg:0,bDmg:0,aGold:0,bGold:0,aVis:0,bVis:0,aPlayers:0,bPlayers:0};
+    var h=teamH2H[key];
+    h.games++;
+    var sorted=tNames.sort();
+    var aData=teamData[sorted[0]],bData=teamData[sorted[1]];
+    if(aData.win)h.aWins++;else h.bWins++;
+    h.aKills+=aData.kills;h.bKills+=bData.kills;
+    h.aDeaths+=aData.deaths;h.bDeaths+=bData.deaths;
+    h.aDmg+=aData.dmg;h.bDmg+=bData.dmg;
+    h.aGold+=aData.gold;h.bGold+=bData.gold;
+    h.aVis+=aData.vision;h.bVis+=bData.vision;
+    h.aPlayers+=aData.count;h.bPlayers+=bData.count;
+  }
+  // Sort by most games played
+  var rivalries=Object.values(teamH2H).filter(function(r){return r.games>=2}).sort(function(a,b){return b.games-a.games});
+  if(!rivalries.length)return;
+  var section=document.createElement('div');
+  section.id='rivalrySection';
+  section.className='rivalry-section';
+  section.innerHTML='<div class="rivalry-title">⚔ Team Rivalries</div>';
+  var grid=document.createElement('div');
+  grid.className='rivalry-grid';
+  rivalries.forEach(function(r){
+    var cA=TC[r.a]||'var(--cyan)';
+    var cB=TC[r.b]||'var(--pink)';
+    var aKPG=(r.aKills/r.aPlayers).toFixed(1);
+    var bKPG=(r.bKills/r.bPlayers).toFixed(1);
+    var aDPG=(r.aDmg/r.aPlayers).toFixed(0);
+    var bDPG=(r.bDmg/r.bPlayers).toFixed(0);
+    var aGPG=(r.aGold/r.aPlayers).toFixed(0);
+    var bGPG=(r.bGold/r.bPlayers).toFixed(0);
+    var aVPG=(r.aVis/r.aPlayers).toFixed(1);
+    var bVPG=(r.bVis/r.bPlayers).toFixed(1);
+    // Determine rivalry heat
+    var heat=r.games>=6?'🔥 HEATED':'';
+    var close=Math.abs(r.aWins-r.bWins)<=1?'⚡ CLOSE':'';
+    var tag=heat||close;
+    var tagColor=heat?'var(--pink)':'var(--cyan)';
+    function statLine(aVal,label,bVal){
+      var aNum=parseFloat(aVal),bNum=parseFloat(bVal);
+      var aWin=aNum>bNum,bWin=bNum>aNum;
+      return'<div class="rc-stat-val left'+(aWin?' winner':'')+'" style="color:'+(aWin?cA:'var(--dim)')+'">'+aVal+'</div>'+
+        '<div class="rc-stat-label">'+label+'</div>'+
+        '<div class="rc-stat-val right'+(bWin?' winner':'')+'" style="color:'+(bWin?cB:'var(--dim)')+'">'+bVal+'</div>';
+    }
+    var card=document.createElement('div');
+    card.className='rivalry-card';
+    card.style.setProperty('--team-a-color',cA);
+    card.style.setProperty('--team-b-color',cB);
+    card.innerHTML='<div class="rc-clash"></div>'+
+      (tag?'<div class="rc-fire" style="color:'+tagColor+';border:1px solid '+tagColor+'40;background:'+tagColor+'10">'+tag+'</div>':'')+
+      '<div class="rc-header">'+
+        '<div class="rc-team"><div class="rc-team-name" style="color:'+cA+'">'+r.a+'</div><div class="rc-team-record"><span style="color:var(--green)">'+r.aWins+'W</span> - <span style="color:var(--pink)">'+r.bWins+'L</span></div></div>'+
+        '<div class="rc-vs">VS</div>'+
+        '<div class="rc-team"><div class="rc-team-name" style="color:'+cB+'">'+r.b+'</div><div class="rc-team-record"><span style="color:var(--green)">'+r.bWins+'W</span> - <span style="color:var(--pink)">'+r.aWins+'L</span></div></div>'+
+      '</div>'+
+      '<div class="rc-stats">'+
+        statLine(aKPG,'K/G',bKPG)+
+        statLine(aDPG,'DMG/G',bDPG)+
+        statLine(aGPG,'GOLD/G',bGPG)+
+        statLine(aVPG,'VIS/G',bVPG)+
+      '</div>';
+    grid.appendChild(card);
+  });
+  section.appendChild(grid);
+  var teamGrid=document.getElementById('teamGrid');
+  if(teamGrid&&teamGrid.parentElement)teamGrid.parentElement.appendChild(section);
+}
+
+})();
+
+// ═══════════════════════════════════════════════════════════════
 // BIG VISUAL UPGRADES
 // ═══════════════════════════════════════════════════════════════
 
