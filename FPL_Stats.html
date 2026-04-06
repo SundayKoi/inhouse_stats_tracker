@@ -4297,30 +4297,33 @@ renderCurrentTab=function(){
   if(curTab==='heatmap')renderHeatmap();
 };
 
+var _hmFiltersPopulated=false;
 function populateHmFilters(){
   var pSel=document.getElementById('hmPlayerFilter');
   var tSel=document.getElementById('hmTeamFilter');
   if(!pSel||!tSel)return;
-  var curP=pSel.value,curT=tSel.value;
-  var playerNames=PD.map(function(p){return p.player}).sort();
+  // Only rebuild team dropdown once (or when PD changes)
   var teamNames=[];PD.forEach(function(p){if(p.team&&teamNames.indexOf(p.team)===-1)teamNames.push(p.team)});teamNames.sort();
-  pSel.innerHTML='<option value="">All Players</option>'+playerNames.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');
+  var curT=tSel.value;
   tSel.innerHTML='<option value="">All Teams</option>'+teamNames.map(function(t){return'<option value="'+t+'">'+t+'</option>'}).join('');
-  if(curP)pSel.value=curP;
-  if(curT)tSel.value=curT;
+  if(curT&&teamNames.indexOf(curT)!==-1)tSel.value=curT;
+  // Rebuild player dropdown respecting current team filter
+  var curP=pSel.value;
+  var filterTeam=tSel.value;
+  var playerNames;
+  if(filterTeam){
+    playerNames=PD.filter(function(p){return p.team===filterTeam}).map(function(p){return p.player}).sort();
+  } else {
+    playerNames=PD.map(function(p){return p.player}).sort();
+  }
+  pSel.innerHTML='<option value="">All Players</option>'+playerNames.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');
+  if(curP&&playerNames.indexOf(curP)!==-1)pSel.value=curP;
 }
 
 window.onHmTeamFilter=function(){
-  var tSel=document.getElementById('hmTeamFilter');
+  // Team changed — just let renderHeatmap handle everything via populateHmFilters
   var pSel=document.getElementById('hmPlayerFilter');
-  if(!tSel||!pSel)return;
-  var team=tSel.value;
-  if(!team){pSel.value='';return}
-  // Filter player dropdown to only this team's players
-  var teamPlayers=PD.filter(function(p){return p.team===team}).map(function(p){return p.player}).sort();
-  var curP=pSel.value;
-  pSel.innerHTML='<option value="">All Players</option>'+teamPlayers.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');
-  if(teamPlayers.indexOf(curP)!==-1)pSel.value=curP;else pSel.value='';
+  if(pSel)pSel.value=''; // reset player when team changes
 };
 
 function renderHeatmap(){
