@@ -4270,7 +4270,13 @@ if(mainWrap&&!document.getElementById('pg-heatmap')){
   var hmPage=document.createElement('div');
   hmPage.className='tab-page';
   hmPage.id='pg-heatmap';
-  hmPage.innerHTML='<div class="card"><div class="card-t">⚔ Player vs Player Heatmap</div><div class="card-s">Win/loss record of every player against every other player they\'ve faced</div><div class="heatmap-wrap" id="heatmapContent"></div></div>';
+  hmPage.innerHTML='<div class="card"><div class="card-t">⚔ Player vs Player Heatmap</div><div class="card-s">Win/loss record of every player against every other player they\'ve faced</div>'+
+    '<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:end">'+
+      '<div class="ctrl" style="min-width:180px"><label>Filter Player</label><select id="hmPlayerFilter" onchange="renderHeatmap()"><option value="">All Players</option></select></div>'+
+      '<div class="ctrl" style="min-width:180px"><label>Filter Team</label><select id="hmTeamFilter" onchange="onHmTeamFilter();renderHeatmap()"><option value="">All Teams</option></select></div>'+
+      '<div class="ctrl" style="min-width:100px"><label>Min Games</label><select id="hmMinGames" onchange="renderHeatmap()"><option value="1">1+</option><option value="2" selected>2+</option><option value="3">3+</option><option value="5">5+</option></select></div>'+
+    '</div>'+
+    '<div class="heatmap-wrap" id="heatmapContent"></div></div>';
   // Insert before footer
   var ftr=mainWrap.querySelector('.ftr');
   if(ftr)mainWrap.insertBefore(hmPage,ftr);
@@ -4291,9 +4297,39 @@ renderCurrentTab=function(){
   if(curTab==='heatmap')renderHeatmap();
 };
 
+function populateHmFilters(){
+  var pSel=document.getElementById('hmPlayerFilter');
+  var tSel=document.getElementById('hmTeamFilter');
+  if(!pSel||!tSel)return;
+  var curP=pSel.value,curT=tSel.value;
+  var playerNames=PD.map(function(p){return p.player}).sort();
+  var teamNames=[];PD.forEach(function(p){if(p.team&&teamNames.indexOf(p.team)===-1)teamNames.push(p.team)});teamNames.sort();
+  pSel.innerHTML='<option value="">All Players</option>'+playerNames.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');
+  tSel.innerHTML='<option value="">All Teams</option>'+teamNames.map(function(t){return'<option value="'+t+'">'+t+'</option>'}).join('');
+  if(curP)pSel.value=curP;
+  if(curT)tSel.value=curT;
+}
+
+window.onHmTeamFilter=function(){
+  var tSel=document.getElementById('hmTeamFilter');
+  var pSel=document.getElementById('hmPlayerFilter');
+  if(!tSel||!pSel)return;
+  var team=tSel.value;
+  if(!team){pSel.value='';return}
+  // Filter player dropdown to only this team's players
+  var teamPlayers=PD.filter(function(p){return p.team===team}).map(function(p){return p.player}).sort();
+  var curP=pSel.value;
+  pSel.innerHTML='<option value="">All Players</option>'+teamPlayers.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');
+  if(teamPlayers.indexOf(curP)!==-1)pSel.value=curP;else pSel.value='';
+};
+
 function renderHeatmap(){
   var el=document.getElementById('heatmapContent');
   if(!el)return;
+  populateHmFilters();
+  var filterPlayer=document.getElementById('hmPlayerFilter')?.value||'';
+  var filterTeam=document.getElementById('hmTeamFilter')?.value||'';
+  var minGames=parseInt(document.getElementById('hmMinGames')?.value)||1;
   var rows=typeof getFilteredRows==='function'?getFilteredRows():[];
   // Group by Match ID
   var matches={};
@@ -4307,19 +4343,17 @@ function renderHeatmap(){
   var playerSet={};
   for(var mid in matches){
     var mRows=matches[mid];
-    // Separate by team
     var teams={};
     mRows.forEach(function(r){
       var t=(r['Teams']||'').trim();if(!t)return;
       if(!teams[t])teams[t]=[];
       var n=r['Summoner Name']||'';if(NAME_MERGES[n])n=NAME_MERGES[n];
-      teams[t].push({name:n,win:r['Win']==='Win'});
-      playerSet[n]=1;
+      teams[t].push({name:n,win:r['Win']==='Win',team:t});
+      playerSet[n]=t;
     });
     var tNames=Object.keys(teams);
     if(tNames.length!==2)continue;
     var t1=teams[tNames[0]],t2=teams[tNames[1]];
-    // Each player on team1 vs each on team2
     t1.forEach(function(p1){
       t2.forEach(function(p2){
         if(!h2h[p1.name])h2h[p1.name]={};
@@ -4331,19 +4365,41 @@ function renderHeatmap(){
       });
     });
   }
-  var players=Object.keys(playerSet).sort();
-  if(!players.length){el.innerHTML='<div class="nodata">NO DATA</div>';return}
+  // Apply filters
+  var allPlayers=Object.keys(playerSet).sort();
+  var players;
+  if(filterPlayer){
+    // Show only this player's matchups - their row + columns they've played against
+    var opponents=[];
+    allPlayers.forEach(function(p){
+      if(p===filterPlayer)return;
+      var rec=h2h[filterPlayer]&&h2h[filterPlayer][p]?h2h[filterPlayer][p]:{w:0,l:0};
+      if(rec.w+rec.l>=minGames)opponents.push(p);
+    });
+    players=[filterPlayer].concat(opponents);
+  } else if(filterTeam){
+    players=allPlayers.filter(function(p){return playerSet[p]===filterTeam});
+  } else {
+    players=allPlayers;
+  }
+  if(!players.length){el.innerHTML='<div class="nodata">NO DATA — adjust filters</div>';return}
   // Render table
+  var colPlayers=filterPlayer?players.slice(1):players;
+  var rowPlayers=filterPlayer?[filterPlayer]:players;
   var html='<table class="heatmap-table"><thead><tr><th></th>';
-  players.forEach(function(p){html+='<th>'+p+'</th>'});
+  colPlayers.forEach(function(p){
+    var pc=TC[playerSet[p]]||'var(--text)';
+    html+='<th style="color:'+pc+'">'+p+'</th>';
+  });
   html+='</tr></thead><tbody>';
-  players.forEach(function(p1){
-    html+='<tr><th class="hm-row-head" style="color:'+(TC[PD.find(function(x){return x.player===p1})?.team]||'var(--text)')+'">'+p1+'</th>';
-    players.forEach(function(p2){
+  rowPlayers.forEach(function(p1){
+    var pc=TC[playerSet[p1]]||'var(--text)';
+    html+='<tr><th class="hm-row-head" style="color:'+pc+'">'+p1+'</th>';
+    colPlayers.forEach(function(p2){
       if(p1===p2){html+='<td class="hm-self">—</td>';return}
       var rec=h2h[p1]&&h2h[p1][p2]?h2h[p1][p2]:{w:0,l:0};
       var total=rec.w+rec.l;
-      if(total===0){html+='<td style="background:var(--bg2);color:var(--dim)">—</td>';return}
+      if(total<minGames){html+='<td style="background:var(--bg2);color:var(--dim)">—</td>';return}
       var wr=rec.w/total;
       // Color: green for winning, red for losing
       var r=Math.round(255*(1-wr));
