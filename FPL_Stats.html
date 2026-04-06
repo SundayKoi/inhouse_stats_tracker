@@ -4203,16 +4203,25 @@ hmStyle.textContent=`
 `;
 document.head.appendChild(hmStyle);
 
-// Add heatmap tab
-var tabNav=document.getElementById('tabNav');
-if(tabNav&&!document.querySelector('[data-tab="heatmap"]')){
-  var hmBtn=document.createElement('button');
-  hmBtn.className='tab-btn';
-  hmBtn.dataset.tab='heatmap';
-  hmBtn.textContent='Heatmap';
-  hmBtn.addEventListener('click',function(){switchTab('heatmap',true)});
-  tabNav.appendChild(hmBtn);
+// Add heatmap tab - must survive applyConfig wiping the nav
+function ensureHeatmapTab(){
+  var tabNav=document.getElementById('tabNav');
+  if(tabNav&&!document.querySelector('[data-tab="heatmap"]')){
+    var hmBtn=document.createElement('button');
+    hmBtn.className='tab-btn';
+    hmBtn.dataset.tab='heatmap';
+    hmBtn.textContent='Heatmap';
+    hmBtn.addEventListener('click',function(){switchTab('heatmap',true)});
+    tabNav.appendChild(hmBtn);
+  }
 }
+ensureHeatmapTab();
+// Patch applyConfig to re-add heatmap tab after it rebuilds nav
+var _acOrig=applyConfig;
+applyConfig=function(){
+  _acOrig.apply(this,arguments);
+  ensureHeatmapTab();
+};
 // Add heatmap page
 var mainWrap=document.querySelector('.wrap');
 if(mainWrap&&!document.getElementById('pg-heatmap')){
