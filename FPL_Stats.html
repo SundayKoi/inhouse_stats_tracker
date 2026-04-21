@@ -1470,7 +1470,50 @@ function renderMVP(){
 }
 
 // POWER RANKINGS
-function calcPowerScore(p,all){const ks=['kda','winRate','csPerMin','goldPerMin','damagePerMin','visionPerMin'];const wt=[2,1.5,1,.8,1.2,.8];let tw=0,ws=0;ks.forEach((k,i)=>{const s=[...all].sort((a,b)=>a[k]-b[k]);const rk=s.findIndex(x=>x.player===p.player);const pc=rk/(s.length-1||1);ws+=pc*wt[i];tw+=wt[i]});return+((ws/tw)*100).toFixed(1)}
+function calcPowerScore(p,all){
+  // Role-adjusted blended scoring (0-100)
+  // Compares players against others in the SAME ROLE for percentile,
+  // then blends with raw normalized stat values so small role pools
+  // can't inflate scores. Uses role-specific weights.
+  var sameRole=all.filter(function(x){return x.mainRole===p.mainRole});
+  if(sameRole.length<4)sameRole=all;
+  function pctile(key,invert){
+    var sorted=sameRole.slice().sort(function(a,b){return a[key]-b[key]});
+    var idx=sorted.findIndex(function(x){return x.player===p.player});
+    if(idx===-1)return 50;
+    var pc=idx/(sorted.length-1||1)*100;
+    return invert?100-pc:pc;
+  }
+  function normVal(val,maxGood,invert){
+    if(invert) val=maxGood-val;
+    return Math.max(0,Math.min(val/maxGood*100,100));
+  }
+  function blended(key,maxGood,invert){
+    return normVal(p[key],maxGood,invert)*0.4+pctile(key,invert)*0.6;
+  }
+  // Role-specific weights (what matters most for a carry player in each role)
+  var weights;
+  switch(p.mainRole){
+    case'TOP':weights={winRate:20,kda:18,damagePerMin:18,csPerMin:14,killsPerGame:10,deathsPerGame:12,goldPerMin:8};break;
+    case'JUNGLE':weights={winRate:22,kda:18,damagePerMin:12,killsPerGame:12,assistsPerGame:12,visionPerMin:12,deathsPerGame:12};break;
+    case'MIDDLE':weights={winRate:20,kda:18,damagePerMin:20,csPerMin:12,killsPerGame:10,deathsPerGame:12,goldPerMin:8};break;
+    case'BOTTOM':weights={winRate:20,kda:16,damagePerMin:22,csPerMin:14,killsPerGame:10,deathsPerGame:12,goldPerMin:6};break;
+    case'UTILITY':weights={winRate:25,kda:16,assistsPerGame:18,visionPerMin:20,deathsPerGame:14,killsPerGame:4,damagePerMin:3};break;
+    default:weights={winRate:20,kda:18,damagePerMin:15,csPerMin:10,killsPerGame:10,deathsPerGame:12,visionPerMin:8,goldPerMin:7};
+  }
+  var maxBenchmarks={
+    winRate:100, kda:6, damagePerMin:800, csPerMin:9, goldPerMin:450,
+    killsPerGame:10, deathsPerGame:8, assistsPerGame:12, visionPerMin:2
+  };
+  var score=0,totalWeight=0;
+  for(var key in weights){
+    var invert=(key==='deathsPerGame');
+    var maxG=maxBenchmarks[key]||100;
+    score+=blended(key,maxG,invert)*weights[key]/100;
+    totalWeight+=weights[key];
+  }
+  return +Math.max(0,Math.min(100,score/totalWeight*100)).toFixed(1);
+}
 function renderPower(){const mg=parseInt(document.getElementById('prMinG').value);const roleEl=document.getElementById('prRole');const role=roleEl?roleEl.value:'All';let el=PD.filter(p=>p.games>=mg);if(role!=='All')el=el.filter(p=>p.mainRole===role);if(!el.length){document.getElementById('powerContent').innerHTML='<div class="nodata">Not enough data</div>';return}el.forEach(p=>p.powerScore=calcPowerScore(p,el));el.sort((a,b)=>b.powerScore-a.powerScore);const mx=el[0].powerScore;document.getElementById('powerContent').innerHTML=el.map((p,i)=>{const c=TC[p.team]||'#6366f1';const pct=(p.powerScore/mx*100).toFixed(1);const dl=Math.min(i*0.03,1.5);const rc=i===0?'r1':i===1?'r2':i===2?'r3':'';return`<div class="pr-row" style="animation-delay:${dl}s"><div class="pr-rank ${rc}" style="color:${i<3?c:'var(--dim)'}">${i+1}</div><div class="pr-info"><div class="pr-name" style="color:${c}" onclick="openProfile('${p.player.replace(/'/g,"\\'")}')">${p.player}</div><div class="pr-detail">${p.team} · ${ROLE_MAP[p.mainRole]||p.mainRole} · ${p.games}g · ${p.winRate}%WR</div></div><div class="pr-bar"><div class="pr-bar-fill" style="width:${pct}%;background:${c}"></div></div><div class="pr-score" style="color:${c}">${p.powerScore}</div></div>`}).join('')}
 // PLAYER PROFILE
 function openProfile(pn){const p=PD.find(x=>x.player===pn);if(!p)return;
